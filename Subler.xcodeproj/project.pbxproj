@@ -100,7 +100,6 @@
 		A9C095800F7B6C8C00170CAF /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9C0957F0F7B6C8C00170CAF /* AudioToolbox.framework */; };
 		A9C1E8560F31F395003A08F3 /* libmp4v2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A9C1E8550F31F395003A08F3 /* libmp4v2.a */; };
 		A9C4ECF712AE562A00BDBB7D /* MP42AACImporter.mm in Sources */ = {isa = PBXBuildFile; fileRef = A9C4ECF612AE562A00BDBB7D /* MP42AACImporter.mm */; };
-		A9C8182D0F74D6E300019BFF /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9C8182C0F74D6E300019BFF /* QuickTime.framework */; };
 		A9C9E34213FBC1EB00CA3B4E /* EncodeCanceled.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C9E33F13FBC1EB00CA3B4E /* EncodeCanceled.png */; };
 		A9C9E34313FBC1EB00CA3B4E /* EncodeComplete.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C9E34013FBC1EB00CA3B4E /* EncodeComplete.png */; };
 		A9C9E34413FBC1EB00CA3B4E /* EncodeWorking.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C9E34113FBC1EB00CA3B4E /* EncodeWorking.png */; };
@@ -346,7 +345,6 @@
 		A9C1E8550F31F395003A08F3 /* libmp4v2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmp4v2.a; path = mp4v2/libmp4v2.a; sourceTree = "<group>"; };
 		A9C4ECF512AE562A00BDBB7D /* MP42AACImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MP42AACImporter.h; path = "mp4v2 wrapper/MP42AACImporter.h"; sourceTree = "<group>"; };
 		A9C4ECF612AE562A00BDBB7D /* MP42AACImporter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MP42AACImporter.mm; path = "mp4v2 wrapper/MP42AACImporter.mm"; sourceTree = "<group>"; };
-		A9C8182C0F74D6E300019BFF /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
 		A9C9E33F13FBC1EB00CA3B4E /* EncodeCanceled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = EncodeCanceled.png; path = images/EncodeCanceled.png; sourceTree = "<group>"; };
 		A9C9E34013FBC1EB00CA3B4E /* EncodeComplete.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = EncodeComplete.png; path = images/EncodeComplete.png; sourceTree = "<group>"; };
 		A9C9E34113FBC1EB00CA3B4E /* EncodeWorking.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = EncodeWorking.png; path = images/EncodeWorking.png; sourceTree = "<group>"; };
@@ -412,7 +410,6 @@
 				8D15AC340486D014006FF6A4 /* Cocoa.framework in Frameworks */,
 				A984DB4B0F52D644001A20B2 /* Sparkle.framework in Frameworks */,
 				A97BE36F0F73D72E00652CBD /* QTKit.framework in Frameworks */,
-				A9C8182D0F74D6E300019BFF /* QuickTime.framework in Frameworks */,
 				A9C095800F7B6C8C00170CAF /* AudioToolbox.framework in Frameworks */,
 				A91F622D0FB0A56F00B96B33 /* libicucore.dylib in Frameworks */,
 				948058B6106E07990037A911 /* libz.dylib in Frameworks */,
@@ -452,7 +449,6 @@
 				CD56966E12FAAFA90029FADB /* Quartz.framework */,
 				A91F622C0FB0A56F00B96B33 /* libicucore.dylib */,
 				A9C0957F0F7B6C8C00170CAF /* AudioToolbox.framework */,
-				A9C8182C0F74D6E300019BFF /* QuickTime.framework */,
 				A97BE36E0F73D72E00652CBD /* QTKit.framework */,
 				A984DB4A0F52D644001A20B2 /* Sparkle.framework */,
 				1058C7A7FEA54F5311CA2CBB /* Cocoa.framework */,
