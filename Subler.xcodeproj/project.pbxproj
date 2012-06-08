@@ -17,6 +17,9 @@
 		6C05FA8815E1E6FD002DB3DD /* libuniversaldetector.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C05FA6F15E1E383002DB3DD /* libuniversaldetector.a */; };
 		6C05FA8C15E1E737002DB3DD /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C05FA8B15E1E737002DB3DD /* Sparkle.framework */; };
 		6C05FA8D15E1E74F002DB3DD /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6C05FA8B15E1E737002DB3DD /* Sparkle.framework */; };
+		6C6D35C515E1E87F000176D1 /* MetadataSearchController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6C6D35BF15E1E87F000176D1 /* MetadataSearchController.xib */; };
+		6C6D35C615E1E87F000176D1 /* PrefsController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6C6D35C115E1E87F000176D1 /* PrefsController.xib */; };
+		6C6D35C715E1E87F000176D1 /* SBQueueController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6C6D35C315E1E87F000176D1 /* SBQueueController.xib */; };
 		6CEEBED415818331009A459F /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6CEEBED315818331009A459F /* Quartz.framework */; };
 		8D15AC2C0486D014006FF6A4 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2A37F4B9FDCFA73011CA2CEA /* Credits.rtf */; };
 		8D15AC2F0486D014006FF6A4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165FFE840EACC02AAC07 /* InfoPlist.strings */; };
@@ -25,7 +28,6 @@
 		948058B6106E07990037A911 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 948058B5106E07990037A911 /* libz.dylib */; };
 		A90327E4133F68C5004E0D41 /* SBOCRWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = A90327E3133F68C5004E0D41 /* SBOCRWrapper.mm */; };
 		A905E58A0FB05A8100B926FF /* MP42ClosedCaptionTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = A905E5880FB05A8100B926FF /* MP42ClosedCaptionTrack.m */; };
-		A90B023B10F3290A000416F3 /* Prefs.xib in Resources */ = {isa = PBXBuildFile; fileRef = A90B023910F3290A000416F3 /* Prefs.xib */; };
 		A911064B0F323D450013D1E0 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A911064A0F323D450013D1E0 /* AppDelegate.m */; };
 		A91D3FA015B15D2100627DD0 /* tvdb_cache.py in Resources */ = {isa = PBXBuildFile; fileRef = A91D3F9F15B15D2100627DD0 /* tvdb_cache.py */; };
 		A91D3FA115B15D3400627DD0 /* tvdb_cache.py in CopyFiles */ = {isa = PBXBuildFile; fileRef = A91D3F9F15B15D2100627DD0 /* tvdb_cache.py */; };
@@ -44,7 +46,6 @@
 		A95FE305133E3DCB00D35687 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A95FE300133E3DCB00D35687 /* libavutil.a */; };
 		A961476313F567E10068F161 /* SBQueueController.m in Sources */ = {isa = PBXBuildFile; fileRef = A961476013F567E10068F161 /* SBQueueController.m */; };
 		A961476413F567E10068F161 /* SBPresetManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A961476213F567E10068F161 /* SBPresetManager.m */; };
-		A961476713F568210068F161 /* Batch.xib in Resources */ = {isa = PBXBuildFile; fileRef = A961476513F568210068F161 /* Batch.xib */; };
 		A9629C8D0F56F7B6001D6A75 /* MP42ChapterTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = A9629C820F56F7B6001D6A75 /* MP42ChapterTrack.m */; };
 		A9629C8E0F56F7B6001D6A75 /* MP42File.m in Sources */ = {isa = PBXBuildFile; fileRef = A9629C840F56F7B6001D6A75 /* MP42File.m */; };
 		A9629C8F0F56F7B6001D6A75 /* MP42Metadata.m in Sources */ = {isa = PBXBuildFile; fileRef = A9629C860F56F7B6001D6A75 /* MP42Metadata.m */; };
@@ -124,7 +125,6 @@
 		CD4E6E5D12F744210095C84F /* ArtworkSelector.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD4E6E5B12F744210095C84F /* ArtworkSelector.xib */; };
 		CD56963212FAAD680029FADB /* ArtworkSelector.m in Sources */ = {isa = PBXBuildFile; fileRef = CD56963112FAAD680029FADB /* ArtworkSelector.m */; };
 		CD71FEA312F1B5AF00F0A98D /* MetadataSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD71FEA212F1B5AF00F0A98D /* MetadataSearchController.m */; };
-		CD71FEA612F1B62600F0A98D /* MetadataSearch.xib in Resources */ = {isa = PBXBuildFile; fileRef = CD71FEA412F1B62600F0A98D /* MetadataSearch.xib */; };
 		CD71FF1D12F1C4A900F0A98D /* TheTVDB.m in Sources */ = {isa = PBXBuildFile; fileRef = CD71FF1C12F1C4A900F0A98D /* TheTVDB.m */; };
 		CD89360E12F34F9D0085C2B5 /* setup.py in CopyFiles */ = {isa = PBXBuildFile; fileRef = CD89360212F34F500085C2B5 /* setup.py */; };
 		CD89360F12F34F9D0085C2B5 /* tvdb_api.py in CopyFiles */ = {isa = PBXBuildFile; fileRef = CD89360312F34F500085C2B5 /* tvdb_api.py */; };
@@ -219,6 +219,9 @@
 		6C05FA8115E1E6AE002DB3DD /* SBLanguages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SBLanguages.h; path = Classes/SBLanguages.h; sourceTree = "<group>"; };
 		6C05FA8215E1E6AE002DB3DD /* SBLanguages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SBLanguages.m; path = Classes/SBLanguages.m; sourceTree = "<group>"; };
 		6C05FA8B15E1E737002DB3DD /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = Vendor/Sparkle.framework; sourceTree = "<group>"; };
+		6C6D35C015E1E87F000176D1 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MetadataSearchController.xib; sourceTree = "<group>"; };
+		6C6D35C215E1E87F000176D1 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/PrefsController.xib; sourceTree = "<group>"; };
+		6C6D35C415E1E87F000176D1 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/SBQueueController.xib; sourceTree = "<group>"; };
 		6CEEBED315818331009A459F /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Quartz.framework; sourceTree = DEVELOPER_DIR; };
 		8D15AC360486D014006FF6A4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D15AC370486D014006FF6A4 /* Subler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Subler.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -227,7 +230,6 @@
 		A90327E3133F68C5004E0D41 /* SBOCRWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SBOCRWrapper.mm; sourceTree = "<group>"; };
 		A905E5880FB05A8100B926FF /* MP42ClosedCaptionTrack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MP42ClosedCaptionTrack.m; sourceTree = "<group>"; };
 		A905E5890FB05A8100B926FF /* MP42ClosedCaptionTrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MP42ClosedCaptionTrack.h; sourceTree = "<group>"; };
-		A90B023A10F3290A000416F3 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/Prefs.xib; sourceTree = "<group>"; };
 		A91103850F321CF60013D1E0 /* UniversalDetector.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UniversalDetector.xcodeproj; path = UniversalDetector/UniversalDetector.xcodeproj; sourceTree = "<group>"; };
 		A911049C0F321DFC0013D1E0 /* UniversalDetector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UniversalDetector.h; path = Vendor/UniversalDetector/UniversalDetector.h; sourceTree = "<group>"; };
 		A91106490F323D450013D1E0 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Classes/AppDelegate.h; sourceTree = "<group>"; };
@@ -258,7 +260,6 @@
 		A961476013F567E10068F161 /* SBQueueController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SBQueueController.m; path = Classes/SBQueueController.m; sourceTree = "<group>"; };
 		A961476113F567E10068F161 /* SBPresetManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SBPresetManager.h; path = Classes/SBPresetManager.h; sourceTree = "<group>"; };
 		A961476213F567E10068F161 /* SBPresetManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SBPresetManager.m; path = Classes/SBPresetManager.m; sourceTree = "<group>"; };
-		A961476613F568210068F161 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/Batch.xib; sourceTree = "<group>"; };
 		A9629C810F56F7B6001D6A75 /* MP42ChapterTrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MP42ChapterTrack.h; sourceTree = "<group>"; };
 		A9629C820F56F7B6001D6A75 /* MP42ChapterTrack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MP42ChapterTrack.m; sourceTree = "<group>"; };
 		A9629C830F56F7B6001D6A75 /* MP42File.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MP42File.h; sourceTree = "<group>"; };
@@ -380,7 +381,6 @@
 		CD56966E12FAAFA90029FADB /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		CD71FEA112F1B5AF00F0A98D /* MetadataSearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MetadataSearchController.h; path = Classes/MetadataSearchController.h; sourceTree = "<group>"; };
 		CD71FEA212F1B5AF00F0A98D /* MetadataSearchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MetadataSearchController.m; path = Classes/MetadataSearchController.m; sourceTree = "<group>"; };
-		CD71FEA512F1B62600F0A98D /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MetadataSearch.xib; sourceTree = "<group>"; };
 		CD71FF1B12F1C4A900F0A98D /* TheTVDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheTVDB.h; path = Classes/MetadataImporters/TheTVDB.h; sourceTree = "<group>"; };
 		CD71FF1C12F1C4A900F0A98D /* TheTVDB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TheTVDB.m; path = Classes/MetadataImporters/TheTVDB.m; sourceTree = "<group>"; };
 		CD89360212F34F500085C2B5 /* setup.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = setup.py; sourceTree = "<group>"; };
@@ -622,14 +622,14 @@
 		A961475E13F5676E0068F161 /* NIBs */ = {
 			isa = PBXGroup;
 			children = (
-				A90B023910F3290A000416F3 /* Prefs.xib */,
 				A9B46AC012B79E230040517A /* SBDocument.xib */,
 				1DDD582A0DA1D0D100B32029 /* MainMenu.xib */,
 				A9C055360F6D395B00AF15B5 /* FileImport.xib */,
-				CD71FEA412F1B62600F0A98D /* MetadataSearch.xib */,
 				CD4E6E5B12F744210095C84F /* ArtworkSelector.xib */,
 				A9FB9DC80F83AAC100AB791A /* VideoFramerate.xib */,
-				A961476513F568210068F161 /* Batch.xib */,
+				6C6D35BF15E1E87F000176D1 /* MetadataSearchController.xib */,
+				6C6D35C115E1E87F000176D1 /* PrefsController.xib */,
+				6C6D35C315E1E87F000176D1 /* SBQueueController.xib */,
 			);
 			name = NIBs;
 			sourceTree = "<group>";
@@ -858,10 +858,8 @@
 				A9C055370F6D395B00AF15B5 /* FileImport.xib in Resources */,
 				A95C881D0F827BFB00F51A22 /* ToolbarRemoveTemplate.png in Resources */,
 				A9FB9DC90F83AAC100AB791A /* VideoFramerate.xib in Resources */,
-				A90B023B10F3290A000416F3 /* Prefs.xib in Resources */,
 				A92A4FB812B0F2F300751FA5 /* prefs-audio.png in Resources */,
 				A9B46AA412B79BB10040517A /* Subler.icns in Resources */,
-				CD71FEA612F1B62600F0A98D /* MetadataSearch.xib in Resources */,
 				CD08BA9612F62829006BA549 /* tmdb-logo.png in Resources */,
 				CD16BC4712F6BC7F00AF5453 /* tvdb-logo.png in Resources */,
 				CD4E6E5D12F744210095C84F /* ArtworkSelector.xib in Resources */,
@@ -871,7 +869,6 @@
 				A9F284A0133C9F6E00F10951 /* close.pdf in Resources */,
 				A9F284A1133C9F6E00F10951 /* close-over.pdf in Resources */,
 				A9F284A2133C9F6E00F10951 /* close-pressed.pdf in Resources */,
-				A961476713F568210068F161 /* Batch.xib in Resources */,
 				A98739FE13FBB09B00B795A7 /* ToolbarActionTemplate.png in Resources */,
 				A9C9E34213FBC1EB00CA3B4E /* EncodeCanceled.png in Resources */,
 				A9C9E34313FBC1EB00CA3B4E /* EncodeComplete.png in Resources */,
@@ -882,6 +879,9 @@
 				6C05FA7E15E1E55A002DB3DD /* MovieView.xib in Resources */,
 				6C05FA7F15E1E55A002DB3DD /* SoundView.xib in Resources */,
 				6C05FA8015E1E55A002DB3DD /* VideoView.xib in Resources */,
+				6C6D35C515E1E87F000176D1 /* MetadataSearchController.xib in Resources */,
+				6C6D35C615E1E87F000176D1 /* PrefsController.xib in Resources */,
+				6C6D35C715E1E87F000176D1 /* SBQueueController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1045,20 +1045,28 @@
 			path = English.lproj;
 			sourceTree = "<group>";
 		};
-		A90B023910F3290A000416F3 /* Prefs.xib */ = {
+		6C6D35BF15E1E87F000176D1 /* MetadataSearchController.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				A90B023A10F3290A000416F3 /* English */,
+				6C6D35C015E1E87F000176D1 /* English */,
 			);
-			name = Prefs.xib;
+			name = MetadataSearchController.xib;
 			sourceTree = "<group>";
 		};
-		A961476513F568210068F161 /* Batch.xib */ = {
+		6C6D35C115E1E87F000176D1 /* PrefsController.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				A961476613F568210068F161 /* English */,
+				6C6D35C215E1E87F000176D1 /* English */,
 			);
-			name = Batch.xib;
+			name = PrefsController.xib;
+			sourceTree = "<group>";
+		};
+		6C6D35C315E1E87F000176D1 /* SBQueueController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6C6D35C415E1E87F000176D1 /* English */,
+			);
+			name = SBQueueController.xib;
 			sourceTree = "<group>";
 		};
 		A9B46AC012B79E230040517A /* SBDocument.xib */ = {
@@ -1091,14 +1099,6 @@
 				CD4E6E5C12F744210095C84F /* English */,
 			);
 			name = ArtworkSelector.xib;
-			sourceTree = "<group>";
-		};
-		CD71FEA412F1B62600F0A98D /* MetadataSearch.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				CD71FEA512F1B62600F0A98D /* English */,
-			);
-			name = MetadataSearch.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

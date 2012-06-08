@@ -45,7 +45,7 @@
 
 -(id) init
 {
-    if ((self = [super initWithWindowNibName:@"Prefs"])) {
+    if ((self = [super initWithWindowNibName:@"PrefsController"])) {
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(updateTableView:)
                                                      name:@"SBPresetManagerUpdatedNotification" object:nil];

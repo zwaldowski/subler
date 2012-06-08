@@ -19,7 +19,7 @@
 
 - (id)initWithDelegate:(id)del
 {
-	if ((self = [super initWithWindowNibName:@"MetadataSearch"])) {        
+	if ((self = [super initWithWindowNibName:@"MetadataSearchController"])) {        
 		delegate = del;
         
         NSMutableParagraphStyle * ps = [[[NSParagraphStyle defaultParagraphStyle] mutableCopy] autorelease];

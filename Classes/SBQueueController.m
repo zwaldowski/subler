@@ -50,7 +50,7 @@ static SBQueueController *sharedController = nil;
 
 - (id)init
 {
-    self = [super initWithWindowNibName:@"Batch"];
+    self = [super initWithWindowNibName:@"SBQueueController"];
     if (self) {
         
         queue = dispatch_queue_create("org.subler.Queue", NULL);
