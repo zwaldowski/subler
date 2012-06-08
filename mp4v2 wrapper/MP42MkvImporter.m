@@ -483,7 +483,7 @@ u_int32_t MP4AV_Ac3GetSamplingRate(u_int8_t* pHdr);
         UInt32 colorPalette[16];
 
         if (palette != NULL) {
-            sscanf(palette, "palette: %lx, %lx, %lx, %lx, %lx, %lx, %lx, %lx, %lx, %lx, %lx, %lx, %lx, %lx, %lx, %lx", 
+            sscanf(palette, "palette: %x, %x, %x, %x, %x, %x, %x, %x, %x, %x, %x, %x, %x, %x, %x, %x", 
                    &colorPalette[ 0], &colorPalette[ 1], &colorPalette[ 2], &colorPalette[ 3], 
                    &colorPalette[ 4], &colorPalette[ 5], &colorPalette[ 6], &colorPalette[ 7], 
                    &colorPalette[ 8], &colorPalette[ 9], &colorPalette[10], &colorPalette[11], 

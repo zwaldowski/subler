@@ -829,11 +829,11 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 
     if (minutes) {
         for (i = 0, y = 1; i < [mp4File movieDuration]; i += minutes, y++) {
-            [chapterTrack addChapter:[NSString stringWithFormat:@"Chapter %d", y]
+            [chapterTrack addChapter:[NSString stringWithFormat:@"Chapter %ld", y]
                             duration:i];
         }
     } else {
-        [chapterTrack addChapter:[NSString stringWithFormat:@"Chapter %d", y]
+        [chapterTrack addChapter:[NSString stringWithFormat:@"Chapter %ld", y]
                         duration:[mp4File movieDuration]];
 	}
 

@@ -241,7 +241,7 @@ struct style_record {
             if ([sampleText characterAtIndex:[sampleText length] - 1] == '\n')
                 [sampleText deleteCharactersInRange:NSMakeRange([sampleText length] - 1, 1)];
 
-            [srtFile appendFormat:@"%d\n%@ --> %@\n", srtSampleNumber++,
+            [srtFile appendFormat:@"%ld\n%@ --> %@\n", srtSampleNumber++,
                                                       SRTStringFromTime(time, timeScale, ','), SRTStringFromTime(time + sampleDuration, timeScale, ',')];
             [srtFile appendString:sampleText];
             [srtFile appendString:@"\n\n"];

@@ -206,7 +206,7 @@ canOutput:
 
 -(NSString*)description
 {
-	return [NSString stringWithFormat:@"lines left: %d finished inputting: %d",[lines count],finished];
+	return [NSString stringWithFormat:@"lines left: %ld finished inputting: %d",[lines count],finished];
 }
 @end
 

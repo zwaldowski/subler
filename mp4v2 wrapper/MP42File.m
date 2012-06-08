@@ -480,7 +480,7 @@ NSString * const MP42FileTypeM4B = @"m4b";
                         [previewImage release];
                     }
                     else
-                        NSLog(@"code: %d, domain: %@, userInfo: %@", [error code], [error domain], [error userInfo]);
+                        NSLog(@"code: %ld, domain: %@, userInfo: %@", [error code], [error domain], [error userInfo]);
 
                     CGImageRelease(imgRef);
                 }
@@ -522,7 +522,7 @@ NSString * const MP42FileTypeM4B = @"m4b";
                 if (previewImage)
                     [previewImages addObject:previewImage];
                 else {
-                    NSLog(@"code: %d, domain: %@, userInfo: %@", [error code], [error domain], [error userInfo]);
+                    NSLog(@"code: %ld, domain: %@, userInfo: %@", [error code], [error domain], [error userInfo]);
 
                     [previewImages addObject:[NSNull null]];
                 }
