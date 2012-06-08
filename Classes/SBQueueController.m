@@ -520,7 +520,7 @@
             NSMutableArray *items = [[NSMutableArray alloc] init];
 
             for (NSURL *url in [panel URLs])
-                [items addObject:[SBQueueItem itemWithURL:url]];
+                [items addObject: [[[SBQueueItem alloc] initWithURL:url] autorelease]];
 
             [self addItems:items atIndexes:nil];
             [items release];
@@ -750,7 +750,7 @@
             NSMutableIndexSet *indexes = [[NSMutableIndexSet alloc] init];
 
             for (NSURL * url in items) {
-                [queueItems addObject:[SBQueueItem itemWithURL:url]];
+                [queueItems addObject: [[[SBQueueItem alloc] initWithURL: url] autorelease]];
                 [indexes addIndex:row];
             }
 

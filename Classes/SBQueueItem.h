@@ -36,12 +36,7 @@ typedef NSInteger SBQueueItemStatus;
 @property (readwrite) SBQueueItemStatus status;
 
 - (id)initWithURL:(NSURL*)URL;
-+ (id)itemWithURL:(NSURL*)URL;
-
 - (id)initWithMP4:(MP42File*)MP4;
 - (id)initWithMP4:(MP42File*)MP4 url:(NSURL*)URL attributes:(NSDictionary*)dict;
-
-+ (id)itemWithMP4:(MP42File*)MP4;
-+ (id)itemWithMP4:(MP42File*)MP4 url:(NSURL*)URL attributes:(NSDictionary*)dict;
 
 @end

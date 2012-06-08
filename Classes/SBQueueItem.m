@@ -16,15 +16,6 @@
 @synthesize destURL;
 @synthesize mp4File;
 @synthesize status;
-- (id)init
-{
-    self = [super init];
-    if (self) {
-
-    }
-
-    return self;
-}
 
 - (id)initWithURL:(NSURL*)URL {
     self = [super init];
@@ -39,11 +30,6 @@
     }
 
     return self;
-}
-
-+ (id)itemWithURL:(NSURL*)URL
-{
-    return [[[SBQueueItem alloc] initWithURL:URL] autorelease];
 }
 
 - (id)initWithMP4:(MP42File*)MP4 {
@@ -69,11 +55,6 @@
     return self;
 }
 
-+ (id)itemWithMP4:(MP42File*)MP4
-{
-    return [[[SBQueueItem alloc] initWithMP4:MP4] autorelease];
-}
-
 - (id)initWithMP4:(MP42File*)MP4 url:(NSURL*)URL attributes:(NSDictionary*)dict
 {
     if (self = [super init])
@@ -87,11 +68,6 @@
     }
 
     return self;
-}
-
-+ (id)itemWithMP4:(MP42File*)MP4 url:(NSURL*)URL attributes:(NSDictionary*)dict
-{
-    return [[[SBQueueItem alloc] initWithMP4:MP4 url:URL attributes:dict] autorelease];
 }
 
 - (void)dealloc

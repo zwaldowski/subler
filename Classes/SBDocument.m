@@ -582,8 +582,9 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 {
     SBQueueController *queue =  [SBQueueController sharedController];
     if ([mp4File hasFileRepresentation]) {
-        SBQueueItem *item = [SBQueueItem itemWithMP4:mp4File];
+        SBQueueItem *item = [[SBQueueItem alloc] initWithMP4: mp4File];
         [queue addItem:item];
+		[item release];
         [self close];
     }
     else {
@@ -598,8 +599,9 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
                 if ([_64bit_data state]) [attributes setObject:[NSNumber numberWithBool:YES] forKey:MP42Create64BitData];
                 if ([_64bit_time state]) [attributes setObject:[NSNumber numberWithBool:YES] forKey:MP42Create64BitTime];
 
-                SBQueueItem *item = [SBQueueItem itemWithMP4:mp4File url:[panel URL] attributes:attributes];
+                SBQueueItem *item = [[SBQueueItem alloc] initWithMP4:mp4File url:[panel URL] attributes:attributes];
                 [queue addItem:item];
+				[item release];
 
                 [attributes release];
                 [self close];
