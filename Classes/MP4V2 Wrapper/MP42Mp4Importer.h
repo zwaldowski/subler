@@ -7,9 +7,9 @@
 //
 
 #import "MP42FileImporter.h"
-#import <mp4v2/mp4v2.h>
+#import "MP42File.h"
 
-@interface MP42Mp4Importer : NSObject <MP42FileImporter> {
+@interface MP42Mp4Importer : NSObject <MP42FileImporter, MP42FileDelegate> {
     MP4FileHandle  fileHandle;
 
     NSThread *dataReader;

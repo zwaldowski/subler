@@ -8,9 +8,17 @@
 
 #import <Quartz/Quartz.h>
 
+@class ArtworkSelector;
+
+@protocol ArtworkSelectorDelegate <NSObject>
+
+- (void)artworkSelector:(ArtworkSelector *)selector didSelect:(NSURL *)artworkURL;
+
+@end
+
 @interface ArtworkSelector : NSWindowController {
 
-    id                               delegate;
+    id <ArtworkSelectorDelegate> delegate;
     IBOutlet IKImageBrowserView     *imageBrowser;
     IBOutlet NSSlider               *slider;
     IBOutlet NSButton               *addArtworkButton;
@@ -20,7 +28,7 @@
 }
 
 #pragma mark Initialization
-- (id)initWithDelegate:(id)del imageURLs:(NSArray *)imageURLs;
+- (id)initWithDelegate:(id <ArtworkSelectorDelegate>)del imageURLs:(NSArray *)imageURLs;
 
 #pragma mark Load images
 - (IBAction) loadMoreArtwork:(id)sender;

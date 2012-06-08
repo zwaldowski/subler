@@ -47,6 +47,14 @@ typedef enum _MAWindowPosition {
     MAPositionAutomatic     = 12
 } MAWindowPosition;
 
+@class MAAttachedWindow;
+
+@protocol MAAttachedWindowDelegate <NSObject, NSWindowDelegate>
+
+- (IBAction)hideInfoWindow:(id)sender;
+
+@end
+
 @interface MAAttachedWindow : NSWindow {
     NSButton *closeButton;
 
@@ -60,7 +68,7 @@ typedef enum _MAWindowPosition {
     BOOL drawsRoundCornerBesideArrow;
 
     @private
-    id delegate;
+    id <MAAttachedWindowDelegate> delegate;
     NSColor *_MABackgroundColor;
     __weak NSView *_view;
     __weak NSWindow *_window;
@@ -101,7 +109,7 @@ typedef enum _MAWindowPosition {
                           inWindow:(NSWindow *)window 
                             onSide:(MAWindowPosition)side 
                         atDistance:(CGFloat)distance
-                          delegate:(id)del;
+                          delegate:(id <MAAttachedWindowDelegate>)del;
 
 // Accessor methods
 - (void)setPoint:(NSPoint)point side:(MAWindowPosition)side;

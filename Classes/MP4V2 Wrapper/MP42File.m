@@ -46,7 +46,7 @@ NSString * const MP42FileTypeM4B = @"m4b";
     return self;
 }
 
-- (id)initWithDelegate:(id)del;
+- (id)initWithDelegate:(id <MP42FileDelegate>)del;
 {
     if ((self = [self init])) {
         delegate = del;
@@ -55,7 +55,7 @@ NSString * const MP42FileTypeM4B = @"m4b";
     return self;
 }
 
-- (id)initWithExistingFile:(NSURL *)URL andDelegate:(id)del;
+- (id)initWithExistingFile:(NSURL *)URL andDelegate:(id <MP42FileDelegate>)del;
 {
     if ((self = [super init]))
 	{

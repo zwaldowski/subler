@@ -105,16 +105,13 @@
 #pragma mark Finishing up
 
 - (IBAction) addArtwork:(id)sender {
-    if ([delegate respondsToSelector:@selector(selectArtworkDone:)]) {
-        NSURL *u = [[images objectAtIndex:[[imageBrowser selectionIndexes] firstIndex]] url];
-        [delegate performSelector:@selector(selectArtworkDone:) withObject:[[u retain] autorelease]];
-    }
+	NSURL *u = [[images objectAtIndex:[[imageBrowser selectionIndexes] firstIndex]] url];
+	[delegate artworkSelector: self didSelect: [[u retain] autorelease]];
 }
 
 - (IBAction) addNoArtwork:(id)sender {
-    if ([delegate respondsToSelector:@selector(selectArtworkDone:)]) {
-        [delegate performSelector:@selector(selectArtworkDone:) withObject:nil];
-    }
+	[delegate artworkSelector: self didSelect: nil];
+
 }
 
 - (void) dealloc {

@@ -23,7 +23,7 @@
 
 #define SublerTableViewDataType @"SublerTableViewDataType"
 
-@interface SBDocument () <FileImportDelegate>
+@interface SBDocument () <MP42FileDelegate, FileImportDelegate, MetadataSearchControllerDelegate>
 
 @end
 
@@ -300,6 +300,13 @@
 }
 
 #pragma mark Interface validation
+
+- (void)file:(MP42File *)file didUpdateProgress:(CGFloat)progress {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[optBar setIndeterminate:NO];
+		[optBar setDoubleValue: progress];
+	});
+}
 
 - (void)updateProgressBar: (NSNumber *)progress {
     [optBar setIndeterminate:NO];
@@ -716,7 +723,33 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 
     [NSApp endSheet: import.window];
     [import.window orderOut:self];
-    [import.window release];
+    [import release];
+}
+
+- (void)searchController:(MetadataSearchController *)controller didImportMetadata:(MP42Metadata *)metadata {
+    if (metadata) {
+        [mp4File.metadata mergeMetadata: metadata];
+		
+        for (MP42Track *track in mp4File.tracks)
+            if ([track isKindOfClass:[MP42VideoTrack class]]) {
+                uint64_t tw = (uint64_t) [((MP42VideoTrack *) track) trackWidth];
+                uint64_t th = (uint64_t) [((MP42VideoTrack *) track) trackHeight];
+				
+                if ((tw > 1280) && (th > 720))
+                    [mp4File.metadata setTag:@"2" forKey:@"HD Video"];
+                else if ((tw >= 960) && (th >= 720))
+                    [mp4File.metadata setTag:@"1" forKey:@"HD Video"];
+				
+                [self updateChangeCount:NSChangeDone];
+            }
+		
+        [self tableViewSelectionDidChange:nil];
+        [self updateChangeCount:NSChangeDone];
+    }
+	
+    [NSApp endSheet: controller.window];
+    [controller.window orderOut:self];
+    [controller release];
 }
 
 - (void) metadataImportDone: (MP42Metadata*) metadataToBeImported

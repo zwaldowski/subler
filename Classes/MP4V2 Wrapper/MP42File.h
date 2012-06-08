@@ -30,6 +30,8 @@ extern NSString * const MP42FileTypeM4A;
 
 @protocol MP42FileDelegate <NSObject>
 
+@optional
+
 - (void)file:(MP42File *)file didUpdateProgress:(CGFloat)progress;
 
 @end
@@ -57,8 +59,8 @@ extern NSString * const MP42FileTypeM4A;
 @property (readonly) MP42Metadata    *metadata;
 @property (readonly) BOOL hasFileRepresentation;
 
-- (id)   initWithDelegate:(id)del;
-- (id)   initWithExistingFile:(NSURL *)URL andDelegate:(id)del;
+- (id)   initWithDelegate:(id <MP42FileDelegate>)del;
+- (id)   initWithExistingFile:(NSURL *)URL andDelegate:(id <MP42FileDelegate>)del;
 
 - (NSUInteger) movieDuration;
 - (MP42ChapterTrack*) chapters;

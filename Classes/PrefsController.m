@@ -16,7 +16,7 @@
 #define TOOLBAR_AUDIO       @"TOOLBAR_AUDIO"
 #define TOOLBAR_SETS        @"TOOLBAR_SETS"
 
-@interface PrefsController (Private)
+@interface PrefsController () <MAAttachedWindowDelegate>
 
 - (void) setPrefView: (id) sender;
 - (NSToolbarItem *)toolbarItemWithIdentifier: (NSString *)identifier
@@ -210,10 +210,6 @@
     else
         [removeSet setEnabled:NO];
 }
-
-@end
-
-@implementation PrefsController (Private)
 
 - (void) setPrefView: (id) sender
 {

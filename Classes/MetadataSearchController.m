@@ -17,7 +17,7 @@
 
 #pragma mark Initialization
 
-- (id)initWithDelegate:(id)del
+- (id)initWithDelegate:(id <MetadataSearchControllerDelegate>)del
 {
 	if ((self = [super initWithWindowNibName:@"MetadataSearchController"])) {        
 		delegate = del;
@@ -41,7 +41,7 @@
 
     [[self window] makeFirstResponder:movieName];
 
-    MP42File *mp4File = [((SBDocument *) delegate) mp4File];
+    MP42File *mp4File = delegate.mp4File;
 
     NSString *language = [[NSUserDefaults standardUserDefaults] valueForKey:@"SBNativeLanguage"];
     if (!language)
@@ -49,7 +49,7 @@
     
     // construct movie language menu
     [movieLanguage removeAllItems];
-    for (NSString *lang in [(SBDocument *) delegate languages]) {
+    for (NSString *lang in delegate.languages) {
         if ([lang isEqualToString:@"Unknown"]) continue;
         [movieLanguage addItemWithTitle:lang];
     }
@@ -330,20 +330,20 @@
             selectedResult.artworkURL = [selectedResult.artworkFullsizeURLs objectAtIndex:0];
             [self loadArtwork];
         } else {
-            artworkSelectorWindow = [[ArtworkSelector alloc] initWithDelegate:self imageURLs:selectedResult.artworkThumbURLs];
-            [NSApp beginSheet:[artworkSelectorWindow window] modalForWindow:[self window] modalDelegate:nil didEndSelector:NULL contextInfo:nil];
+			ArtworkSelector *sheet = [[ArtworkSelector alloc] initWithDelegate:self imageURLs:selectedResult.artworkThumbURLs];
+            [NSApp beginSheet: [sheet window] modalForWindow: [self window] modalDelegate: nil didEndSelector: NULL contextInfo: nil];
         }
     } else {
         [self addMetadata];
     }
 }
 
-- (void) selectArtworkDone:(NSURL *)url {
-    NSUInteger i = [selectedResult.artworkThumbURLs indexOfObject:url];
+- (void)artworkSelector:(ArtworkSelector *)selector didSelect:(NSURL *)artworkURL {
+    NSUInteger i = [selectedResult.artworkThumbURLs indexOfObject: artworkURL];
     if (i != NSNotFound) {
-        [NSApp endSheet:[artworkSelectorWindow window]];
-        [[artworkSelectorWindow window] orderOut:self];
-        [artworkSelectorWindow autorelease]; artworkSelectorWindow = nil;
+        [NSApp endSheet: selector.window];
+        [selector.window orderOut:self];
+        [selector autorelease];
         selectedResult.artworkURL = [selectedResult.artworkFullsizeURLs objectAtIndex:i];
     }
     [self loadArtwork];
@@ -411,18 +411,14 @@
             }
         }
     }
-    if ([delegate respondsToSelector:@selector(metadataImportDone:)]) {
-        [delegate performSelector:@selector(metadataImportDone:) withObject:selectedResult];
-    }
+	
+	[delegate searchController:self didImportMetadata:selectedResult];
 }
 
 - (IBAction) closeWindow: (id) sender
 {
     [currentSearcher cancel];
-
-    if ([delegate respondsToSelector:@selector(metadataImportDone:)]) {
-        [delegate performSelector:@selector(metadataImportDone:) withObject:nil];
-    }
+	[delegate searchController:self didImportMetadata:nil];
 }
 
 - (void) dealloc

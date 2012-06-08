@@ -7,13 +7,24 @@
 //
 
 @class SBTableView;
-@class MP42Metadata;
+@class MP42Metadata, MP42File;
 
 #import "TheMovieDB.h"
 #import "TheTVDB.h"
+#import "ArtworkSelector.h"
 
-@interface MetadataSearchController : NSWindowController<NSTableViewDelegate> {
-    id                            delegate;
+@protocol MetadataSearchControllerDelegate <NSObject>
+
+- (void)searchController:(MetadataSearchController *)controller didImportMetadata:(MP42Metadata *)metadata;
+
+@property (nonatomic, readonly) MP42File *mp4File;
+
+@property (readonly) NSMutableArray *languages;
+
+@end
+
+@interface MetadataSearchController : NSWindowController<NSTableViewDelegate, ArtworkSelectorDelegate> {
+    id <MetadataSearchControllerDelegate> delegate;
     NSDictionary                 *detailBoldAttr;
 
     IBOutlet NSTabView           *searchMode;
@@ -40,7 +51,6 @@
     IBOutlet NSButton            *addButton;
 
     NSData                       *artworkData;
-    id                           artworkSelectorWindow;
 
     IBOutlet NSProgressIndicator *progress;
     IBOutlet NSTextField         *progressText;
@@ -48,7 +58,7 @@
 }
 
 #pragma mark Initialization
-- (id)initWithDelegate:(id)del;
+- (id)initWithDelegate:(id <MetadataSearchControllerDelegate>)del;
 + (NSDictionary *) parseFilename: (NSString *) filename;
 + (NSString *)langCodeFor:(NSString *)language;
 
@@ -66,7 +76,6 @@
 
 #pragma mark Select artwork
 - (void) selectArtwork;
-- (void) selectArtworkDone:(NSURL *)url;
 
 #pragma mark Load artwork
 - (void) loadArtwork;
