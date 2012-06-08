@@ -730,7 +730,6 @@ static bool GetFirstHeader(FILE* inFile)
         size = st.st_size * 8;
 
         // collect all the necessary meta information
-        u_int8_t mpegVersion;
         u_int8_t profile;
         u_int8_t channelConfig;
 
@@ -741,7 +740,6 @@ static bool GetFirstHeader(FILE* inFile)
         }
 
         samplesPerSecond = MP4AV_AdtsGetSamplingRate(firstHeader);
-        mpegVersion = MP4AV_AdtsGetVersion(firstHeader);
         profile = MP4AV_AdtsGetProfile(firstHeader);
         if (aacProfileLevel == 2) {
             if (profile > MP4_MPEG4_AAC_SSR_AUDIO_TYPE) {
@@ -749,9 +747,6 @@ static bool GetFirstHeader(FILE* inFile)
                 [newTrack release];
                 return nil;
             }
-            mpegVersion = 1;
-        } else if (aacProfileLevel == 4) {
-            mpegVersion = 0;
         }
         channelConfig = MP4AV_AdtsGetChannels(firstHeader);
 

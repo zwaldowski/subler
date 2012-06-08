@@ -2926,10 +2926,10 @@ ulonglong     mkv_GetSegmentTop(MatroskaFile *mf) {
 #define	IS_DELTA(f) (!((f)->flags & FRAME_KF) || ((f)->flags & FRAME_UNKNOWN_START))
 
 void  mkv_Seek(MatroskaFile *mf,ulonglong timecode,unsigned flags) {
-  int		i,j,m,ret;
-  unsigned	n,z,mask;
-  ulonglong	m_kftime[MAX_TRACKS];
-  unsigned char	m_seendf[MAX_TRACKS];
+  int		i = 0,j,m,ret;
+  unsigned	n = 0,z,mask;
+  ulonglong	m_kftime[MAX_TRACKS] = { 0 };
+  unsigned char	m_seendf[MAX_TRACKS] = { '\0' };
 
   if (mf->flags & MKVF_AVOID_SEEKS)
     return;

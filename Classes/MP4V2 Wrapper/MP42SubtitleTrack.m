@@ -74,7 +74,7 @@
             MP4GetTrackFloatProperty(fileHandle, Id, "tkhd.height", &trackHeight);
 
             uint8_t *val;
-            uint8_t nval[36];
+            uint8_t nval[36] = { 0 };
             uint32_t *ptr32 = (uint32_t*) nval;
             uint32_t size;
 

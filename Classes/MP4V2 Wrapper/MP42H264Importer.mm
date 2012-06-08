@@ -575,7 +575,7 @@ extern "C" int h264_read_slice_info (const uint8_t *buffer,
 {
     uint32_t header;
     uint8_t tmp[512]; /* Enough for the begining of the slice header */
-    int tmp_len;
+    int tmp_len = 0;
     uint32_t temp;
     
     if (buffer[2] == 1) header = 4;
@@ -1341,7 +1341,7 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
     }
 
     fclose(inFile);
-    return [avcCData copy];
+    return [avcCData autorelease];
 }
 
 @implementation MP42H264Importer
@@ -1463,11 +1463,8 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
     free(nal.buffer);
     nal.buffer = NULL;
 
-    uint8_t *nal_buffer;
-    uint32_t nal_buffer_size, nal_buffer_size_max;
-    nal_buffer = NULL;
-    nal_buffer_size = 0;
-    nal_buffer_size_max = 0;
+    uint8_t *nal_buffer = NULL;
+    uint32_t nal_buffer_size = 0, nal_buffer_size_max = 0;
     bool first = true;
     bool nal_is_sync = false;
     bool slice_is_idr = false;
@@ -1565,13 +1562,15 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
                 nal_buffer_size_max += nal.buffer_on + 4;
                 nal_buffer = (uint8_t *)realloc(nal_buffer, nal_buffer_size_max);
             }
-            nal_buffer[nal_buffer_size] = (to_write >> 24) & 0xff;
-            nal_buffer[nal_buffer_size + 1] = (to_write >> 16) & 0xff;
-            nal_buffer[nal_buffer_size + 2] = (to_write >> 8) & 0xff;
-            nal_buffer[nal_buffer_size + 3] = to_write & 0xff;
-            memcpy(nal_buffer + nal_buffer_size + 4,
-                   nal.buffer + header_size,
-                   to_write);
+			if (nal_buffer) {
+				nal_buffer[nal_buffer_size] = (to_write >> 24) & 0xff;
+				nal_buffer[nal_buffer_size + 1] = (to_write >> 16) & 0xff;
+				nal_buffer[nal_buffer_size + 2] = (to_write >> 8) & 0xff;
+				nal_buffer[nal_buffer_size + 3] = to_write & 0xff;
+				memcpy(nal_buffer + nal_buffer_size + 4,
+					   nal.buffer + header_size,
+					   to_write);
+			}
 
             nal_buffer_size += to_write + 4;
         }
