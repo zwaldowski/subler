@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "mp4v2.h"
-@class MP42FileImporter;
+#import "MP42FileImporter.h"
 
 @interface MP42Track : NSObject <NSCoding> {
     MP4TrackId  Id;
@@ -34,7 +34,7 @@
 
     NSMutableDictionary *updatedProperty;
 
-    MP42FileImporter * trackImporterHelper;
+    id <MP42FileImporter> trackImporterHelper;
     id trackDemuxerHelper;
     id trackConverterHelper;
 }
@@ -61,11 +61,11 @@
 @property(readwrite) BOOL muxed;
 @property(readwrite) BOOL needConversion;
 
-@property(readwrite, assign) MP42FileImporter * trackImporterHelper;
-@property(readwrite, retain) id trackDemuxerHelper;
-@property(readwrite, retain) id trackConverterHelper;
+@property(nonatomic, assign) id <MP42FileImporter> trackImporterHelper;
+@property(nonatomic, retain) id trackDemuxerHelper;
+@property(nonatomic, retain) id trackConverterHelper;
 
-@property(readwrite, retain) NSMutableDictionary *updatedProperty;
+@property(nonatomic, retain) NSMutableDictionary *updatedProperty;
 
 - (id) initWithSourceURL:(NSURL *)URL trackID:(NSInteger)trackID fileHandle:(MP4FileHandle)fileHandle;
 - (BOOL) writeToFile:(MP4FileHandle)fileHandle error:(NSError **)outError;

@@ -16,83 +16,31 @@
 #import "MP42H264Importer.h"
 #import "MP42AVFImporter.h"
 
-@implementation MP42FileImporter
+@implementation MP42Utilities (FileImporter)
 
-- (id)initWithDelegate:(id <MP42FileImporterDelegate>)del andFile:(NSURL *)URL error:(NSError **)outError
-{
-    [self release];
-    self = nil;
-    if ([[URL pathExtension] caseInsensitiveCompare: @"mkv"] == NSOrderedSame ||
++ (id <MP42FileImporter>)fileImporterForURL:(NSURL *)URL delegate:(id <MP42FileImporterDelegate>)del error:(NSError **)outError {
+	if ([[URL pathExtension] caseInsensitiveCompare: @"mkv"] == NSOrderedSame ||
         [[URL pathExtension] caseInsensitiveCompare: @"mka"] == NSOrderedSame ||
         [[URL pathExtension] caseInsensitiveCompare: @"mks"] == NSOrderedSame)
-        self = [[MP42MkvImporter alloc] initWithDelegate:del andFile:URL error:outError];
+		return [[MP42MkvImporter alloc] initWithFile: URL delegate: del error: outError];
     else if ([[URL pathExtension] caseInsensitiveCompare: @"mp4"] == NSOrderedSame ||
              [[URL pathExtension] caseInsensitiveCompare: @"m4v"] == NSOrderedSame ||
              [[URL pathExtension] caseInsensitiveCompare: @"m4a"] == NSOrderedSame)
-        self = [[MP42Mp4Importer alloc] initWithDelegate:del andFile:URL error:outError];
+        return [[MP42Mp4Importer alloc] initWithFile:URL delegate: del error:outError];
     else if ([[URL pathExtension] caseInsensitiveCompare: @"srt"] == NSOrderedSame)
-        self = [[MP42SrtImporter alloc] initWithDelegate:del andFile:URL error:outError];
+        return [[MP42SrtImporter alloc] initWithFile:URL delegate: del error:outError];
     else if ([[URL pathExtension] caseInsensitiveCompare: @"scc"] == NSOrderedSame)
-        self = [[MP42CCImporter alloc] initWithDelegate:del andFile:URL error:outError];
+        return [[MP42CCImporter alloc] initWithFile:URL delegate: del error:outError];
     else if ([[URL pathExtension] caseInsensitiveCompare: @"ac3"] == NSOrderedSame)
-        self = [[MP42AC3Importer alloc] initWithDelegate:del andFile:URL error:outError];
+        return [[MP42AC3Importer alloc] initWithFile:URL delegate: del error:outError];
     else if ([[URL pathExtension] caseInsensitiveCompare: @"aac"] == NSOrderedSame)
-        self = [[MP42AACImporter alloc] initWithDelegate:del andFile:URL error:outError];
+        return [[MP42AACImporter alloc] initWithFile:URL delegate: del error:outError];
     else if ([[URL pathExtension] caseInsensitiveCompare: @"264"] == NSOrderedSame ||
              [[URL pathExtension] caseInsensitiveCompare: @"h264"] == NSOrderedSame)
-        self = [[MP42H264Importer alloc] initWithDelegate:del andFile:URL error:outError];
-    else if (NSClassFromString(@"AVAsset")) {
-        if ([[URL pathExtension] caseInsensitiveCompare: @"mov"] == NSOrderedSame ||
-            [[URL pathExtension] caseInsensitiveCompare: @"m2ts"] == NSOrderedSame ||
-            [[URL pathExtension] caseInsensitiveCompare: @"mts"] == NSOrderedSame ) {
-            self = [[MP42AVFImporter alloc] initWithDelegate:del andFile:URL error:outError];
-        }
-    }
-
-    return self;
+        return [[MP42H264Importer alloc] initWithFile:URL delegate: del error:outError];
+    else if ([[URL pathExtension] caseInsensitiveCompare: @"mov"] == NSOrderedSame)
+        return [[MP42AVFImporter alloc] initWithFile:URL delegate: del error:outError];
+	return nil;
 }
-
-- (NSUInteger)timescaleForTrack:(MP42Track *)track{
-    return 0;
-}
-- (NSSize)sizeForTrack:(MP42Track *)track{
-    return NSMakeSize(0,0);
-}
-- (NSData*)magicCookieForTrack:(MP42Track *)track{
-    return nil;
-}
-
-- (void)setActiveTrack:(MP42Track *)track
-{
-}
-
-- (MP42SampleBuffer*)copyNextSample
-{
-    return nil;
-}
-
-- (MP42SampleBuffer*)nextSampleForTrack:(MP42Track *)track
-{
-    return nil;
-}
-
-- (CGFloat)progress
-{
-    return 0;
-}
-
-- (BOOL)cleanUp:(MP4FileHandle) fileHandle
-{
-    return NO;
-}
-
-- (void)cancel
-{
-    isCancelled = YES;
-}
-
-
-@synthesize metadata;
-@synthesize tracksArray;
 
 @end

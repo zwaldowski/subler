@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "MP42FileImporter.h"
 
-@interface MP42MkvImporter : MP42FileImporter {
+@interface MP42MkvImporter : NSObject <MP42FileImporter> {
 
     struct MatroskaFile	*matroskaFile;
 	struct StdIoStream  *ioStream;

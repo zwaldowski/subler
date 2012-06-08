@@ -14,8 +14,9 @@
 
 @implementation MP42SrtImporter
 
-- (id)initWithDelegate:(id)del andFile:(NSURL *)URL error:(NSError **)outError
-{
+@synthesize metadata, delegate, tracksArray, fileURL, cancelled;
+
+- (id <MP42FileImporter>)initWithFile:(NSURL *)URL delegate:(id <MP42FileImporterDelegate>)del error:(NSError **)outError {
     if ((self = [super init])) {
         delegate = del;
         fileURL = [URL retain];
@@ -61,6 +62,18 @@
     }
 
     return self;
+}
+
+- (void)cancel
+{
+	@synchronized (self) {
+		cancelled = YES;
+	}
+}
+
+- (BOOL)cleanUp:(MP4FileHandle) fileHandle
+{
+    return NO;
 }
 
 - (NSUInteger)timescaleForTrack:(MP42Track *)track

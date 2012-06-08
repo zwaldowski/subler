@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "MP42FileImporter.h"
 
-@interface MP42AC3Importer : MP42FileImporter {
+@interface MP42AC3Importer : NSObject <MP42FileImporter> {
     FILE* inFile;
     int64_t size;
 

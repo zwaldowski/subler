@@ -23,7 +23,7 @@
 	NSURL               * fileURL;
     NSMutableArray		* importCheckArray;
     NSMutableArray      * actionArray;
-    MP42FileImporter    * fileImporter;
+    id <MP42FileImporter> fileImporter;
 
 	id <FileImportDelegate> delegate;
 	IBOutlet NSTableView * tableView;

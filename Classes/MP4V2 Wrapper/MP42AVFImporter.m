@@ -11,6 +11,7 @@
 #import "MP42File.h"
 #import <AVFoundation/AVFoundation.h>
 #import <AudioToolbox/AudioToolbox.h>
+#import "MP42Sample.h"
 
 @interface AVFTrackHelper : NSObject {
 @public
@@ -36,6 +37,8 @@
 @end
 
 @implementation MP42AVFImporter
+
+@synthesize metadata, delegate, tracksArray, fileURL, cancelled;
 
 - (NSString*)formatForTrack: (AVAssetTrack *)track;
 {
@@ -159,8 +162,7 @@
     return [NSString stringWithUTF8String:lang_for_qtcode([[track languageCode] integerValue])->eng_name];
 }
 
-- (id)initWithDelegate:(id)del andFile:(NSURL *)URL error:(NSError **)outError
-{
+- (id <MP42FileImporter>)initWithFile:(NSURL *)URL delegate:(id <MP42FileImporterDelegate>)del error:(NSError **)outError {
     if ((self = [super init])) {
         delegate = del;
         fileURL = [URL retain];
@@ -241,6 +243,13 @@
     }
 
     return self;
+}
+
+- (void)cancel
+{
+	@synchronized (self) {
+		cancelled = YES;
+	}
 }
 
 - (NSUInteger)timescaleForTrack:(MP42Track *)track
@@ -351,7 +360,7 @@
 
     for (MP42Track * track in activeTracks) {
         AVAssetReaderOutput *assetReaderOutput = ((AVFTrackHelper*)track.trackDemuxerHelper)->assetReaderOutput;
-        while (!isCancelled) {
+        while (!cancelled) {
             while ([samplesBuffer count] >= 200) {
                 usleep(200);
             }

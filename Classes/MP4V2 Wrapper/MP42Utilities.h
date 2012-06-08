@@ -8,7 +8,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#include "mp4v2.h"
+#import <mp4v2/mp4v2.h>
 
 extern NSString * const SBMonoMixdown;
 extern NSString * const SBStereoMixdown;
@@ -65,3 +65,8 @@ int rgb2yuv(int rgb);
 
 void *fast_realloc_with_padding(void *ptr, unsigned int *size, unsigned int min_size);
 void DecompressZlib(uint8_t **codecData, unsigned int *bufferSize, uint8_t *sampleData, uint64_t sampleSize);
+
+
+@interface MP42Utilities : NSObject
+
+@end

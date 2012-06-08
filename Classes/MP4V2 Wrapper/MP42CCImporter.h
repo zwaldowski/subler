@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "MP42FileImporter.h"
 
-@interface MP42CCImporter : MP42FileImporter {
+@interface MP42CCImporter : NSObject <MP42FileImporter> {
     NSThread *dataReader;
     NSInteger readerStatus;
 

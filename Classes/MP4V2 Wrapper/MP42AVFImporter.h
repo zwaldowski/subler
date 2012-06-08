@@ -10,7 +10,7 @@
 #import "MP42FileImporter.h"
 @class AVAsset;
 
-@interface MP42AVFImporter : MP42FileImporter {
+@interface MP42AVFImporter : NSObject <MP42FileImporter> {
     AVAsset *localAsset;
     
     NSThread *dataReader;

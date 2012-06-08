@@ -11,12 +11,13 @@
 #import "SBLanguages.h"
 #import "MP42File.h"
 #import "RegexKitLite.h"
-
+#import "MP42Sample.h"
 
 @implementation MP42CCImporter
 
-- (id)initWithDelegate:(id)del andFile:(NSURL *)URL error:(NSError **)outError
-{
+@synthesize tracksArray, delegate, metadata, fileURL, cancelled;
+
+- (id <MP42FileImporter>)initWithFile:(NSURL *)URL delegate:(id <MP42FileImporterDelegate>)del error:(NSError **)outError {
     if ((self = [super init])) {
         delegate = del;
         fileURL = [URL retain];
@@ -36,6 +37,17 @@
     return self;
 }
 
+- (void)cancel
+{
+	@synchronized (self) {
+		cancelled = YES;
+	}
+}
+
+- (BOOL)cleanUp:(MP4FileHandle) fileHandle
+{
+    return NO;
+}
 
 - (NSUInteger)timescaleForTrack:(MP42Track *)track
 {

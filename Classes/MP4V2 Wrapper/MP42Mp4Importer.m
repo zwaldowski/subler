@@ -38,7 +38,9 @@
 
 @implementation MP42Mp4Importer
 
-- (id)initWithDelegate:(id)del andFile:(NSURL *)URL error:(NSError **)outError
+@synthesize metadata, delegate, tracksArray, fileURL, cancelled;
+
+- (id <MP42FileImporter>)initWithFile:(NSURL *)URL delegate:(id <MP42FileImporterDelegate>)del error:(NSError **)outError
 {
     if ((self = [super init])) {
         delegate = del;
@@ -66,6 +68,13 @@
     }
 
     return self;
+}
+
+- (void)cancel
+{
+	@synchronized (self) {
+		cancelled = YES;
+	}
 }
 
 - (NSUInteger)timescaleForTrack:(MP42Track *)track
@@ -241,7 +250,7 @@
     }
 
     for (MP42Track * track in activeTracks) {
-        while (!isCancelled) {
+        while (!cancelled) {
             while ([samplesBuffer count] >= 200) {
                 usleep(200);
             }

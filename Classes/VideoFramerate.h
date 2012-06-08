@@ -8,12 +8,13 @@
 
 #import <Cocoa/Cocoa.h>
 #import "FileImport.h"
+#import "MP42FileImporter.h"
 
 @class MP42Metadata;
 
 @interface VideoFramerate : NSWindowController {
     NSURL    *fileURL;
-    MP42FileImporter    * fileImporter;
+    id <MP42FileImporter> fileImporter;
     IBOutlet NSPopUpButton  *framerateSelection;
 
     id <FileImportDelegate> delegate;

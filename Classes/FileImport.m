@@ -18,8 +18,7 @@
 	{
 		delegate = del;
         fileURL = [file retain];
-
-        fileImporter = [[MP42FileImporter alloc] initWithDelegate:delegate andFile:file error:outError];
+		fileImporter = [MP42Utilities fileImporterForURL: file delegate: delegate error: outError];
         if (!fileImporter)
             return nil;
 	}
@@ -198,7 +197,7 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
     NSMutableArray *tracks = [[NSMutableArray alloc] init];
     NSInteger i = 0;
 
-    for (MP42Track * track in [fileImporter tracksArray]) {
+    for (MP42Track * track in fileImporter.tracksArray) {
         if ([[importCheckArray objectAtIndex: i] boolValue]) {
             NSUInteger conversion = [[actionArray objectAtIndex:i] integerValue];
 

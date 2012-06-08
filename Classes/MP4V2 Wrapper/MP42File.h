@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "mp4v2.h"
+#import <mp4v2/mp4v2.h>
 #import "MP42Track.h"
 #import "MP42VideoTrack.h"
 #import "MP42AudioTrack.h"
@@ -17,6 +17,7 @@
 #import "MP42Metadata.h"
 #import "MP42Utilities.h"
 #import "MP42Muxer.h"
+#import "MP42FileImporter.h"
 
 extern NSString * const MP42Create64BitData;
 extern NSString * const MP42Create64BitTime;

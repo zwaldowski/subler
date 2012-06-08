@@ -252,14 +252,13 @@ static SBQueueController *sharedController = nil;
             result = [subtitleFilename compare:movieFilename options:kCFCompareCaseInsensitive range:range];
 
             if (result == NSOrderedSame) {
-                MP42FileImporter *fileImporter = [[MP42FileImporter alloc] initWithDelegate:nil
-                                                                                    andFile:dirUrl
-                                                                                      error:&outError];
-
+                id fileImporter = [MP42Utilities fileImporterForURL: dirUrl delegate: nil error:&outError];
+				
                 for (MP42Track *track in [fileImporter tracksArray]) {
                     [track setTrackImporterHelper:fileImporter];
-                    [tracksArray addObject:track];                    
+                    [tracksArray addObject:track];
                 }
+				
                 [fileImporter release];
             }
         }
@@ -329,10 +328,8 @@ static SBQueueController *sharedController = nil;
     }
     else {
         mp4File = [[MP42File alloc] initWithDelegate:self];
-        MP42FileImporter *fileImporter = [[MP42FileImporter alloc] initWithDelegate:nil
-                                                                            andFile:url
-                                                                              error:outError];
-
+		id <MP42FileImporter> fileImporter = [MP42Utilities fileImporterForURL: url delegate: nil error: outError];
+		
         for (MP42Track *track in [fileImporter tracksArray]) {
             if ([track.format isEqualToString:@"AC-3"] && [[[NSUserDefaults standardUserDefaults] valueForKey:@"SBAudioConvertAC3"] boolValue])
                 track.needConversion = YES;

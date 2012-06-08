@@ -11,7 +11,7 @@
 
 @class SBSubSerializer;
 
-@interface MP42SrtImporter : MP42FileImporter {
+@interface MP42SrtImporter : NSObject <MP42FileImporter> {
     SBSubSerializer * ss;
     
     NSMutableArray *activeTracks;

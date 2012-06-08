@@ -1001,3 +1001,6 @@ bail:
     *bufferSize = bufferSizeDec;
 }
 
+@implementation MP42Utilities
+
+@end

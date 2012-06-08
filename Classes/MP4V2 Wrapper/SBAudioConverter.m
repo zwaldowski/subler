@@ -11,6 +11,7 @@
 #import "MP42AudioTrack.h"
 #import "MP42FileImporter.h"
 #import "MP42Utilities.h"
+#import "MP42Sample.h"
 
 #define FIFO_DURATION (0.5f)
 

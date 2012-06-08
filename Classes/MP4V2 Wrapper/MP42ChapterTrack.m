@@ -9,6 +9,7 @@
 #import "MP42ChapterTrack.h"
 #import "SubUtilities.h"
 #import "MP42Utilities.h"
+#import "MP42FileImporter.h"
 
 @implementation MP42ChapterTrack
 
@@ -217,7 +218,7 @@
 	return [file writeToURL:url atomically:YES encoding:NSUTF8StringEncoding error:error];
 }
 
-- (void) setTrackImporterHelper: (MP42FileImporter*) importerHelper
+- (void) setTrackImporterHelper: (id <MP42FileImporter>) importerHelper
 {
 }
 

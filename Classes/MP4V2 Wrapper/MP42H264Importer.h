@@ -31,7 +31,7 @@ typedef struct
     int *frame;
 } h264_dpb_t;
 
-@interface MP42H264Importer : MP42FileImporter {
+@interface MP42H264Importer : NSObject <MP42FileImporter> {
     FILE* inFile;
     int64_t size;
 

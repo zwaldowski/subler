@@ -11,6 +11,7 @@ NSString *MetadataPBoardType = @"MetadataPBoardType";
 #import "MovieViewController.h"
 #import "SBTableView.h"
 #import "SBPresetManager.h"
+#import "MP42Metadata.h"
 
 @interface MovieViewController (Private)
 - (void) updateSetsMenu: (id)sender;

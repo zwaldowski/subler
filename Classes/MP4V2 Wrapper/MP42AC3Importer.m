@@ -10,6 +10,7 @@
 #import "SBLanguages.h"
 #import "MP42File.h"
 #import "MP42Utilities.h"
+#import "MP42Sample.h"
 
 #include <sys/stat.h>
 
@@ -251,9 +252,9 @@ static bool GetFirstHeader(FILE* inFile)
 	return true;
 }
 
+@synthesize delegate, tracksArray, metadata, fileURL, cancelled;
 
-- (id)initWithDelegate:(id)del andFile:(NSURL *)URL error:(NSError **)outError
-{
+- (id <MP42FileImporter>)initWithFile:(NSURL *)URL delegate:(id <MP42FileImporterDelegate>)del error:(NSError **)outError {
     if ((self = [super init])) {
         delegate = del;
         fileURL = [URL retain];
@@ -319,6 +320,18 @@ static bool GetFirstHeader(FILE* inFile)
 
     return self;
 }
+	
+- (void)cancel
+{
+	@synchronized (self) {
+		cancelled = YES;
+	}
+}
+
+- (BOOL)cleanUp:(MP4FileHandle) fileHandle
+{
+    return NO;
+}
 
 - (NSUInteger)timescaleForTrack:(MP42Track *)track
 {
@@ -352,7 +365,7 @@ static bool GetFirstHeader(FILE* inFile)
 
     int64_t currentSize = 0;
 
-    while (LoadNextAc3Frame(inFile, sampleBuffer, &sampleSize, false) && !isCancelled) {
+    while (LoadNextAc3Frame(inFile, sampleBuffer, &sampleSize, false) && !cancelled) {
         while ([samplesBuffer count] >= 200) {
             usleep(200);
         }

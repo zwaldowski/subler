@@ -6,14 +6,14 @@
 //  Copyright 2010 Damiano Galassi All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "MP42Sample.h"
-#import "mp4v2.h"
+#import <mp4v2/mp4v2.h>
+#import "MP42Utilities.h"
 
 @class MP42Sample;
 @class MP42Metadata;
 @class MP42Track;
 @class MP42FileImporter;
+@class MP42SampleBuffer;
 
 @protocol MP42FileImporterDelegate <NSObject>
 
@@ -23,18 +23,9 @@
 
 @end
 
-@interface MP42FileImporter : NSObject {
-    NSURL          *fileURL;
+@protocol MP42FileImporter <NSObject>
 
-    NSInteger      chapterTrackId;
-    MP42Metadata   *metadata;
-    NSMutableArray *tracksArray;
-
-    id <MP42FileImporterDelegate> delegate;
-    BOOL           isCancelled;
-}
-
-- (id)initWithDelegate:(id <MP42FileImporterDelegate>)del andFile:(NSURL *)URL error:(NSError **)outError;
+- (id <MP42FileImporter>)initWithFile:(NSURL *)URL delegate:(id <MP42FileImporterDelegate>)delegate error:(NSError **)outError;
 
 - (NSUInteger)timescaleForTrack:(MP42Track *)track;
 - (NSSize)sizeForTrack:(MP42Track *)track;
@@ -47,7 +38,16 @@
 
 - (BOOL)cleanUp:(MP4FileHandle) fileHandle;
 
-@property(readwrite, retain) MP42Metadata *metadata;
-@property(readonly) NSMutableArray  *tracksArray;
+@property (nonatomic, retain) MP42Metadata *metadata;
+@property (nonatomic, readonly) NSMutableArray  *tracksArray;
+@property (nonatomic, readonly) NSURL *fileURL;
+@property (nonatomic, readonly) id <MP42FileImporterDelegate> delegate;
+@property (nonatomic, readonly, getter = isCancelled) BOOL cancelled;
+
+@end
+
+@interface MP42Utilities (FileImporter)
+
++ (id <MP42FileImporter>)fileImporterForURL:(NSURL *)URL delegate:(id <MP42FileImporterDelegate>)del error:(NSError **)outError;
 
 @end

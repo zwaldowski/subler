@@ -7,6 +7,7 @@
 //
 
 #import "MP42MkvImporter.h"
+#import "MP42Sample.h"
 #import "MatroskaParser.h"
 #import "MatroskaFile.h"
 #import "SubUtilities.h"
@@ -90,7 +91,9 @@ u_int32_t MP4AV_Ac3GetSamplingRate(u_int8_t* pHdr);
 
 @implementation MP42MkvImporter
 
-- (id)initWithDelegate:(id)del andFile:(NSURL *)URL error:(NSError **)outError
+@synthesize metadata, delegate, tracksArray, fileURL, cancelled;
+
+- (id <MP42FileImporter>)initWithFile:(NSURL *)URL delegate:(id <MP42FileImporterDelegate>)del error:(NSError **)outError
 {
     if ((self = [super init])) {
         delegate = del;
@@ -235,6 +238,13 @@ u_int32_t MP4AV_Ac3GetSamplingRate(u_int8_t* pHdr);
     }
 
     return self;
+}
+
+- (void)cancel
+{
+	@synchronized (self) {
+		cancelled = YES;
+	}
 }
 
 - (MP42Metadata*) readMatroskaMetadata
@@ -534,7 +544,7 @@ u_int32_t MP4AV_Ac3GetSamplingRate(u_int8_t* pHdr);
 
     mkv_SetTrackMask(matroskaFile, TrackMask);
 
-    while (!mkv_ReadFrame(matroskaFile, 0, &Track, &StartTime, &EndTime, &FilePos, &FrameSize, &FrameFlags) && !isCancelled) {
+    while (!mkv_ReadFrame(matroskaFile, 0, &Track, &StartTime, &EndTime, &FilePos, &FrameSize, &FrameFlags) && !cancelled) {
         while ([samplesBuffer count] >= 200) {
             usleep(200);
         }

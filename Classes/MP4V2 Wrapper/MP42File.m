@@ -9,6 +9,7 @@
 #import "MP42File.h"
 #import "MP42Muxer.h"
 #import <QTKit/QTKit.h>
+#import "SubUtilities.h"
 #import <AVFoundation/AVFoundation.h>
 #import "SubUtilities.h"
 #import "SBLanguages.h"
@@ -347,19 +348,15 @@ NSString * const MP42FileTypeM4B = @"m4b";
         if (!(track.muxed) && !isCancelled) {
             // Reopen the file importer is they are not already open, this happens when the object has been unarchived from a file
             if (![track trackImporterHelper]) {
-                MP42FileImporter *fileImporter = nil;
+                id fileImporter = nil;
                 NSURL *sourceURL = [track sourceURL];
                 if ((fileImporter = [_fileImporters valueForKey:[[track sourceURL] path]])) {
                     [track setTrackImporterHelper:fileImporter];
-                }
-                else if (sourceURL) {
-                    fileImporter = [[MP42FileImporter alloc] initWithDelegate:nil andFile:[track sourceURL] error:outError];
-                    if (fileImporter) {
-                        [track setTrackImporterHelper:fileImporter];
-                        [_fileImporters setObject:fileImporter forKey:[[track sourceURL] path]];
-                        [fileImporter release];
-                    }
-                }
+                } else if (sourceURL && (fileImporter = [MP42Utilities fileImporterForURL: track.sourceURL delegate: nil error: outError])) {
+					[track setTrackImporterHelper:fileImporter];
+					[_fileImporters setObject:fileImporter forKey:[[track sourceURL] path]];
+					[fileImporter release];
+				}
             }
             [muxer addTrack:track];
     }

@@ -10,6 +10,7 @@
 #import "SBLanguages.h"
 #import "MP42File.h"
 #include <sys/stat.h>
+#import "MP42Sample.h"
 
 #define DEBUG_H264
 
@@ -1344,8 +1345,9 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
 
 @implementation MP42H264Importer
 
-- (id)initWithDelegate:(id)del andFile:(NSURL *)URL error:(NSError **)outError
-{
+@synthesize delegate, tracksArray, metadata, fileURL, cancelled;
+
+- (id <MP42FileImporter>)initWithFile:(NSURL *)URL delegate:(id <MP42FileImporterDelegate>)del error:(NSError **)outError {
     if ((self = [super init])) {
         delegate = del;
         fileURL = [URL retain];
@@ -1380,6 +1382,13 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
     }
 
     return self;
+}
+
+- (void)cancel
+{
+	@synchronized (self) {
+		cancelled = YES;
+	}
 }
 
 - (NSUInteger)timescaleForTrack:(MP42Track *)track
@@ -1468,7 +1477,7 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
     memset(&h264_dec, 0, sizeof(h264_dec));
     DpbInit(&h264_dpb);
     
-    while ( (LoadNal(&nal) != false) && !isCancelled) {
+    while ( (LoadNal(&nal) != false) && !cancelled) {
         uint32_t header_size;
         header_size = nal.buffer[2] == 1 ? 3 : 4;
         bool boundary = h264_detect_boundary(nal.buffer, 
