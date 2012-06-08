@@ -330,7 +330,7 @@
             selectedResult.artworkURL = [selectedResult.artworkFullsizeURLs objectAtIndex:0];
             [self loadArtwork];
         } else {
-			ArtworkSelector *sheet = [[ArtworkSelector alloc] initWithDelegate:self imageURLs:selectedResult.artworkThumbURLs];
+			ArtworkSelector *sheet = [[[ArtworkSelector alloc] initWithDelegate:self imageURLs:selectedResult.artworkThumbURLs] autorelease];
             [NSApp beginSheet: [sheet window] modalForWindow: [self window] modalDelegate: nil didEndSelector: NULL contextInfo: nil];
         }
     } else {

@@ -82,8 +82,9 @@
 
 - (id)initWithType:(NSString *)typeName error:(NSError **)outError
 {
-    if (self = [super initWithType:typeName error:outError])
-        mp4File = [[MP42File alloc] initWithDelegate:self];
+	if ((self = [super initWithType: typeName error: outError])) {
+		mp4File = [[MP42File alloc] initWithDelegate:self];
+	}
     return self;
 }
 
@@ -695,15 +696,14 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 	NSWindowController *controller = nil;
 
     if ([[fileURL pathExtension] isEqualToString:@"h264"] || [[fileURL pathExtension] isEqualToString:@"264"])
-        controller = [[VideoFramerate alloc] initWithDelegate:self andFile:fileURL];
+        controller = [[[VideoFramerate alloc] initWithDelegate:self andFile:fileURL] autorelease];
     else
-		controller = [[FileImport alloc] initWithDelegate:self andFile:fileURL error:&error];
+		controller = [[[FileImport alloc] initWithDelegate:self andFile:fileURL error:&error] autorelease];
 
     if (controller) {
         [NSApp beginSheet:controller.window modalForWindow:documentWindow
             modalDelegate:nil didEndSelector:NULL contextInfo:nil];
     } else if (error) {
-        
             [self presentError:error modalForWindow:documentWindow delegate:nil didPresentSelector:NULL contextInfo:nil];
     }
 }

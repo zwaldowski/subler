@@ -206,8 +206,8 @@ static ComponentResult ReadPacketControls(UInt8 *packet, UInt32 palette[16], Pac
 
 - (void) DecoderThreadMainRoutine: (id) sender
 {
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-
+	@autoreleasepool {
+		
     encoderDone = NO;
 
     while(1) {
@@ -367,10 +367,8 @@ static ComponentResult ReadPacketControls(UInt8 *packet, UInt32 palette[16], Pac
     }
 
     encoderDone = YES;
-
-    [pool drain];
-
-	return;
+		
+	}
 }
 
 - (id) initWithTrack: (MP42SubtitleTrack*) track error:(NSError **)outError

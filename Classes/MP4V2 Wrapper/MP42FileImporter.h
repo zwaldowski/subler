@@ -48,6 +48,6 @@
 
 @interface MP42Utilities (FileImporter)
 
-+ (id <MP42FileImporter>)fileImporterForURL:(NSURL *)URL delegate:(id <MP42FileImporterDelegate>)del error:(NSError **)outError;
++ (id <MP42FileImporter>)fileImporterForURL:(NSURL *)URL delegate:(id <MP42FileImporterDelegate>)del error:(NSError **)outError NS_RETURNS_RETAINED;
 
 @end

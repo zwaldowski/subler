@@ -422,21 +422,24 @@ u_int32_t MP4AV_Ac3GetSamplingRate(u_int8_t* pHdr);
         if (trackInfo->CompMethodPrivateSize != 0) {
             frame = malloc(FrameSize + trackInfo->CompMethodPrivateSize);
             memcpy(frame, trackInfo->CompMethodPrivate, trackInfo->CompMethodPrivateSize);
-        }
-        else
+        } else {
             frame = malloc(FrameSize);
+		}
         
         if (fb < FrameSize) {
             fb = FrameSize;
-            frame = realloc(frame, fb);
-            if (frame == NULL) {
-                fprintf(stderr,"Out of memory\n");
-                return nil;		
-            }
+			uint8_t *newFrame = realloc(frame, fb);
+			if (newFrame != NULL)
+				frame = newFrame;
+			else {
+				fprintf(stderr,"Out of memory\n");
+				free(frame);
+				return nil;
+			}
         }
 
         size_t rd = fread(frame + trackInfo->CompMethodPrivateSize,1,FrameSize,ioStream->fp);
-        if (rd != FrameSize || !frame) 
+        if (rd != FrameSize || !frame)
 		{
             if (rd == 0)
 			{
@@ -444,8 +447,11 @@ u_int32_t MP4AV_Ac3GetSamplingRate(u_int8_t* pHdr);
                     fprintf(stderr,"Unexpected EOF while reading frame\n");
                 else
                     fprintf(stderr,"Error reading frame: %s\n",strerror(errno));
-            } else
+            } else {
                 fprintf(stderr,"Short read while reading frame\n");
+			}
+			
+			free(frame);
 			return nil; // we should be able to read at least one frame
         }
 
@@ -502,12 +508,7 @@ u_int32_t MP4AV_Ac3GetSamplingRate(u_int8_t* pHdr);
         return [NSData dataWithBytes:colorPalette length:sizeof(UInt32)*16];
     }
 
-    NSData * magicCookie = [NSData dataWithBytes:trackInfo->CodecPrivate length:trackInfo->CodecPrivateSize];
-
-    if (magicCookie)
-        return magicCookie;
-    else
-        return nil;
+    return [NSData dataWithBytes:trackInfo->CodecPrivate length:trackInfo->CodecPrivateSize];
 }
 
 // Methods to extract all the samples from the active tracks at the same time

@@ -311,14 +311,14 @@ static void   myvsnprintf(char *dest,unsigned dsize,const char *fmt,va_list ap) 
 
   while (*fmt && dest < de)
     switch (state) {
-      case 0:
-	if (*fmt == '%') {
-	  ++fmt;
-	  state = 1;
-	  width = zero = neg = ll = 0;
-	} else
-	  *dest++ = *fmt++;
-	break;
+		case 0:
+		if (*fmt == '%') {
+		  ++fmt;
+		  state = 1;
+		  width = zero = neg = ll = 0;
+		} else
+		  *dest++ = *fmt++;
+		break;
       case 1:
 	if (*fmt == '-') {
 	  neg = 1;

@@ -754,34 +754,6 @@ static bool GetFirstHeader(FILE* inFile)
             mpegVersion = 0;
         }
         channelConfig = MP4AV_AdtsGetChannels(firstHeader);
-        
-        u_int8_t audioType = MP4_INVALID_AUDIO_TYPE;
-        switch (mpegVersion) {
-            case 0:
-                audioType = MP4_MPEG4_AUDIO_TYPE;
-                break;
-            case 1:
-                switch (profile) {
-                    case 0:
-                        audioType = MP4_MPEG2_AAC_MAIN_AUDIO_TYPE;
-                        break;
-                    case 1:
-                        audioType = MP4_MPEG2_AAC_LC_AUDIO_TYPE;
-                        break;
-                    case 2:
-                        audioType = MP4_MPEG2_AAC_SSR_AUDIO_TYPE;
-                        break;
-                    case 3:
-                        //*outError = MP42Error(@"The audio could not be opened.", @"Data in file doesn't appear to be valid audio.", 100);
-                        [newTrack release];
-                        return nil;
-                    default:
-                        break;
-                }
-                break;
-            default:
-                break;
-        }
 
         u_int8_t* pConfig = NULL;
         u_int32_t configLength = 0;

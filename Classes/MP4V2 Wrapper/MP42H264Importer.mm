@@ -1257,9 +1257,9 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
     
     inFile = fopen(filePath, "r");
     if (inFile == NULL) {
-        [avcCData release];
-        return 0;
-    }
+		[avcCData release];
+		return nil;
+	};
     
     memset(&nal, 0, sizeof(nal));
     nal.ifile = inFile;
@@ -1268,8 +1268,8 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
         if (LoadNal(&nal) == false) {
             // fprintf(stderr, "%s: Could not find sequence header\n", ProgName);
             fclose(inFile);
-            [avcCData release];
-            return 0;
+			[avcCData release];
+            return nil;
         }
         uint32_t header_size = nal.buffer[2] == 1 ? 3 : 4;
 
@@ -1309,6 +1309,7 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
             if (h264_read_seq_info(nal.buffer, nal.buffer_on, &h264_dec) == -1)
             {
                 // fprintf(stderr, "%s: Could not decode Sequence header\n", ProgName);
+				[avcCData release];
                 fclose(inFile);
                 return nil;
             }
@@ -1600,10 +1601,11 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
 
         DpbAdd(&h264_dpb, h264_dec.pic_order_cnt, slice_is_idr);
     }
+	
+	free(nal_buffer);
 
     DpbFlush(&h264_dpb);
 
-    free(nal_buffer);
     [pool release];
     readerStatus = 1;
 }

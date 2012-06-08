@@ -1136,6 +1136,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = Subler;
+				RUN_CLANG_STATIC_ANALYZER = YES;
 				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Vendor/Tesseract/include\"/** \"$(SRCROOT)/Vendor/mp4v2/include\"/** \"$(SRCROOT)/Vendor/ffmpeg/include\"/**";
 			};
 			name = Debug;
@@ -1170,6 +1171,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = Subler;
+				RUN_CLANG_STATIC_ANALYZER = YES;
 				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Vendor/Tesseract/include\"/** \"$(SRCROOT)/Vendor/mp4v2/include\"/** \"$(SRCROOT)/Vendor/ffmpeg/include\"/**";
 			};
 			name = Release;
