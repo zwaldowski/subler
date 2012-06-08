@@ -15,8 +15,6 @@
 #define SublerBatchTableViewDataType @"SublerBatchTableViewDataType"
 #define kOptionsPanelHeight 88
 
-static SBQueueController *sharedController = nil;
-
 @interface SBQueueController () <MP42FileDelegate>
 
 - (void)updateUI;
@@ -37,15 +35,12 @@ static SBQueueController *sharedController = nil;
 
 + (SBQueueController*)sharedController
 {
-    if (sharedController == nil) {
-        sharedController = [[super allocWithZone:NULL] init];
-    }
+	static dispatch_once_t onceToken;
+	static SBQueueController *sharedController = nil;
+	dispatch_once(&onceToken, ^{
+		sharedController = [[self alloc] init];
+	});
     return sharedController;
-}
-
-+ (id)allocWithZone:(NSZone *)zone
-{
-    return [[self sharedController] retain];
 }
 
 - (id)init
@@ -71,31 +66,6 @@ static SBQueueController *sharedController = nil;
         [self updateDockTile];
     }
 
-    return self;
-}
-
-- (id)copyWithZone:(NSZone *)zone
-{
-    return self;
-}
-
-- (id)retain
-{
-    return self;
-}
-
-- (NSUInteger)retainCount
-{
-    return NSUIntegerMax;  //denotes an object that cannot be released
-}
-
-- (oneway void)release
-{
-    //do nothing
-}
-
-- (id)autorelease
-{
     return self;
 }
 

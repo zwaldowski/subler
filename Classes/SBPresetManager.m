@@ -12,8 +12,6 @@
 /// Notification sent to update presets lists.
 NSString *SBPresetManagerUpdatedNotification = @"SBPresetManagerUpdatedNotification";
 
-static SBPresetManager *sharedPresetManager = nil;
-
 @interface SBPresetManager ()
 - (BOOL) loadPresets;
 - (BOOL) savePresets;
@@ -26,15 +24,12 @@ static SBPresetManager *sharedPresetManager = nil;
 
 + (SBPresetManager*)sharedManager
 {
-    if (sharedPresetManager == nil) {
-        sharedPresetManager = [[super allocWithZone:NULL] init];
-    }
+	static dispatch_once_t once;
+    static SBPresetManager *sharedPresetManager = nil;
+    dispatch_once(&once, ^{
+        sharedPresetManager = [[self alloc] init];
+    });
     return sharedPresetManager;
-}
-
-+ (id)allocWithZone:(NSZone *)zone
-{
-    return [[self sharedManager] retain];
 }
 
 - (id)init {
@@ -44,31 +39,6 @@ static SBPresetManager *sharedPresetManager = nil;
         [self loadPresets];
     }
 
-    return self;
-}
-
-- (id)copyWithZone:(NSZone *)zone
-{
-    return self;
-}
-
-- (id)retain
-{
-    return self;
-}
-
-- (NSUInteger)retainCount
-{
-    return NSUIntegerMax;  //denotes an object that cannot be released
-}
-
-- (oneway void)release
-{
-    //do nothing
-}
-
-- (id)autorelease
-{
     return self;
 }
 
