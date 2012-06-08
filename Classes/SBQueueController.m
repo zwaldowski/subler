@@ -640,13 +640,11 @@ static SBQueueController *sharedController = nil;
 
     if ([rowIndexes count]) {
         if ([NSTableView instancesRespondToSelector:@selector(beginUpdates)]) {
-            #if __MAC_OS_X_VERSION_MAX_ALLOWED > 1060
             [aTableView beginUpdates];
             [aTableView removeRowsAtIndexes:rowIndexes withAnimation:NSTableViewAnimationEffectFade];
             [aTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedIndex] byExtendingSelection:NO];
             [self removeItems:array];
             [aTableView endUpdates];
-            #endif
         }
         else {
             [self removeItems:array];
@@ -677,13 +675,11 @@ static SBQueueController *sharedController = nil;
 
     if ([indexes count]) {
         if ([NSTableView instancesRespondToSelector:@selector(beginUpdates)]) {
-#if __MAC_OS_X_VERSION_MAX_ALLOWED > 1060
             [tableView beginUpdates];
             [tableView removeRowsAtIndexes:indexes withAnimation:NSTableViewAnimationEffectFade];
             NSArray* items = [filesArray objectsAtIndexes:indexes];
             [self removeItems:items];
             [tableView endUpdates];
-#endif
         }
         else {
             NSArray* items = [filesArray objectsAtIndexes:indexes];
