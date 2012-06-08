@@ -2546,9 +2546,6 @@ static void reindex(MatroskaFile *mf) {
   bad = 0;
 
   while (pos < mf->pSegmentTop) {
-    if (!mf->cache->progress(mf->cache,pos,mf->pSegmentTop))
-      break;
-
     if (++bad > 50) {
       pos += step;
       bad = 0;
@@ -2635,8 +2632,6 @@ static void reindex(MatroskaFile *mf) {
     cue->Block = 0;
     cue->Track = 0;
   }
-
-  mf->cache->progress(mf->cache,0,0);
 
   memcpy(&mf->jb,&jb,sizeof(jb));
 }
@@ -2822,7 +2817,6 @@ MatroskaFile  *mkv_OpenEx(InputStream *io,
 
   mf->cache = io;
   mf->flags = flags;
-  io->progress(io,0,0);
 
   if (setjmp(mf->jb)==0) {
     seek(mf,base);

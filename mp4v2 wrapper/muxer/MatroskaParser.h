@@ -91,8 +91,6 @@ struct InputStream {
   void	      *(*memalloc)(struct InputStream *cc,size_t size);
   void	      *(*memrealloc)(struct InputStream *cc,void *mem,size_t newsize);
   void	      (*memfree)(struct InputStream *cc,void *mem);
-  /* zero return causes parser to abort open */
-  int	      (*progress)(struct InputStream *cc,ulonglong cur,ulonglong max);
   /* get file size, optional, can be NULL or return -1 if filesize is unknown */
   longlong    (*getfilesize)(struct InputStream *cc);
 };

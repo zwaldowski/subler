@@ -76,7 +76,7 @@ void  *StdIoMalloc(StdIoStream *st, size_t size) {
 	return malloc(size); 
 } 
 
-void  *StdIoRealloc(StdIoStream *st, void *mem, size_t size) { 
+void  *StdIoRealloc(StdIoStream *st, void *mem, size_t size) {
 	return realloc(mem,size); 
 } 
 
@@ -93,17 +93,16 @@ int StdIoProgress(StdIoStream *st, uint64_t cur, uint64_t max) {
 
 MatroskaFile *openMatroskaFile(char *filePath, StdIoStream *ioStream)
 {
-	char err_msg[256]; 
+	char err_msg[256];
 	
 	/* fill in I/O object */ 
-	ioStream->base.read = StdIoRead; 
-	ioStream->base.scan = StdIoScan; 
-	ioStream->base.getcachesize = StdIoGetCacheSize; 
-	ioStream->base.geterror = StdIoGetLastError; 
-	ioStream->base.memalloc = StdIoMalloc; 
-	ioStream->base.memrealloc = StdIoRealloc; 
-	ioStream->base.memfree = StdIoFree; 
-	ioStream->base.progress = StdIoProgress; 
+	ioStream->base.read = (int(*)(struct InputStream *, ulonglong, void *, int))StdIoRead; 
+	ioStream->base.scan = (longlong(*)(struct InputStream *, ulonglong, unsigned int))StdIoScan; 
+	ioStream->base.getcachesize = (unsigned int (*)(struct InputStream *))StdIoGetCacheSize; 
+	ioStream->base.geterror = (const char *(*)(struct InputStream *))StdIoGetLastError; 
+	ioStream->base.memalloc = (void *(*)(struct InputStream *, size_t))StdIoMalloc; 
+	ioStream->base.memrealloc = (void *(*)(struct InputStream *, void *, size_t))StdIoRealloc; 
+	ioStream->base.memfree = (void(*)(struct InputStream *, void *))StdIoFree; 
 	
 	/* open source file */ 
 	ioStream->fp = fopen(filePath,"r"); 
