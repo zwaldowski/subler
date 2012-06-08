@@ -7,8 +7,8 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "FileImport.h"
 
-@class MP42FileImporter;
 @class MP42Metadata;
 
 @interface VideoFramerate : NSWindowController {
@@ -16,16 +16,11 @@
     MP42FileImporter    * fileImporter;
     IBOutlet NSPopUpButton  *framerateSelection;
 
-    id delegate;
+    id <FileImportDelegate> delegate;
 }
 
-- (id)initWithDelegate:(id)del andFile:(NSURL *)URL;
+- (id)initWithDelegate:(id <FileImportDelegate>)del andFile:(NSURL *)URL;
 - (IBAction) closeWindow: (id) sender;
 - (IBAction) addTracks: (id) sender;
-
-@end
-
-@interface NSObject (VideoFramerateDelegateMethod)
-- (void) importDoneWithTracks: (NSArray*) tracksToBeImported andMetadata: (MP42Metadata*)metadata;
 
 @end

@@ -189,8 +189,8 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 
 - (IBAction) closeWindow: (id) sender
 {
-    if ([delegate respondsToSelector:@selector(importDoneWithTracks:andMetadata:)]) 
-        [delegate importDoneWithTracks:nil andMetadata:nil];
+	if (delegate)
+		[delegate fileImport: self didCompleteWithTracks: nil metadata: nil];
 }
 
 - (IBAction) addTracks: (id) sender
@@ -241,9 +241,10 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
     MP42Metadata *metadata = nil;
     if ([importMetadata state])
         metadata = [[[fileImporter metadata] retain] autorelease];
-
-    if ([delegate respondsToSelector:@selector(importDoneWithTracks:andMetadata:)]) 
-        [delegate importDoneWithTracks:tracks andMetadata: metadata];
+	
+	if (delegate)
+		[delegate fileImport: self didCompleteWithTracks: tracks metadata: metadata];
+	
     [tracks release];
 }
 

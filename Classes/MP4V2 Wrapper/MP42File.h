@@ -26,11 +26,19 @@ extern NSString * const MP42FileTypeMP4;
 extern NSString * const MP42FileTypeM4V;
 extern NSString * const MP42FileTypeM4A;
 
+@class MP42File;
+
+@protocol MP42FileDelegate <NSObject>
+
+- (void)file:(MP42File *)file didUpdateProgress:(CGFloat)progress;
+
+@end
+
 @interface MP42File : NSObject <NSCoding> {
 @private
     MP4FileHandle  fileHandle;
     NSURL          *fileURL;
-    id delegate;
+    id <MP42FileDelegate> delegate;
 
     NSMutableArray  *tracksToBeDeleted;
     NSMutableArray  *fileImporters;
@@ -43,7 +51,7 @@ extern NSString * const MP42FileTypeM4A;
     MP42Muxer       *muxer;
 }
 
-@property (readwrite, assign) id delegate;
+@property (nonatomic, assign) id <MP42FileDelegate> delegate;
 @property (readonly) NSURL  *URL;
 @property (readonly) NSMutableArray  *tracks;
 @property (readonly) MP42Metadata    *metadata;
@@ -69,10 +77,5 @@ extern NSString * const MP42FileTypeM4A;
 - (void) optimize;
 
 - (void) cancel;
-
-@end
-
-@interface NSObject (MP42FileDelegateMethod)
-- (void)progressStatus: (CGFloat)progress;
 
 @end

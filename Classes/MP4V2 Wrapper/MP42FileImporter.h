@@ -13,6 +13,15 @@
 @class MP42Sample;
 @class MP42Metadata;
 @class MP42Track;
+@class MP42FileImporter;
+
+@protocol MP42FileImporterDelegate <NSObject>
+
+@optional
+
+- (void)fileImporterDidLoadFile:(MP42FileImporter *)importer;
+
+@end
 
 @interface MP42FileImporter : NSObject {
     NSURL          *fileURL;
@@ -21,11 +30,11 @@
     MP42Metadata   *metadata;
     NSMutableArray *tracksArray;
 
-    id delegate;
+    id <MP42FileImporterDelegate> delegate;
     BOOL           isCancelled;
 }
 
-- (id)initWithDelegate:(id)del andFile:(NSURL *)URL error:(NSError **)outError;
+- (id)initWithDelegate:(id <MP42FileImporterDelegate>)del andFile:(NSURL *)URL error:(NSError **)outError;
 
 - (NSUInteger)timescaleForTrack:(MP42Track *)track;
 - (NSSize)sizeForTrack:(MP42Track *)track;
@@ -40,10 +49,5 @@
 
 @property(readwrite, retain) MP42Metadata *metadata;
 @property(readonly) NSMutableArray  *tracksArray;
-
-@end
-
-@interface NSObject (MP42FileImporterDelegateMethod)
-- (void) fileLoaded;
 
 @end

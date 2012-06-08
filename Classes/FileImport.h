@@ -7,9 +7,16 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "MP42FileImporter.h"
 
-@class MP42FileImporter;
 @class MP42Metadata;
+@class FileImport;
+
+@protocol FileImportDelegate <NSObject, MP42FileImporterDelegate>
+
+- (void)fileImport:(NSWindowController *)import didCompleteWithTracks:(NSArray *)tracksToBeImported metadata:(MP42Metadata*)metadata;
+
+@end
 
 @interface FileImport : NSWindowController <NSTableViewDelegate> {
 
@@ -18,7 +25,7 @@
     NSMutableArray      * actionArray;
     MP42FileImporter    * fileImporter;
 
-	id delegate;
+	id <FileImportDelegate> delegate;
 	IBOutlet NSTableView * tableView;
 	IBOutlet NSButton    * addTracksButton;
     IBOutlet NSButton    * importMetadata;
@@ -26,13 +33,8 @@
     NSTimer *loadTimer;
 }
 
-- (id)initWithDelegate:(id)del andFile: (NSURL *)file error:(NSError **)outError;
+- (id)initWithDelegate:(id <FileImportDelegate>)del andFile: (NSURL *)file error:(NSError **)outError;
 - (IBAction) closeWindow: (id) sender;
 - (IBAction) addTracks: (id) sender;
-
-@end
-
-@interface NSObject (FileImportDelegateMethod)
-- (void) importDoneWithTracks: (NSArray*) tracksToBeImported andMetadata: (MP42Metadata*)metadata;
 
 @end

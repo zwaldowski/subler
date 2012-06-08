@@ -23,6 +23,10 @@
 
 #define SublerTableViewDataType @"SublerTableViewDataType"
 
+@interface SBDocument () <FileImportDelegate>
+
+@end
+
 @implementation SBDocument
 
 @synthesize languages;
@@ -296,12 +300,6 @@
 }
 
 #pragma mark Interface validation
-
-- (void)progressStatus: (CGFloat)progress {
-    [self performSelectorOnMainThread:@selector(updateProgressBar:)
-                           withObject:[NSNumber numberWithDouble:progress] waitUntilDone: NO];
-
-}
 
 - (void)updateProgressBar: (NSNumber *)progress {
     [optBar setIndeterminate:NO];
@@ -685,25 +683,23 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 - (void) showImportSheet: (NSURL *) fileURL
 {
     NSError *error = nil;
+	NSWindowController *controller = nil;
 
     if ([[fileURL pathExtension] isEqualToString:@"h264"] || [[fileURL pathExtension] isEqualToString:@"264"])
-        importWindow = [[VideoFramerate alloc] initWithDelegate:self andFile:fileURL];
+        controller = [[VideoFramerate alloc] initWithDelegate:self andFile:fileURL];
     else
-		importWindow = [[FileImport alloc] initWithDelegate:self andFile:fileURL error:&error];
+		controller = [[FileImport alloc] initWithDelegate:self andFile:fileURL error:&error];
 
-    if (importWindow) {
-        [NSApp beginSheet:[importWindow window] modalForWindow:documentWindow
+    if (controller) {
+        [NSApp beginSheet:controller.window modalForWindow:documentWindow
             modalDelegate:nil didEndSelector:NULL contextInfo:nil];
-    }
-    else {
-        //[self presentError:error];
-        if (error)
+    } else if (error) {
+        
             [self presentError:error modalForWindow:documentWindow delegate:nil didPresentSelector:NULL contextInfo:nil];
     }
 }
 
-- (void) importDoneWithTracks: (NSArray*) tracksToBeImported andMetadata: (MP42Metadata*) metadata
-{
+- (void)fileImport:(NSWindowController *)import didCompleteWithTracks:(NSArray *)tracksToBeImported metadata:(MP42Metadata *)metadata {
     if (tracksToBeImported) {
         for (id track in tracksToBeImported)
             [mp4File addTrack:track];
@@ -718,9 +714,9 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
         [self updateChangeCount:NSChangeDone];
     }
 
-    [NSApp endSheet:[importWindow window]];
-    [[importWindow window] orderOut:self];
-    [importWindow release], importWindow = nil;
+    [NSApp endSheet: import.window];
+    [import.window orderOut:self];
+    [import.window release];
 }
 
 - (void) metadataImportDone: (MP42Metadata*) metadataToBeImported

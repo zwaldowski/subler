@@ -17,7 +17,7 @@
 
 static SBQueueController *sharedController = nil;
 
-@interface SBQueueController (Private)
+@interface SBQueueController () <MP42FileDelegate>
 
 - (void)updateUI;
 - (void)updateDockTile;
@@ -530,6 +530,10 @@ static SBQueueController *sharedController = nil;
 
     [tableScrollView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
     [optionsBox setAutoresizingMask:NSViewWidthSizable | NSViewMaxYMargin];
+}
+
+- (void)file:(MP42File *)file didUpdateProgress:(CGFloat)progress {
+	
 }
 
 #pragma mark Open methods

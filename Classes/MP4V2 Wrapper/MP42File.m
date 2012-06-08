@@ -7,6 +7,7 @@
 //
 
 #import "MP42File.h"
+#import "MP42Muxer.h"
 #import <QTKit/QTKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import "SubUtilities.h"
@@ -22,7 +23,7 @@ NSString * const MP42FileTypeM4V = @"m4v";
 NSString * const MP42FileTypeM4A = @"m4a";
 NSString * const MP42FileTypeM4B = @"m4b";
 
-@interface MP42File (Private)
+@interface MP42File () <MP42MuxerDelegate>
 
 - (void) removeMuxedTrack: (MP42Track *)track;
 - (BOOL) createChaptersPreview;
@@ -228,7 +229,8 @@ NSString * const MP42FileTypeM4B = @"m4b";
 
     while (!noErr) {
         unsigned long long fileSize = [[[fileManager attributesOfItemAtPath:tempPath error:nil] valueForKey:NSFileSize] unsignedLongLongValue];
-        [self progressStatus:((CGFloat)fileSize / originalFileSize) * 100];
+		if (delegate)
+			[delegate file: self didUpdateProgress: ((CGFloat)fileSize / originalFileSize) * 100];
         usleep(450000);
     }
 
@@ -257,7 +259,8 @@ NSString * const MP42FileTypeM4B = @"m4b";
 
             while (!done) {
                 unsigned long long fileSize = [[[fileManager attributesOfItemAtPath:[url path] error:outError] valueForKey:NSFileSize] unsignedLongLongValue];
-                [self progressStatus:((CGFloat)fileSize / originalFileSize) * 100];
+				if (delegate)
+					[delegate file: self didUpdateProgress: ((CGFloat)fileSize / originalFileSize) * 100];
                 usleep(450000);
             }
             [fileManager release];
@@ -404,9 +407,9 @@ NSString * const MP42FileTypeM4B = @"m4b";
     [muxer cancel];
 }
 
-- (void)progressStatus: (CGFloat)progress {
-    if ([delegate respondsToSelector:@selector(progressStatus:)]) 
-        [delegate progressStatus:progress];
+- (void)muxer:(MP42Muxer *)muxer didUpdateProgress:(CGFloat)progress {
+	if (delegate)
+		[delegate file: self didUpdateProgress: progress];
 }
 
 - (void) removeMuxedTrack: (MP42Track *)track

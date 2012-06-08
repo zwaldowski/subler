@@ -18,7 +18,7 @@
 
 @implementation MP42FileImporter
 
-- (id)initWithDelegate:(id)del andFile:(NSURL *)URL error:(NSError **)outError
+- (id)initWithDelegate:(id <MP42FileImporterDelegate>)del andFile:(NSURL *)URL error:(NSError **)outError
 {
     [self release];
     self = nil;

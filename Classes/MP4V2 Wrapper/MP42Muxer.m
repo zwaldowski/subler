@@ -402,8 +402,8 @@
             if (currentNumber == 150) {
                 status = [importerHelper progress] / tracksImportersCount;
 
-                if ([delegate respondsToSelector:@selector(progressStatus:)]) 
-                    [delegate progressStatus:status];
+                if (delegate)
+                    [delegate muxer: self didUpdateProgress: status];
                 currentNumber = 0;
             }
             else {
