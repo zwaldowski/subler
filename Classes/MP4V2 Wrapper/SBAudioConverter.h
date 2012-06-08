@@ -6,12 +6,11 @@
 //  Copyright 2010 Damiano Galassi. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
-#include "sfifo.h"
-#include "downmix.h"
-
 #import <AudioToolbox/AudioToolbox.h>
 #import <CoreAudio/CoreAudio.h>
+
+#include "sfifo.h"
+#include "downmix.h"
 
 @class MP42SampleBuffer;
 @class MP42AudioTrack;

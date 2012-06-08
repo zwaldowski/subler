@@ -6,8 +6,6 @@
 //  Copyright Damiano Galassi 2009 . All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
-
 @class MP42File;
 
 @interface SBDocument : NSDocument <NSTableViewDelegate>

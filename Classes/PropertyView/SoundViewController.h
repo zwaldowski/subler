@@ -6,8 +6,6 @@
 //  Copyright 2009 Damiano Galassi. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
-
 @class MP42AudioTrack;
 @class MP42File;
 

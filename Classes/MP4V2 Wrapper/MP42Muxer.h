@@ -6,8 +6,7 @@
 //  Copyright 2010 Damiano Galassi. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
-#import "mp4v2.h"
+#import <mp4v2/mp4v2.h>
 
 @class MP42Track, MP42Muxer;
 

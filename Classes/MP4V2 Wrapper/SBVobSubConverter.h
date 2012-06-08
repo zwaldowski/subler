@@ -6,8 +6,7 @@
 //  Copyright 2011 Damiano Galassi. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
-#include "avcodec.h"
+#import <libavcodec/avcodec.h>
 
 @class MP42SampleBuffer;
 @class MP42SubtitleTrack;

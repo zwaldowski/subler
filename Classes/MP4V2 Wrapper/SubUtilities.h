@@ -6,7 +6,6 @@
 //  Copyright 2007 Perian. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import <UniversalDetector/UniversalDetector.h>
 #import <mp4v2.h>
 

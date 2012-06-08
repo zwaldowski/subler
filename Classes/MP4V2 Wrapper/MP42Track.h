@@ -6,8 +6,7 @@
 //  Copyright 2009 Damiano Galassi. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "mp4v2.h"
+#import <mp4v2/mp4v2.h>
 #import "MP42FileImporter.h"
 
 @interface MP42Track : NSObject <NSCoding> {

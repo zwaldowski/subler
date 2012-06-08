@@ -6,7 +6,6 @@
 //  Copyright 2011 Douglas Stebila. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
 #import <Quartz/Quartz.h>
 
 @interface ArtworkSelector : NSWindowController {

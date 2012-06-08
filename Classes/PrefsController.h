@@ -5,7 +5,6 @@
 //  Copyright 2008 Damiano Galassi. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
 #import "MAAttachedWindow.h"
 
 @class MovieViewController;

@@ -6,7 +6,6 @@
 //  Copyright 2009 Damiano Galassi. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "MP42Track.h"
 
 @class SBTextSample;

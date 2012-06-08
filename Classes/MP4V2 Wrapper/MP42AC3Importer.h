@@ -6,7 +6,6 @@
 //  Copyright 2010 Damiano Galassi All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "MP42FileImporter.h"
 
 @interface MP42AC3Importer : NSObject <MP42FileImporter> {

@@ -6,7 +6,6 @@
 //  Copyright 2011 Damiano Galassi. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
 #import "SBTableView.h"
 
 @class MP42File;

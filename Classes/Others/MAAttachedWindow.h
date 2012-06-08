@@ -5,8 +5,6 @@
 //  Copyright 2007 Magic Aubergine.
 //
 
-#import <Cocoa/Cocoa.h>
-
 /*
  Below are the positions the attached window can be displayed at.
  

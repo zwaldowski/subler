@@ -6,8 +6,6 @@
 //  Copyright 2011 Douglas Stebila. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
-
 @class MetadataSearchController;
 @class MP42Metadata;
 

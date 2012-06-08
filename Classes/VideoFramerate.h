@@ -6,7 +6,6 @@
 //  Copyright 2009 Damiano Galassi. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
 #import "FileImport.h"
 #import "MP42FileImporter.h"
 

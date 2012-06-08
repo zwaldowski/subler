@@ -6,7 +6,6 @@
 //  Copyright 2009 Damiano Galassi. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import <mp4v2/mp4v2.h>
 #import "MP42Track.h"
 #import "MP42VideoTrack.h"

@@ -6,8 +6,6 @@
 //  Copyright 2011 Damiano Galassi. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
-
 @interface SBOCRWrapper : NSObject {
     void *tess_base;
     

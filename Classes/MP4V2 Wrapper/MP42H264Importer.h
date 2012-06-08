@@ -6,7 +6,6 @@
 //  Copyright 2010 Damiano Galassi All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "MP42FileImporter.h"
 
 typedef struct framerate_t {

@@ -6,7 +6,6 @@
 //  Copyright 2010. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
 #import "MP42FileImporter.h"
 
 @class MP42Metadata;

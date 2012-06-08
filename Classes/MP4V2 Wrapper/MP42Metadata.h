@@ -6,8 +6,7 @@
 //  Copyright 2009 Damiano Galassi. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
-#import "mp4v2.h"
+#import <mp4v2/mp4v2.h>
 
 enum rating_type {
     MPAA_NR = 1,

@@ -6,9 +6,8 @@
 //  Copyright 2010 Damiano Galassi All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "MP42FileImporter.h"
-#import "mp4v2.h"
+#import <mp4v2/mp4v2.h>
 
 @interface MP42Mp4Importer : NSObject <MP42FileImporter> {
     MP4FileHandle  fileHandle;

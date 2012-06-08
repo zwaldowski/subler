@@ -11,8 +11,7 @@
 #import "SBPresetManager.h"
 #import "SBQueueController.h"
 #import "PrefsController.h"
-
-#import "mp4v2.h"
+#import <mp4v2/mp4v2.h>
 
 #define DONATE_NAG_TIME (60 * 60 * 24 * 7)
 

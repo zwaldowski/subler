@@ -22,8 +22,6 @@
  * DEALINGS IN THE SOFTWARE.
  *****************************************************************************/
 
-#import <Cocoa/Cocoa.h>
-
 @interface ButtonToolbarItem : NSToolbarItem
 {
 }

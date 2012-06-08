@@ -19,7 +19,7 @@
  *		Dave Mackie		dmackie@cisco.com
  */
 
-#include "mp4v2.h"
+#import <mp4v2/mp4v2.h>
 #include <assert.h>
 #include <ctype.h> /* isdigit, isprint, isspace */
 #include <errno.h>

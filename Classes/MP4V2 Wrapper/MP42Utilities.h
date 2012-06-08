@@ -7,7 +7,6 @@
  *
  */
 
-#import <Foundation/Foundation.h>
 #import <mp4v2/mp4v2.h>
 
 extern NSString * const SBMonoMixdown;
