@@ -10,8 +10,8 @@
 #import "SubUtilities.h"
 #import "SBLanguages.h"
 #import "MP42File.h"
-#import "RegexKitLite.h"
 #import "MP42Sample.h"
+#import "NSRegularExpression+Subler.h"
 
 @implementation MP42CCImporter
 
@@ -136,13 +136,11 @@ static int ParseByte(const char *string, UInt8 *byte, Boolean hex)
 
     unsigned startTime=0;
     BOOL firstSample = YES;
-    NSString *splitLine  = @"\\n+";
-    NSString *splitTimestamp  = @"\\t+";
-    NSString *splitBytes  = @"\\s+";
-    NSArray  *fileArray   = nil;
+	NSRegularExpression *splitLine = [NSRegularExpression regularExpressionWithPattern: @"\\n+" options: 0 error: NULL];
+    NSRegularExpression *splitTimestamp  = [NSRegularExpression regularExpressionWithPattern: @"\\t+" options: 0 error: NULL];
+	NSRegularExpression *splitBytes = [NSRegularExpression regularExpressionWithPattern: @"\\s+" options: 0 error: NULL];
     NSUInteger i = 0;
-
-    fileArray = [scc componentsSeparatedByRegex:splitLine];
+    NSArray  *fileArray = [splitLine  arrayBySeparatingMatchesInString: scc];
 
     NSMutableArray *sampleArray = [[NSMutableArray alloc] initWithCapacity:[fileArray count]];
 
@@ -151,7 +149,7 @@ static int ParseByte(const char *string, UInt8 *byte, Boolean hex)
     uint64_t minutesDrop = 0;
 
     for (NSString *line in fileArray) {
-        NSArray *lineArray = [line componentsSeparatedByRegex:splitTimestamp];
+        NSArray *lineArray = [splitTimestamp arrayBySeparatingMatchesInString: line];
 
         if ([lineArray count] < 2)
             continue;
@@ -165,9 +163,8 @@ static int ParseByte(const char *string, UInt8 *byte, Boolean hex)
     }
 
     for (SBTextSample *ccSample in sampleArray) {
-        NSArray  *bytesArray   = nil;
         MP4Duration sampleDuration = 0;
-        bytesArray = [ccSample.title componentsSeparatedByRegex:splitBytes];
+        NSArray  *bytesArray = [splitBytes arrayBySeparatingMatchesInString: ccSample.title];
 
         NSUInteger byteCount = [bytesArray count] *2;
         UInt8 *bytes = malloc(sizeof(UInt8)*byteCount*2 + (sizeof(UInt8)*8));

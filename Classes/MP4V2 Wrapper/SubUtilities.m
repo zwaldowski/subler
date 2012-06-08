@@ -7,7 +7,6 @@
 //
 
 #import "SubUtilities.h"
-#import "RegexKitLite.h"
 #import "MP42Sample.h"
 
 @implementation SBTextSample
@@ -788,10 +787,6 @@ int ParseSSAHeader(NSString *header) {
     if (info) {
     }
     [sc scanUpToString:@"[Events]" intoString:&styles];
-    if (styles) {
-        //stylesArray = [styles componentsSeparatedByRegex:splitLine];
-        //NSLog(@"%@", styles);
-    }
     [sc scanUpToString:@"Format:" intoString:nil];
 
     return 0;

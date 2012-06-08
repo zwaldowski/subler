@@ -8,7 +8,7 @@
 
 #import "MP42Metadata.h"
 #import "MP42Utilities.h"
-#import "RegexKitLite.h"
+#import "NSRegularExpression+Subler.h"
 
 typedef struct mediaKind_t
 {
@@ -336,9 +336,9 @@ static const genreType_t genreType_strings[] = {
 
 - (NSArray *) dictArrayFromString:(NSString *)data
 {
-    NSString *splitElements  = @",\\s+";
-    NSArray *stringArray = [data componentsSeparatedByRegex:splitElements];
-    NSMutableArray *dictElements = [[[NSMutableArray alloc] init] autorelease];
+	NSRegularExpression *regEx = [NSRegularExpression regularExpressionWithPattern: @",\\s+" options: 0 error: NULL];
+	NSArray *stringArray = [regEx arrayBySeparatingMatchesInString: data];
+    NSMutableArray *dictElements = [NSMutableArray arrayWithCapacity: stringArray.count];
     for (NSString *name in stringArray) {
         [dictElements addObject:[NSDictionary dictionaryWithObject:name forKey:@"name"]];
     }
@@ -481,10 +481,10 @@ static const genreType_t genreType_strings[] = {
 
 - (BOOL) setTag:(id)value forKey:(NSString *)key;
 {
-    NSString *regexPositive = @"YES|Yes|yes|1|2";
-
+	NSRegularExpression *regexPositive = [NSRegularExpression regularExpressionWithPattern: @"YES|Yes|yes|1|2" options: 0 error: NULL];
+\
     if ([key isEqualToString:@"HD Video"]) {
-        if( value != nil && [value length] > 0 && [value isMatchedByRegex:regexPositive]) {
+        if ([value length] && [regexPositive rangeOfFirstMatchInString: value options: 0 range: NSMakeRange(0, [value length])].location != NSNotFound) {
             hdVideo = [value integerValue];
             isEdited = YES;
         }
@@ -495,7 +495,7 @@ static const genreType_t genreType_strings[] = {
             return YES;
     }
     else if ([key isEqualToString:@"Gapless"]) {
-        if( value != nil && [value length] > 0 && [value isMatchedByRegex:regexPositive]) {
+        if ([value length] && [regexPositive rangeOfFirstMatchInString: value options: 0 range: NSMakeRange(0, [value length])].location != NSNotFound) {
             gapless = 1;
             isEdited = YES;
         }
@@ -764,8 +764,8 @@ static const genreType_t genreType_strings[] = {
             for (j = 0; j < item->dataList.size; j++) {
                 MP4ItmfData* data = &item->dataList.elements[j];
                 NSString *ratingString = [[NSString alloc] initWithBytes:data->value length: data->valueSize encoding:NSUTF8StringEncoding];
-                NSString *splitElements  = @"\\|";
-                NSArray *ratingItems = [ratingString componentsSeparatedByRegex:splitElements];
+                NSRegularExpression *splitElements  = [NSRegularExpression regularExpressionWithPattern: @"\\|" options: 0 error: NULL];
+                NSArray *ratingItems = [splitElements arrayBySeparatingMatchesInString: ratingString];
                 NSInteger ratingIndex = R_UNKNOWN;
                 if ([ratingItems count] >= 3) {
                     NSString *ratingCompareString = [NSString stringWithFormat:@"%@|%@|%@|", 

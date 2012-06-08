@@ -802,7 +802,7 @@ static MKFLOAT readFloat(MatroskaFile *mf,unsigned int len) {
     shift = (ui >> 23) & 0xff;
     if (shift == 0) // assume 0
 zero:
-      shift = 0, f.v = 0;
+      f.v = 0;
     else if (shift == 255)
 inf:
       if (ui & 0x80000000)
