@@ -51,10 +51,13 @@ class wrappedUniversalDetector:public nsUniversalDetector
 			case ePureAscii:
 				confidence=0;
 				return "US-ASCII";
+			break;
+				
+			case eEscAscii:
+				confidence=0;
+				return 0;
+				break;
 		}
-
-		confidence=0;
-		return 0;
 	}
 
 	bool done()

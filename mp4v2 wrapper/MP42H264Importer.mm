@@ -901,14 +901,8 @@ extern "C" const char *h264_get_frame_type (h264_decode_t *dec)
     }
     else {
         if (H264_TYPE_IS_P(dec->slice_type)) return "P";
-        if (H264_TYPE_IS_B(dec->slice_type)) {
-            if (dec->nal_ref_idc) {
-                return "BREF";
-            }
-            else {
-                return "B";
-            }
-        }
+        if (H264_TYPE_IS_B(dec->slice_type))
+			return dec->nal_ref_idc ? "BREF" : "B";
         if (H264_TYPE_IS_I(dec->slice_type)) return "I";
         if (H264_TYPE_IS_SI(dec->slice_type)) return "SI";
         if (H264_TYPE_IS_SP(dec->slice_type)) return "SP";

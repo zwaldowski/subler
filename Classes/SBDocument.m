@@ -827,14 +827,15 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
         [chapterTrack release];
     }
 
-    if (minutes)
+    if (minutes) {
         for (i = 0, y = 1; i < [mp4File movieDuration]; i += minutes, y++) {
             [chapterTrack addChapter:[NSString stringWithFormat:@"Chapter %d", y]
                             duration:i];
         }
-    else
-        [chapterTrack addChapter:@"Chapter 1"
+    } else {
+        [chapterTrack addChapter:[NSString stringWithFormat:@"Chapter %d", y]
                         duration:[mp4File movieDuration]];
+	}
 
     [fileTracksTable reloadData];
     [self tableViewSelectionDidChange:nil];

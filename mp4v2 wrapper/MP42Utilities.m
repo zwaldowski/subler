@@ -91,14 +91,12 @@ int enableFirstSubtitleTrack(MP4FileHandle fileHandle)
     for (i = 0; i < MP4GetNumberOfTracks( fileHandle, 0, 0); i++) {
         const char* trackType = MP4GetTrackType( fileHandle, MP4FindTrackId( fileHandle, i, 0, 0));
         
-        if (!strcmp(trackType, MP4_SUBTITLE_TRACK_TYPE)) {
+        if (!strcmp(trackType, MP4_SUBTITLE_TRACK_TYPE))
             if (firstTrack++ == 0) {
                 enableTrack(fileHandle, MP4FindTrackId( fileHandle, i, 0, 0));
-            }
-            else {
+            } else {
                 disableTrack(fileHandle, MP4FindTrackId( fileHandle, i, 0, 0));
-            }
-        }
+			}
     }
         return 0;
 }
