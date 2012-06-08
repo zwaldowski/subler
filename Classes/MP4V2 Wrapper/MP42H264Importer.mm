@@ -195,7 +195,6 @@ uint32_t h264_ue (CBitstream *bs)
     int bits_left;
     uint8_t coded;
     bool done = false;
-    uint32_t temp;
     bits = 0;
     // we want to read 8 bits at a time - if we don't have 8 bits, 
     // read what's left, and shift.  The exp_golomb_bits calc remains the
@@ -216,7 +215,7 @@ uint32_t h264_ue (CBitstream *bs)
         }
     }
     coded = exp_golomb_bits[read];
-    temp = bs->GetBits(coded);
+    bs->GetBits(coded);
     bits += coded;
     
     //  printf("ue - bits %d\n", bits);
@@ -475,7 +474,7 @@ int h264_read_seq_info (const uint8_t *buffer,
     //bs.set_verbose(true);
     try {
         dec->profile = bs.GetBits(8);
-        dummy = bs.GetBits(1 + 1 + 1 + 1 + 4);
+        bs.GetBits(8);
         dec->level = bs.GetBits(8);
         (void)h264_ue(&bs); // seq_parameter_set_id
         if (dec->profile == 100 || dec->profile == 110 ||
@@ -509,8 +508,8 @@ int h264_read_seq_info (const uint8_t *buffer,
                 dec->offset_for_ref_frame[MIN(ix,255)] = h264_se(&bs); // offset for ref fram -
             }
         }
-        dummy = h264_ue(&bs); // num_ref_frames
-        dummy = bs.GetBits(1); // gaps_in_frame_num_value_allowed_flag
+        h264_ue(&bs); // num_ref_frames
+        bs.GetBits(1); // gaps_in_frame_num_value_allowed_flag
         uint32_t PicWidthInMbs = h264_ue(&bs) + 1;
         dec->pic_width = PicWidthInMbs * 16;
         uint32_t PicHeightInMapUnits = h264_ue(&bs) + 1;
@@ -552,7 +551,6 @@ extern "C" int h264_find_slice_type (const uint8_t *buffer,
                                      bool noheader)
 {
     uint32_t header;
-    uint32_t dummy;
     if (noheader) header = 1;
     else {
         if (buffer[2] == 1) header = 4;
@@ -561,7 +559,7 @@ extern "C" int h264_find_slice_type (const uint8_t *buffer,
     CBitstream bs;
     bs.init(buffer + header, (buflen - header) * 8);
     try {
-        dummy = h264_ue(&bs); // first_mb_in_slice
+        h264_ue(&bs); // first_mb_in_slice
         *slice_type = h264_ue(&bs); // slice type
     } catch (...) {
         return -1;
@@ -576,7 +574,6 @@ extern "C" int h264_read_slice_info (const uint8_t *buffer,
     uint32_t header;
     uint8_t tmp[512]; /* Enough for the begining of the slice header */
     int tmp_len = 0;
-    uint32_t temp;
     
     if (buffer[2] == 1) header = 4;
     else header = 5;
@@ -589,9 +586,9 @@ extern "C" int h264_read_slice_info (const uint8_t *buffer,
         dec->bottom_field_flag = 0;
         dec->delta_pic_order_cnt[0] = 0;
         dec->delta_pic_order_cnt[1] = 0;
-        temp = h264_ue(&bs); // first_mb_in_slice
+        h264_ue(&bs); // first_mb_in_slice
         dec->slice_type = h264_ue(&bs); // slice type
-        temp = h264_ue(&bs); // pic_parameter_set
+        h264_ue(&bs); // pic_parameter_set
         dec->frame_num = bs.GetBits(dec->log2_max_frame_num_minus4 + 4);
         if (!dec->frame_mbs_only_flag) {
             dec->field_pic_flag = bs.GetBits(1);
@@ -1469,7 +1466,6 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
     bool nal_is_sync = false;
     bool slice_is_idr = false;
     int32_t poc = 0;
-    uint32_t dflags = 0;
     
     // now process the rest of the video stream
     memset(&h264_dec, 0, sizeof(h264_dec));
@@ -1510,7 +1506,7 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
                 DpbAdd( &h264_dpb, poc, slice_is_idr );
                 nal_is_sync = false;
                 nal_buffer_size = 0;
-            } 
+            }
         }
         bool copy_nal_to_buffer = false;
         if (Verbosity) {
@@ -1518,7 +1514,7 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
                    h264_dec.nal_unit_type, nal.buffer_on);
         }
         if (h264_nal_unit_type_is_slice(h264_dec.nal_unit_type)) {
-            dflags = h264_get_frame_dependency(&h264_dec);
+			h264_get_frame_dependency(&h264_dec);
             // copy all seis, etc before indicating first
             first = false;
             copy_nal_to_buffer = true;

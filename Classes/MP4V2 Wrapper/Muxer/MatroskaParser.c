@@ -341,7 +341,6 @@ static void   myvsnprintf(char *dest,unsigned dsize,const char *fmt,va_list ap) 
 	  ++fmt;
 	  break;
 	}
-	state = 4;
       case 4:
 	switch (*fmt) {
 	  case 's':
@@ -629,12 +628,11 @@ static inline longlong mul3(MKFLOAT scale,longlong tc) {
   //    r = ((x0*y0) >> 32) + (x1*y0) + (x0*y1) + ((x1*y1) << 32)
   unsigned    x0,x1,y0,y1;
   ulonglong   p;
-  char	      sign = 0;
 
   if (scale.v < 0)
-    sign = !sign, scale.v = -scale.v;
+    scale.v = -scale.v;
   if (tc < 0)
-    sign = !sign, tc = -tc;
+    tc = -tc;
 
   x0 = (unsigned)scale.v;
   x1 = (unsigned)((ulonglong)scale.v >> 32);
@@ -949,7 +947,7 @@ static void parseEBML(MatroskaFile *mf,ulonglong toplen) {
 
   FOREACH(mf,toplen)
     case 0x4286: // Version
-      v = readUInt(mf,(unsigned)len);
+      readUInt(mf,(unsigned)len);
       break;
     case 0x42f7: // ReadVersion
       v = readUInt(mf,(unsigned)len);
@@ -972,12 +970,12 @@ static void parseEBML(MatroskaFile *mf,ulonglong toplen) {
 	errorjmp(mf,"Unsupported DocType: %s",buf);
       break;
     case 0x4287: // DocTypeVersion
-      v = readUInt(mf,(unsigned)len);
+      readUInt(mf,(unsigned)len);
       break;
     case 0x4285: // DocTypeReadVersion
-      v = readUInt(mf,(unsigned)len);
+      readUInt(mf,(unsigned)len);
       if (v > MATROSKA_VERSION)
-	errorjmp(mf,"File requires version %d Matroska parser",(int)v);
+		  errorjmp(mf,"File requires version %d Matroska parser",(int)v);
       break;
   ENDFOR(mf);
 }
@@ -2165,7 +2163,7 @@ static void parseBlockGroup(MatroskaFile *mf,ulonglong toplen,ulonglong timecode
       ref = 1;
       break;
 blockex:
-      cur = start = filepos(mf);
+      start = filepos(mf);
       len = tmplen = toplen;
     case 0xa1: // Block
       have_block = 1;
