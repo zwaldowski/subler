@@ -14,7 +14,7 @@ NSString *SBPresetManagerUpdatedNotification = @"SBPresetManagerUpdatedNotificat
 
 static SBPresetManager *sharedPresetManager = nil;
 
-@interface SBPresetManager (Private)
+@interface SBPresetManager ()
 - (BOOL) loadPresets;
 - (BOOL) savePresets;
 - (NSString *) appSupportPath;

@@ -10,7 +10,7 @@
 #import "MetadataSearchController.h"
 #import "MP42File.h"
 
-@interface TheTVDB (Private)
+@interface TheTVDB ()
 #pragma mark Parse metadata
 - (NSString *) cleanPeopleList:(NSString *)s;
 - (NSArray *) metadataForResults:(NSDictionary *)results;

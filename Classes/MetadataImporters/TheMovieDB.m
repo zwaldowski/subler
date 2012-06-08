@@ -10,7 +10,7 @@
 #import "MetadataSearchController.h"
 #import "MP42File.h"
 
-@interface TheMovieDB (Private)
+@interface TheMovieDB ()
 - (NSString *) nodes:(NSXMLElement *)node forXPath:(NSString *)query joinedBy:(NSString *)joiner;
 - (MP42Metadata *) metadata:(MP42Metadata *)metadata forNode:(NSXMLElement *)node;
 @end

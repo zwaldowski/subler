@@ -286,7 +286,7 @@ static const genreType_t genreType_strings[] = {
     {0, "undefined" } // must be last
 };
 
-@interface MP42Metadata (Private)
+@interface MP42Metadata ()
 
 -(void) readMetaDataFromFileHandle:(MP4FileHandle)fileHandle;
 

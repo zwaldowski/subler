@@ -82,11 +82,11 @@ u_int32_t MP4AV_Ac3GetSamplingRate(u_int8_t* pHdr);
 
 @end
 
-@interface MP42MkvImporter (Private)
-    - (MP42Metadata*) readMatroskaMetadata;
-    - (NSString*) matroskaCodecIDToHumanReadableName:(TrackInfo *)track;
-    - (NSString*) matroskaTrackName:(TrackInfo *)track;
-    - (uint64_t) matroskaTrackStartTime:(TrackInfo *)track Id:(MP4TrackId)Id;
+@interface MP42MkvImporter ()
+- (MP42Metadata*) readMatroskaMetadata;
+- (NSString*) matroskaCodecIDToHumanReadableName:(TrackInfo *)track;
+- (NSString*) matroskaTrackName:(TrackInfo *)track;
+- (uint64_t) matroskaTrackStartTime:(TrackInfo *)track Id:(MP4TrackId)Id;
 @end
 
 @implementation MP42MkvImporter
