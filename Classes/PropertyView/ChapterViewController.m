@@ -9,6 +9,7 @@
 #import "ChapterViewController.h"
 #import "MP42Utilities.h"
 #import "SubUtilities.h"
+#import "SBTableView.h"
 
 @implementation ChapterViewController
 

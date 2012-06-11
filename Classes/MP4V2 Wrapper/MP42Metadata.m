@@ -10,33 +10,32 @@
 #import "MP42Utilities.h"
 #import "NSRegularExpression+Subler.h"
 
-typedef struct mediaKind_t
-{
-    uint8_t stik;
-    NSString *english_name;
+typedef struct mediaKind_t {
+	uint8_t stik;
+	const char *englishName;
 } mediaKind_t;
 
 static const mediaKind_t mediaKind_strings[] = {
-    {1, @"Music"},
-    {2, @"Audiobook"},
-    {6, @"Music Video"},
-    {9, @"Movie"},
-    {10, @"TV Show"},
-    {11, @"Booklet"},
-    {14, @"Ringtone"},  
+    {1, "Music"},
+    {2, "Audiobook"},
+    {6, "Music Video"},
+    {9, "Movie"},
+    {10, "TV Show"},
+    {11, "Booklet"},
+    {14, "Ringtone"},
     {0, NULL},
 };
 
 typedef struct contentRating_t
 {
     uint8_t rtng;
-    NSString *english_name;
+    const char *english_name;
 } contentRating_t;
 
 static const contentRating_t contentRating_strings[] = {
-    {0, @"None"},
-    {2, @"Clean"},
-    {4, @"Explicit"},
+    {0, "None"},
+    {2, "Clean"},
+    {4, "Explicit"},
     {0, NULL},
 };
 
@@ -368,21 +367,21 @@ static const genreType_t genreType_strings[] = {
 
 - (BOOL) setMediaKindFromString:(NSString *)mediaKindString;
 {
-    mediaKind_t *mediaKindList;
-    for (mediaKindList = (mediaKind_t*) mediaKind_strings; mediaKindList->english_name; mediaKindList++) {
-        if ([mediaKindString isEqualToString:mediaKindList->english_name]) {
-            mediaKind = mediaKindList->stik;
-            return YES;      
-        }
-    }
-    return NO;
+	mediaKind_t *mediaKindList;
+	for (mediaKindList = (mediaKind_t *)mediaKind_strings; mediaKind_strings->englishName; mediaKindList++) {
+		if ([mediaKindString isEqualToString: [NSString stringWithUTF8String:mediaKindList->englishName]]) {
+			mediaKind = mediaKindList->stik;
+			return YES;
+		}
+	}
+	return NO;
 }
 
 - (BOOL) setContentRatingFromString:(NSString *)contentRatingString;
 {
     contentRating_t *contentRatingList;
     for ( contentRatingList = (contentRating_t*) contentRating_strings; contentRatingList->english_name; contentRatingList++) {
-        if ([contentRatingString isEqualToString:contentRatingList->english_name]) {
+        if ([contentRatingString isEqualToString: [NSString stringWithUTF8String:contentRatingList->english_name]]) {
             contentRating = contentRatingList->rtng;
             return YES;      
         }
