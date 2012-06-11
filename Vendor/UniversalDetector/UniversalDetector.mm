@@ -80,7 +80,13 @@ class wrappedUniversalDetector:public nsUniversalDetector
 	void reset() { Reset(); }
 };
 
+@interface UniversalDetector () {
+	wrappedUniversalDetector *detector;
+	NSString *charset;
+	float confidence;
+}
 
+@end
 
 @implementation UniversalDetector
 
@@ -88,23 +94,14 @@ class wrappedUniversalDetector:public nsUniversalDetector
 {
 	if(self=[super init])
 	{
-		detectorptr=(void *)new wrappedUniversalDetector;
-		charset=nil;
+		detector=new wrappedUniversalDetector;
 	}
 	return self;
 }
 
 -(void)dealloc
 {
-	delete (wrappedUniversalDetector *)detectorptr;
-	[charset release];
-	[super dealloc];
-}
-
--(void)finalize
-{
-	delete (wrappedUniversalDetector *)detectorptr;
-	[super finalize];
+	delete detector;
 }
 
 -(void)analyzeData:(NSData *)data
@@ -114,24 +111,17 @@ class wrappedUniversalDetector:public nsUniversalDetector
 
 -(void)analyzeBytes:(const char *)data length:(int)len
 {
-	wrappedUniversalDetector *detector=(wrappedUniversalDetector *)detectorptr;
-
-	if(detector->done()) return;
-
+	if (detector->done()) return;
 	detector->HandleData(data,len);
-	[charset release];
-	charset=nil;
 }
 
 -(void)reset
 {
-	wrappedUniversalDetector *detector=(wrappedUniversalDetector *)detectorptr;
 	detector->reset();
 }
 
 -(BOOL)done
 {
-	wrappedUniversalDetector *detector=(wrappedUniversalDetector *)detectorptr;
 	return detector->done()?YES:NO;
 }
 
@@ -139,9 +129,8 @@ class wrappedUniversalDetector:public nsUniversalDetector
 {
 	if(!charset)
 	{
-		wrappedUniversalDetector *detector=(wrappedUniversalDetector *)detectorptr;
 		const char *cstr=detector->charset(confidence);
-		if(!cstr) return nil;
+		if (!cstr) return nil;
 		charset=[[NSString alloc] initWithUTF8String:cstr];
 	}
 	return charset;
@@ -164,13 +153,7 @@ class wrappedUniversalDetector:public nsUniversalDetector
 
 -(void)debugDump
 {
-    wrappedUniversalDetector *detector=(wrappedUniversalDetector *)detectorptr;
     return detector->debug();
-}
-
-+(UniversalDetector *)detector
-{
-	return [[[UniversalDetector alloc] init] autorelease];
 }
 
 @end
