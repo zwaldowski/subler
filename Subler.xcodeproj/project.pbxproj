@@ -23,6 +23,7 @@
 		6C6D35FA15E1EA67000176D1 /* NSRegularExpression+Subler.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C6D35F915E1EA67000176D1 /* NSRegularExpression+Subler.m */; };
 		6CBC598E15E27A1600C03710 /* languages.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6CBC598D15E27A1600C03710 /* languages.plist */; };
 		6CBC59AD15E27D5F00C03710 /* topLanguages.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6CBC59AC15E27D5F00C03710 /* topLanguages.plist */; };
+		6CBC59B815E293BF00C03710 /* prefs-audio@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CBC59B715E293BF00C03710 /* prefs-audio@2x.png */; };
 		6CEEBED415818331009A459F /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6CEEBED315818331009A459F /* Quartz.framework */; };
 		8D15AC2C0486D014006FF6A4 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2A37F4B9FDCFA73011CA2CEA /* Credits.rtf */; };
 		8D15AC2F0486D014006FF6A4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165FFE840EACC02AAC07 /* InfoPlist.strings */; };
@@ -41,7 +42,6 @@
 		A937137512B76EAD00940FEC /* MP42H264Importer.mm in Sources */ = {isa = PBXBuildFile; fileRef = A937137412B76EAD00940FEC /* MP42H264Importer.mm */; };
 		A940E0FF13F130FB007AB5C6 /* MP42AVFImporter.m in Sources */ = {isa = PBXBuildFile; fileRef = A940E0FE13F130FB007AB5C6 /* MP42AVFImporter.m */; };
 		A9569CEB0F616926002F79F8 /* MP42VideoTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = A9569CEA0F616926002F79F8 /* MP42VideoTrack.m */; };
-		A95C881D0F827BFB00F51A22 /* ToolbarRemoveTemplate.png in Resources */ = {isa = PBXBuildFile; fileRef = A95C881C0F827BFB00F51A22 /* ToolbarRemoveTemplate.png */; };
 		A95FE301133E3DCB00D35687 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A95FE2FC133E3DCB00D35687 /* libavcodec.a */; };
 		A95FE302133E3DCB00D35687 /* libavcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A95FE2FD133E3DCB00D35687 /* libavcore.a */; };
 		A95FE303133E3DCB00D35687 /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A95FE2FE133E3DCB00D35687 /* libavdevice.a */; };
@@ -62,7 +62,6 @@
 		A97BE36F0F73D72E00652CBD /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A97BE36E0F73D72E00652CBD /* QTKit.framework */; };
 		A982D0C0140AB66400B92357 /* SBQueueItem.m in Sources */ = {isa = PBXBuildFile; fileRef = A982D0BF140AB66400B92357 /* SBQueueItem.m */; };
 		A984DB740F52DD4B001A20B2 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = A984DB730F52DD4B001A20B2 /* dsa_pub.pem */; };
-		A98739FE13FBB09B00B795A7 /* ToolbarActionTemplate.png in Resources */ = {isa = PBXBuildFile; fileRef = A98739FD13FBB09B00B795A7 /* ToolbarActionTemplate.png */; };
 		A9891D5E124502C000427CF9 /* MP42SrtImporter.m in Sources */ = {isa = PBXBuildFile; fileRef = A9891D5D124502C000427CF9 /* MP42SrtImporter.m */; };
 		A991319A13F0615700DCAA12 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A991319913F0615700DCAA12 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		A991319C13F0668300DCAA12 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A991319B13F0668300DCAA12 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -214,6 +213,7 @@
 		6C6D35F915E1EA67000176D1 /* NSRegularExpression+Subler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSRegularExpression+Subler.m"; path = "Classes/NSRegularExpression+Subler.m"; sourceTree = "<group>"; };
 		6CBC598D15E27A1600C03710 /* languages.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = languages.plist; sourceTree = "<group>"; };
 		6CBC59AC15E27D5F00C03710 /* topLanguages.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = topLanguages.plist; sourceTree = "<group>"; };
+		6CBC59B715E293BF00C03710 /* prefs-audio@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "prefs-audio@2x.png"; path = "images/prefs-audio@2x.png"; sourceTree = "<group>"; };
 		6CEEBED315818331009A459F /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Quartz.framework; sourceTree = DEVELOPER_DIR; };
 		8D15AC360486D014006FF6A4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D15AC370486D014006FF6A4 /* Subler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Subler.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -242,7 +242,6 @@
 		A9569CE90F616926002F79F8 /* MP42VideoTrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MP42VideoTrack.h; sourceTree = "<group>"; };
 		A9569CEA0F616926002F79F8 /* MP42VideoTrack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MP42VideoTrack.m; sourceTree = "<group>"; };
 		A95A60470F4422DB00767D87 /* mp4v2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mp4v2.h; path = Vendor/mp4v2/include/mp4v2/mp4v2.h; sourceTree = "<group>"; };
-		A95C881C0F827BFB00F51A22 /* ToolbarRemoveTemplate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ToolbarRemoveTemplate.png; path = images/ToolbarRemoveTemplate.png; sourceTree = "<group>"; };
 		A95FE2FC133E3DCB00D35687 /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavcodec.a; path = ffmpeg/lib/libavcodec.a; sourceTree = "<group>"; };
 		A95FE2FD133E3DCB00D35687 /* libavcore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavcore.a; path = ffmpeg/lib/libavcore.a; sourceTree = "<group>"; };
 		A95FE2FE133E3DCB00D35687 /* libavdevice.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavdevice.a; path = ffmpeg/lib/libavdevice.a; sourceTree = "<group>"; };
@@ -273,7 +272,6 @@
 		A982D0BE140AB66400B92357 /* SBQueueItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SBQueueItem.h; path = Classes/SBQueueItem.h; sourceTree = "<group>"; };
 		A982D0BF140AB66400B92357 /* SBQueueItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SBQueueItem.m; path = Classes/SBQueueItem.m; sourceTree = "<group>"; };
 		A984DB730F52DD4B001A20B2 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
-		A98739FD13FBB09B00B795A7 /* ToolbarActionTemplate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ToolbarActionTemplate.png; path = images/ToolbarActionTemplate.png; sourceTree = "<group>"; };
 		A9891D5C124502C000427CF9 /* MP42SrtImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MP42SrtImporter.h; sourceTree = "<group>"; };
 		A9891D5D124502C000427CF9 /* MP42SrtImporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MP42SrtImporter.m; sourceTree = "<group>"; };
 		A991319913F0615700DCAA12 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -559,12 +557,11 @@
 				CD08BA9512F62829006BA549 /* tmdb-logo.png */,
 				CD16BC4612F6BC7F00AF5453 /* tvdb-logo.png */,
 				A9B46AA312B79BB10040517A /* Subler.icns */,
-				A95C881C0F827BFB00F51A22 /* ToolbarRemoveTemplate.png */,
-				A98739FD13FBB09B00B795A7 /* ToolbarActionTemplate.png */,
 				A9C9E33F13FBC1EB00CA3B4E /* EncodeCanceled.png */,
 				A9C9E34013FBC1EB00CA3B4E /* EncodeComplete.png */,
 				A9C9E34113FBC1EB00CA3B4E /* EncodeWorking.png */,
 				A92A4FB712B0F2F300751FA5 /* prefs-audio.png */,
+				6CBC59B715E293BF00C03710 /* prefs-audio@2x.png */,
 				A941B4D6134A52B600E22F45 /* tessdata */,
 				CD8935FF12F34F500085C2B5 /* tvdb_py */,
 			);
@@ -832,7 +829,6 @@
 				1DDD582D0DA1D0D100B32029 /* MainMenu.xib in Resources */,
 				A984DB740F52DD4B001A20B2 /* dsa_pub.pem in Resources */,
 				A9C055370F6D395B00AF15B5 /* FileImport.xib in Resources */,
-				A95C881D0F827BFB00F51A22 /* ToolbarRemoveTemplate.png in Resources */,
 				A9FB9DC90F83AAC100AB791A /* VideoFramerate.xib in Resources */,
 				A92A4FB812B0F2F300751FA5 /* prefs-audio.png in Resources */,
 				A9B46AA412B79BB10040517A /* Subler.icns in Resources */,
@@ -845,7 +841,6 @@
 				A9F284A0133C9F6E00F10951 /* close.pdf in Resources */,
 				A9F284A1133C9F6E00F10951 /* close-over.pdf in Resources */,
 				A9F284A2133C9F6E00F10951 /* close-pressed.pdf in Resources */,
-				A98739FE13FBB09B00B795A7 /* ToolbarActionTemplate.png in Resources */,
 				A9C9E34213FBC1EB00CA3B4E /* EncodeCanceled.png in Resources */,
 				A9C9E34313FBC1EB00CA3B4E /* EncodeComplete.png in Resources */,
 				A9C9E34413FBC1EB00CA3B4E /* EncodeWorking.png in Resources */,
@@ -860,6 +855,7 @@
 				6C6D35C715E1E87F000176D1 /* SBQueueController.xib in Resources */,
 				6CBC598E15E27A1600C03710 /* languages.plist in Resources */,
 				6CBC59AD15E27D5F00C03710 /* topLanguages.plist in Resources */,
+				6CBC59B815E293BF00C03710 /* prefs-audio@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
