@@ -556,26 +556,24 @@
     return nil;
 }
 
-static NSInteger sortFunction (id ldict, id rdict, void *context) {
-    NSComparisonResult rc;
-    
-    NSInteger right = [(__bridge NSArray*) context indexOfObject:rdict];
-    NSInteger left = [(__bridge NSArray*) context indexOfObject:ldict];
-    
-    if (right < left)
-        rc = NSOrderedDescending;
-    else
-        rc = NSOrderedAscending;
-    
-    return rc;
-}
-
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification {
     if ([aNotification object] == resultsTable) {
         if (resultsArray && [resultsArray count] > 0) {
             selectedResult = [resultsArray objectAtIndex:[resultsTable selectedRow]];
             selectedResultTags = selectedResult.tagsDict;
-            selectedResultTagsArray = [[selectedResultTags allKeys] sortedArrayUsingFunction:sortFunction context:(__bridge void *)([selectedResult availableMetadata])];
+			selectedResultTagsArray = [selectedResultTags.allKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+				NSComparisonResult rc = NSOrderedSame;
+
+				NSInteger right = [selectedResult.availableMetadata indexOfObject:obj2];
+				NSInteger left = [selectedResult.availableMetadata indexOfObject:obj1];
+
+				if (right < left)
+					rc = NSOrderedDescending;
+				else
+					rc = NSOrderedAscending;
+
+				return rc;
+			}];
             [metadataTable reloadData];
             [addButton setEnabled:YES];
             [addButton setKeyEquivalent:@"\r"];

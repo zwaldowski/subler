@@ -46,6 +46,7 @@
 @end
 
 @implementation SBSubSerializer
+
 -(id)init
 {
 	if ((self = [super init])) {
@@ -58,33 +59,9 @@
 	return self;
 }
 
-
-static CFComparisonResult CompareLinesByBeginTime(const void *a, const void *b, void *unused)
-{
-	SBSubLine *al = (__bridge SBSubLine*)a, *bl = (__bridge SBSubLine*)b;
-	
-	if (al->begin_time > bl->begin_time) return kCFCompareGreaterThan;
-	if (al->begin_time < bl->begin_time) return kCFCompareLessThan;
-	
-	if (al->no > bl->no) return kCFCompareGreaterThan;
-	if (al->no < bl->no) return kCFCompareLessThan;
-	return kCFCompareEqualTo;
-}
-
-/*static int cmp_uint(const void *a, const void *b)
-{
-	unsigned av = *(unsigned*)a, bv = *(unsigned*)b;
-	
-	if (av > bv) return 1;
-	if (av < bv) return -1;
-	return 0;
-}*/
-
 -(void)addLine:(SBSubLine *)line
 {
 	if (line->begin_time >= line->end_time) {
-		if (line->begin_time)
-			//Codecprintf(NULL, "Invalid times (%d and %d) for line \"%s\"", line->begin_time, line->end_time, [line->line UTF8String]);
 		return;
 	}
 
@@ -95,7 +72,14 @@ static CFComparisonResult CompareLinesByBeginTime(const void *a, const void *b, 
 	if (!nlines || line->begin_time > ((SBSubLine*)[lines objectAtIndex:nlines-1])->begin_time) {
 		[lines addObject:line];
 	} else {
-		CFIndex i = CFArrayBSearchValues((CFArrayRef)lines, CFRangeMake(0, nlines), (__bridge const void *)(line), CompareLinesByBeginTime, NULL);
+		NSUInteger i = [lines indexOfObject: line inSortedRange: NSMakeRange(0, nlines) options: NSBinarySearchingInsertionIndex | NSBinarySearchingLastEqual usingComparator:^NSComparisonResult(SBSubLine *al, SBSubLine *bl) {
+			if (al->begin_time > bl->begin_time) return NSOrderedDescending;
+			if (al->begin_time < bl->begin_time) return NSOrderedAscending;
+
+			if (al->no > bl->no) return NSOrderedDescending;
+			if (al->no < bl->no) return NSOrderedAscending;
+			return NSOrderedSame;
+		}];
 		
 		if (i >= nlines)
 			[lines addObject:line];

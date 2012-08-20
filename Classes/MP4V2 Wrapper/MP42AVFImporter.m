@@ -283,9 +283,7 @@
             if (code == kCMVideoCodecType_H264) {
                 CFDictionaryRef extentions = CMFormatDescriptionGetExtensions(formatDescription);
                 CFDictionaryRef atoms = CFDictionaryGetValue(extentions, kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms);
-                CFDataRef avcC = CFDictionaryGetValue(atoms, @"avcC");
-
-                return (__bridge NSData*)avcC;
+				return [(__bridge NSDictionary *)atoms objectForKey: @"avcC"];
             }
         }
         else if ([[assetTrack mediaType] isEqualToString:AVMediaTypeAudio]) {

@@ -299,12 +299,13 @@ NSString* getHumanReadableTrackLanguage(MP4FileHandle fileHandle, MP4TrackId Id)
 
 // if the subtitle filename is something like title.en.srt or movie.fre.srt
 // this function detects it and returns the subtitle language
-NSString* getFilenameLanguage(CFStringRef filename)
+NSString* getFilenameLanguage(CFURLRef file)
 {
 	CFRange findResult;
 	CFStringRef baseName = NULL;
 	CFStringRef langStr = NULL;
 	NSString *lang = @"English";
+	CFStringRef filename = CFURLGetString(file);
 
 	// find and strip the extension
 	findResult = CFStringFind(filename, CFSTR("."), kCFCompareBackwards);

@@ -33,7 +33,7 @@
         newTrack.sourceFormat = @"Srt";
         newTrack.sourceURL = fileURL;
         newTrack.alternate_group = 2;
-        newTrack.language = getFilenameLanguage((__bridge CFStringRef)[fileURL path]);
+        newTrack.language = getFilenameLanguage((__bridge CFURLRef)fileURL);
 
         ss = [[SBSubSerializer alloc] init];
         if ([[fileURL pathExtension] caseInsensitiveCompare: @"srt"] == NSOrderedSame) {
