@@ -20,29 +20,28 @@ extern NSString * const SBStereoMixdown;
 extern NSString * const SBDolbyMixdown;
 extern NSString * const SBDolbyPlIIMixdown;
 
-// a struct to hold info for the data proc
-struct AudioFileIO
-{    
-    AudioConverterRef converter;
-    AudioStreamBasicDescription inputFormat;
-    AudioStreamBasicDescription outputFormat;
+@interface SBAudioIOData : NSObject
 
-    sfifo_t          *fifo;
-    
-	SInt64          pos;
-	char *			srcBuffer;
-	UInt32			srcBufferSize;
-	UInt32			srcSizePerPacket;
-	UInt32			numPacketsPerRead;
-    AudioStreamBasicDescription     srcFormat;
-	AudioStreamPacketDescription    *pktDescs;
-    
-    NSMutableArray * inputSamplesBuffer;
-    NSMutableArray * outputSamplesBuffer;
-    
-    MP42SampleBuffer      *sample;
-    int                   fileReaderDone;
-} AudioFileIO;
+@property (nonatomic) AudioConverterRef				converter;
+@property (nonatomic) AudioStreamBasicDescription	inputFormat;
+@property (nonatomic) AudioStreamBasicDescription	outputFormat;
+
+@property (nonatomic) sfifo_t						*fifo;
+
+@property (nonatomic) NSUInteger					pos;
+@property (nonatomic, strong) NSMutableData			*srcBuffer;
+@property (nonatomic) UInt32						srcSizePerPacket;
+@property (nonatomic) UInt32						numPacketsPerRead;
+@property (nonatomic) AudioStreamBasicDescription	srcFormat;
+@property (nonatomic) AudioStreamPacketDescription	*pktDescs;
+
+@property (nonatomic, strong) NSMutableArray		*inputSamplesBuffer;
+@property (nonatomic, strong) NSMutableArray		*outputSamplesBuffer;
+
+@property (nonatomic, strong) MP42SampleBuffer		*sample;
+@property (nonatomic) BOOL							fileReaderDone;
+
+@end
 
 @interface SBAudioConverter : NSObject {
     NSThread *decoderThread;
@@ -67,8 +66,8 @@ struct AudioFileIO
     NSMutableArray * outputSamplesBuffer;
     NSData * outputMagicCookie;
 
-    struct AudioFileIO decoderData;
-    struct AudioFileIO encoderData;
+    SBAudioIOData *decoderData;
+    SBAudioIOData *encoderData;
 }
 
 - (id) initWithTrack: (MP42AudioTrack*) track andMixdownType: (NSString*) mixdownType error:(NSError **)outError;

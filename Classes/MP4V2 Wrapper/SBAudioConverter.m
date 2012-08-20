@@ -70,6 +70,22 @@ InstallStatus setWrongLocationInstalled(InstallStatus status)
 	return (status & ~1);
 }
 
+@implementation SBAudioIOData
+
+- (void)dealloc {
+	self.srcBuffer = nil;
+	self.inputSamplesBuffer = nil;
+	self.outputSamplesBuffer = nil;
+	self.sample = nil;
+
+	if (self.pktDescs)
+		free(self.pktDescs); self.pktDescs = nil;
+
+	[super dealloc];
+}
+
+@end
+
 @implementation SBAudioConverter
 
 - (NSString *)installationBasePath:(BOOL)userInstallation
@@ -152,16 +168,16 @@ OSStatus EncoderDataProc(AudioConverterRef              inAudioConverter,
                          AudioStreamPacketDescription**	outDataPacketDescription,
                          void*							inUserData)
 {
-	struct AudioFileIO* afio = (struct AudioFileIO*)inUserData;
+	SBAudioIOData *afio = (SBAudioIOData *)inUserData;
 
 	// figure out how much to read
-	if (*ioNumberDataPackets > afio->numPacketsPerRead) *ioNumberDataPackets = afio->numPacketsPerRead;
+	if (*ioNumberDataPackets > afio.numPacketsPerRead) *ioNumberDataPackets = afio.numPacketsPerRead;
 
     // read from the fifo    
 	UInt32 outNumBytes;
-    unsigned int wanted = MIN(*ioNumberDataPackets * afio->srcSizePerPacket, sfifo_used(afio->fifo));
+    unsigned int wanted = MIN(*ioNumberDataPackets * afio.srcSizePerPacket, sfifo_used(afio.fifo));
 
-    outNumBytes = sfifo_read(afio->fifo, afio->srcBuffer, wanted);
+    outNumBytes = sfifo_read(afio.fifo, afio.srcBuffer.mutableBytes, wanted);
     OSStatus err = noErr;
 	if (outNumBytes < wanted) {
         *ioNumberDataPackets = 0;
@@ -174,17 +190,17 @@ OSStatus EncoderDataProc(AudioConverterRef              inAudioConverter,
 
     // put the data pointer into the buffer list
 
-	ioData->mBuffers[0].mData = afio->srcBuffer;
+	ioData->mBuffers[0].mData = (void *)afio.srcBuffer.bytes;
 	ioData->mBuffers[0].mDataByteSize = outNumBytes;
-	ioData->mBuffers[0].mNumberChannels = afio->srcFormat.mChannelsPerFrame;
+	ioData->mBuffers[0].mNumberChannels = afio.srcFormat.mChannelsPerFrame;
 
-    *ioNumberDataPackets = ioData->mBuffers[0].mDataByteSize / afio->srcSizePerPacket;
+    *ioNumberDataPackets = ioData->mBuffers[0].mDataByteSize / afio.srcSizePerPacket;
 
-    afio->pos += *ioNumberDataPackets;
+    afio.pos += *ioNumberDataPackets;
 
 	if (outDataPacketDescription) {
-		if (afio->pktDescs)
-			*outDataPacketDescription = afio->pktDescs;
+		if (afio.pktDescs)
+			*outDataPacketDescription = afio.pktDescs;
 		else
 			*outDataPacketDescription = NULL;
 	}
@@ -278,12 +294,15 @@ OSStatus EncoderDataProc(AudioConverterRef              inAudioConverter,
                               &tmpsiz, &encoderFormat );
 
     // set up buffers and data proc info struct
-	encoderData.srcBufferSize = 32768;
-	encoderData.srcBuffer = (char *)malloc( encoderData.srcBufferSize );
+	if (encoderData)
+		[encoderData release];
+	encoderData = [SBAudioIOData new];
+	const NSUInteger srcBufferSize = 32768;
+	encoderData.srcBuffer = [NSMutableData dataWithCapacity: srcBufferSize];
 	encoderData.pos = 0;
 	encoderData.srcFormat = inputFormat;
     encoderData.srcSizePerPacket = inputFormat.mBytesPerPacket;
-    encoderData.numPacketsPerRead = encoderData.srcBufferSize / encoderData.srcSizePerPacket;
+    encoderData.numPacketsPerRead = srcBufferSize / encoderData.srcSizePerPacket;
     encoderData.pktDescs = NULL;
     encoderData.fifo = &fifo;
 
@@ -331,13 +350,13 @@ OSStatus EncoderDataProc(AudioConverterRef              inAudioConverter,
 		fillBufList.mBuffers[0].mNumberChannels = inputFormat.mChannelsPerFrame;
 		fillBufList.mBuffers[0].mDataByteSize = theOutputBufSize;
 		fillBufList.mBuffers[0].mData = outputBuffer;
-        
+
         while ((sfifo_used(&fifo) < (inputFormat.mBytesPerPacket * encoderFormat.mFramesPerPacket * 4)) && !readerDone)
             usleep(500);
         
         // convert data
 		UInt32 ioOutputDataPackets = 1;
-		err = AudioConverterFillComplexBuffer(converterEnc, EncoderDataProc, &encoderData, &ioOutputDataPackets,
+		err = AudioConverterFillComplexBuffer(converterEnc, EncoderDataProc, (void *)encoderData, &ioOutputDataPackets,
                                               &fillBufList, &odesc);
         if (err)
             NSLog(@"Error converterEnc %ld", (long)err);
@@ -386,44 +405,43 @@ OSStatus DecoderDataProc(AudioConverterRef              inAudioConverter,
                          void*							inUserData)
 {
     OSStatus err = noErr;
-    struct AudioFileIO * afio = inUserData;
+    SBAudioIOData *afio = (SBAudioIOData *)inUserData;
 
-    if (afio->sample)
-        [afio->sample release];
+    if (afio.sample)
+		afio.sample = nil;
 
     // figure out how much to read
-	if (*ioNumberDataPackets > afio->numPacketsPerRead) *ioNumberDataPackets = afio->numPacketsPerRead;
+	if (*ioNumberDataPackets > afio.numPacketsPerRead) *ioNumberDataPackets = afio.numPacketsPerRead;
     
     // read from the buffer    
-    while (![afio->inputSamplesBuffer count] && !afio->fileReaderDone)
+    while (!afio.inputSamplesBuffer.count && !afio.fileReaderDone)
         usleep(250);
 
-    if (![afio->inputSamplesBuffer count] && afio->fileReaderDone) {
+    if (!afio.inputSamplesBuffer.count && afio.fileReaderDone) {
         *ioNumberDataPackets = 0;
         return err;
     }
     else {
-        @synchronized(afio->inputSamplesBuffer) {
-            afio->sample = [afio->inputSamplesBuffer objectAtIndex:0];
-            [afio->sample retain];
-            [afio->inputSamplesBuffer removeObjectAtIndex:0];
+        @synchronized(afio.inputSamplesBuffer) {
+            afio.sample = [afio.inputSamplesBuffer objectAtIndex:0];
+            [afio.inputSamplesBuffer removeObjectAtIndex:0];
         }
     }
 
     // advance input file packet position
-	afio->pos += *ioNumberDataPackets;
+	afio.pos += *ioNumberDataPackets;
     
     // put the data pointer into the buffer list
-	ioData->mBuffers[0].mData = afio->sample->sampleData;
-	ioData->mBuffers[0].mDataByteSize = afio->sample->sampleSize;
-	ioData->mBuffers[0].mNumberChannels = afio->srcFormat.mChannelsPerFrame;
+	ioData->mBuffers[0].mData = afio.sample->sampleData;
+	ioData->mBuffers[0].mDataByteSize = afio.sample->sampleSize;
+	ioData->mBuffers[0].mNumberChannels = afio.srcFormat.mChannelsPerFrame;
     
 	if (outDataPacketDescription) {
-		if (afio->pktDescs) {
-            afio->pktDescs->mStartOffset = 0;
-            afio->pktDescs->mVariableFramesInPacket = *ioNumberDataPackets;
-            afio->pktDescs->mDataByteSize = afio->sample->sampleSize;
-			*outDataPacketDescription = afio->pktDescs;
+		if (afio.pktDescs) {
+            afio.pktDescs->mStartOffset = 0;
+            afio.pktDescs->mVariableFramesInPacket = *ioNumberDataPackets;
+            afio.pktDescs->mDataByteSize = afio.sample->sampleSize;
+			*outDataPacketDescription = afio.pktDescs;
         }
 		else
 			*outDataPacketDescription = NULL;
@@ -438,8 +456,12 @@ OSStatus DecoderDataProc(AudioConverterRef              inAudioConverter,
     OSStatus    err;
 
     // set up buffers and data proc info struct
-	decoderData.srcBufferSize = 32768;
-	decoderData.srcBuffer = (char *)malloc( decoderData.srcBufferSize );
+	if (decoderData)
+		[decoderData release];
+	
+	decoderData = [SBAudioIOData new];
+	const NSUInteger srcBufferSize = 32768;
+	decoderData.srcBuffer = [NSMutableData dataWithCapacity: srcBufferSize];
 	decoderData.pos = 0;
 	decoderData.srcFormat = decoderData.inputFormat;    
     decoderData.numPacketsPerRead = 1;
@@ -503,7 +525,7 @@ OSStatus DecoderDataProc(AudioConverterRef              inAudioConverter,
 
         // convert data
 		UInt32 ioOutputDataPackets = numOutputPackets;
-		err = AudioConverterFillComplexBuffer(decoderData.converter, DecoderDataProc, &decoderData, &ioOutputDataPackets,
+		err = AudioConverterFillComplexBuffer(decoderData.converter, DecoderDataProc, (void *)decoderData, &ioOutputDataPackets,
                                               &fillBufList, outputPktDescs);
         if (err)
             NSLog(@"Error converterDec %ld", (long)err);
@@ -690,8 +712,10 @@ OSStatus DecoderDataProc(AudioConverterRef              inAudioConverter,
         outputFormat.mBitsPerChannel = 32;
 
         // initialize the decoder
-        err = AudioConverterNew( &inputFormat, &outputFormat, &decoderData.converter );
+		AudioConverterRef converter = decoderData.converter;
+        err = AudioConverterNew( &inputFormat, &outputFormat, &converter);
         if ( err != noErr) {
+			decoderData.converter = converter;
             if (outError)
                 if (![self errorMessageForFormat:track.sourceFileHandle error:outError]) {
                 *outError = MP42Error(@"Audio Converter Error.",
@@ -822,11 +846,8 @@ OSStatus DecoderDataProc(AudioConverterRef              inAudioConverter,
 {
     sfifo_close(&fifo);
 
-    free(decoderData.srcBuffer);
-    free(decoderData.pktDescs);
-
-    free(encoderData.srcBuffer);
-    free(encoderData.pktDescs);
+	[decoderData release];
+	[encoderData release];
     
     [outputMagicCookie release];
 
