@@ -29,8 +29,6 @@
 
 @implementation SBDocument
 
-@synthesize languages;
-
 - (id)init
 {
     self = [super init];
@@ -59,8 +57,6 @@
 - (void)windowControllerDidLoadNib:(NSWindowController *) aController
 {
     [super windowControllerDidLoadNib:aController];
-
-    languages = [[SBLanguages defaultLanguages] copy];
 
     MovieViewController *controller = [[MovieViewController alloc] initWithNibName:@"MovieView" bundle:nil];
     [controller setFile:mp4File];
@@ -566,15 +562,15 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 
 - (NSInteger)numberOfItemsInComboBoxCell:(NSComboBoxCell *)comboBoxCell
 {
-    return [languages count];
+    return [[SBLanguages languageNames] count];
 }
 
 - (id)comboBoxCell:(NSComboBoxCell *)comboBoxCell objectValueForItemAtIndex:(NSInteger)index {
-    return [languages objectAtIndex:index];
+    return [[SBLanguages languageNames] objectAtIndex:index];
 }
 
 - (NSUInteger)comboBoxCell:(NSComboBoxCell *)comboBoxCell indexOfItemWithStringValue:(NSString *)string {
-    return [languages indexOfObject: string];
+    return [[SBLanguages languageNames] indexOfObject: string];
 }
 
 #pragma mark Various things
@@ -930,7 +926,6 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 {
     [propertyView release];
     [mp4File release];
-    [languages release];
     [super dealloc];
 }
 

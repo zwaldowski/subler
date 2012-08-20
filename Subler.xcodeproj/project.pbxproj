@@ -21,6 +21,8 @@
 		6C6D35C615E1E87F000176D1 /* PrefsController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6C6D35C115E1E87F000176D1 /* PrefsController.xib */; };
 		6C6D35C715E1E87F000176D1 /* SBQueueController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6C6D35C315E1E87F000176D1 /* SBQueueController.xib */; };
 		6C6D35FA15E1EA67000176D1 /* NSRegularExpression+Subler.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C6D35F915E1EA67000176D1 /* NSRegularExpression+Subler.m */; };
+		6CBC598E15E27A1600C03710 /* languages.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6CBC598D15E27A1600C03710 /* languages.plist */; };
+		6CBC59AD15E27D5F00C03710 /* topLanguages.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6CBC59AC15E27D5F00C03710 /* topLanguages.plist */; };
 		6CEEBED415818331009A459F /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6CEEBED315818331009A459F /* Quartz.framework */; };
 		8D15AC2C0486D014006FF6A4 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2A37F4B9FDCFA73011CA2CEA /* Credits.rtf */; };
 		8D15AC2F0486D014006FF6A4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165FFE840EACC02AAC07 /* InfoPlist.strings */; };
@@ -210,6 +212,8 @@
 		6C6D35C415E1E87F000176D1 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/SBQueueController.xib; sourceTree = "<group>"; };
 		6C6D35F815E1EA67000176D1 /* NSRegularExpression+Subler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSRegularExpression+Subler.h"; path = "Classes/NSRegularExpression+Subler.h"; sourceTree = "<group>"; };
 		6C6D35F915E1EA67000176D1 /* NSRegularExpression+Subler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSRegularExpression+Subler.m"; path = "Classes/NSRegularExpression+Subler.m"; sourceTree = "<group>"; };
+		6CBC598D15E27A1600C03710 /* languages.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = languages.plist; sourceTree = "<group>"; };
+		6CBC59AC15E27D5F00C03710 /* topLanguages.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = topLanguages.plist; sourceTree = "<group>"; };
 		6CEEBED315818331009A459F /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Quartz.framework; sourceTree = DEVELOPER_DIR; };
 		8D15AC360486D014006FF6A4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D15AC370486D014006FF6A4 /* Subler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Subler.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -540,6 +544,8 @@
 		2A37F4B8FDCFA73011CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				6CBC598D15E27A1600C03710 /* languages.plist */,
+				6CBC59AC15E27D5F00C03710 /* topLanguages.plist */,
 				2A37F4B9FDCFA73011CA2CEA /* Credits.rtf */,
 				A984DB730F52DD4B001A20B2 /* dsa_pub.pem */,
 				089C165FFE840EACC02AAC07 /* InfoPlist.strings */,
@@ -852,6 +858,8 @@
 				6C6D35C515E1E87F000176D1 /* MetadataSearchController.xib in Resources */,
 				6C6D35C615E1E87F000176D1 /* PrefsController.xib in Resources */,
 				6C6D35C715E1E87F000176D1 /* SBQueueController.xib in Resources */,
+				6CBC598E15E27A1600C03710 /* languages.plist in Resources */,
+				6CBC59AD15E27D5F00C03710 /* topLanguages.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

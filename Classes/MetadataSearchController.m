@@ -50,7 +50,7 @@
     
     // construct movie language menu
     [movieLanguage removeAllItems];
-    for (NSString *lang in delegate.languages) {
+    for (NSString *lang in [SBLanguages languageNames]) {
         if ([lang isEqualToString:@"Unknown"]) continue;
         [movieLanguage addItemWithTitle:lang];
     }

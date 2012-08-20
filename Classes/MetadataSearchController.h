@@ -19,8 +19,6 @@
 
 @property (nonatomic, readonly) MP42File *mp4File;
 
-@property (readonly) NSMutableArray *languages;
-
 @end
 
 @interface MetadataSearchController : NSWindowController<NSTableViewDelegate, ArtworkSelectorDelegate> {

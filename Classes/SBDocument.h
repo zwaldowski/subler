@@ -29,8 +29,6 @@
     IBOutlet NSToolbarItem  *searchMetadata;
     IBOutlet NSToolbarItem  *sendToQueue;
 
-    NSMutableArray          *languages;
-
     NSViewController        *propertyView;
     IBOutlet NSView         *targetView;
     id                      importWindow;
@@ -43,8 +41,6 @@
     IBOutlet NSButton *_64bit_time;
     BOOL _optimize;
 }
-
-@property (readonly) NSMutableArray *languages;
 
 - (IBAction) selectFile: (id) sender;
 - (IBAction) deleteTrack: (id) sender;
