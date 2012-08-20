@@ -31,7 +31,7 @@ NSString *const SBLanguageQTCodeKey = @"qtLang";
 	static dispatch_once_t onceToken;
 	static NSArray *languagesArray = nil;
 	dispatch_once(&onceToken, ^{
-		NSMutableArray *otherLanguages = [[[self languages] keysSortedByValueUsingSelector: @selector(compare:)] mutableCopy];
+		NSMutableArray *otherLanguages = [[[[self languages] allKeys] sortedArrayUsingSelector: @selector(compare:)] mutableCopy];
 
 		NSURL *URL = [[NSBundle mainBundle] URLForResource: @"topLanguages" withExtension: @"plist"];
 		NSMutableArray *topLanguages = [NSMutableArray arrayWithContentsOfURL: URL];
