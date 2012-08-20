@@ -16,37 +16,14 @@
 
 #import "SBLanguages.h"
 
-NSLock *ocrLock;
-
 using namespace tesseract;
 
-class OCRWrapper {
-public:
-OCRWrapper(const char* lang, const char* base_path) {
-    NSString *path = nil;
-    if (base_path)
-        path = [[NSString stringWithUTF8String:base_path] stringByAppendingString:@"/"];
-    else
-        path = [[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/"];
-
-    setenv("TESSDATA_PREFIX", [path UTF8String], 1);
-
-    path = [path stringByAppendingString:@"tessdata/"];
-
-    tess_base_api.Init([path UTF8String], lang, OEM_DEFAULT);
-}
-char* OCRFrame(const unsigned char *image, int bytes_per_pixel, int bytes_per_line, int width, int height) {
-    char* text = tess_base_api.TesseractRect(image,
-                                             bytes_per_pixel,
-                                             bytes_per_line,
-                                             0, 0,
-                                             width, height);
-    return text;
+@interface SBOCRWrapper () {
+    NSString *_language;
+    TessBaseAPI _tessBaseAPI;
 }
 
-protected:
-    TessBaseAPI tess_base_api;
-};
+@end
 
 @implementation SBOCRWrapper
 
@@ -86,15 +63,27 @@ protected:
     return NO;
 }
 
++ (NSLock *)ocrLock {
+	static dispatch_once_t onceToken;
+	static NSLock *ocrLock = nil;
+	dispatch_once(&onceToken, ^{
+		ocrLock = [NSLock new];
+	});
+	return ocrLock;
+}
 
 - (id)init
 {
     if ((self = [super init]))
     {
-        if (ocrLock == nil)
-            ocrLock = [[NSLock alloc] init];
+		
+		NSString *path = [[NSBundle mainBundle] resourcePath];
 
-        tess_base = (void *)new OCRWrapper(lang_for_english([_language UTF8String])->iso639_2, NULL);
+		setenv("TESSDATA_PREFIX", [path UTF8String], 1);
+
+		path = [path stringByAppendingPathComponent: @"tessdata/"];
+
+		_tessBaseAPI.Init([path UTF8String], lang_for_english([_language UTF8String])->iso639_2, OEM_DEFAULT);
     }
     return self;
 }
@@ -104,17 +93,19 @@ protected:
     if ((self = [super init]))
     {
         _language = [language retain];
-        if (ocrLock == nil)
-            ocrLock = [[NSLock alloc] init];
 
         NSString * lang = [NSString stringWithUTF8String:lang_for_english([_language UTF8String])->iso639_2];
         NSURL *dataURL = [self appSupportUrl];
         if (![self tessdataAvailableForLanguage:lang]) {
             lang = @"eng";
-            dataURL = nil;
+            dataURL = [[NSBundle mainBundle] resourceURL];
         }
 
-        tess_base = (void *)new OCRWrapper([lang UTF8String], [[dataURL path] UTF8String]);
+		setenv("TESSDATA_PREFIX", [dataURL.path UTF8String], 1);
+
+		dataURL = [dataURL URLByAppendingPathComponent: @"tessdat" isDirectory:YES];
+
+		_tessBaseAPI.Init(dataURL.path.UTF8String, lang.UTF8String, OEM_DEFAULT);
     }
     return self;
 }
@@ -122,7 +113,6 @@ protected:
 - (NSString*) performOCROnCGImage:(CGImageRef)cgImage {
     NSMutableString * text;
 
-    OCRWrapper *ocr = (OCRWrapper *)tess_base;
     size_t bytes_per_line   = CGImageGetBytesPerRow(cgImage);
     size_t bytes_per_pixel  = CGImageGetBitsPerPixel(cgImage) / 8.0;
     size_t width = CGImageGetWidth(cgImage);
@@ -133,13 +123,13 @@ protected:
 
     
     // Tesseract is not multithreaded
-    [ocrLock lock];
-    char* string = ocr->OCRFrame(imageData,
-                                 bytes_per_pixel,
-                                 bytes_per_line,
-                                 width,
-                                 height);
-    [ocrLock unlock];
+    [[[self class] ocrLock] lock];
+    char *string = _tessBaseAPI.TesseractRect(imageData,
+											  bytes_per_pixel,
+											  bytes_per_line,
+											  0, 0,
+											  width, height);
+    [[[self class] ocrLock] unlock];
     CFRelease(data);
 
     if (string) {
@@ -157,11 +147,7 @@ protected:
 }
 
 - (void) dealloc {
-    OCRWrapper *ocr = (OCRWrapper *)tess_base;
-    delete ocr;
-
     [_language release];
-    [ocrLock release];
     [super dealloc];
 }
 @end

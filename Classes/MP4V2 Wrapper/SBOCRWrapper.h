@@ -6,11 +6,7 @@
 //  Copyright 2011 Damiano Galassi. All rights reserved.
 //
 
-@interface SBOCRWrapper : NSObject {
-    void *tess_base;
-    
-    NSString *_language;
-}
+@interface SBOCRWrapper : NSObject
 
 - (id) initWithLanguage: (NSString*) language;
 - (NSString*) performOCROnCGImage:(CGImageRef)image;
