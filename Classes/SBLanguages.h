@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-typedef struct iso639_lang_t
+struct _ISO639Lang
 {
     char * eng_name;        /* Description in English */
     char * native_name;     /* Description in native language */
@@ -16,32 +16,25 @@ typedef struct iso639_lang_t
     char * iso639_2;        /* ISO-639-2/t (3 character) code */
     char * iso639_2b;       /* ISO-639-2/b code (if different from above) */
     short  qtLang;          /* QT Lang Code */
-    
-} iso639_lang_t;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-    /* find language associated with ISO-639-1 language code */
-    iso639_lang_t * lang_for_code( int code );
-    
-    /* find language associated with ISO-639-2 language code */
-    iso639_lang_t * lang_for_code2( const char *code2 );
-    
-    /* find language associated with qt language code */
-    iso639_lang_t * lang_for_qtcode( short code );
-    
-    /* ISO-639-1 code for language */
-    int lang_to_code(const iso639_lang_t *lang);
-    
-    iso639_lang_t * lang_for_english( const char * english );
-#ifdef __cplusplus
-}
-#endif
+};
+
+typedef struct _ISO639Lang *ISO639LangRef;
 
 @interface SBLanguages : NSObject
 
-+ (SBLanguages*)defaultManager;
-- (NSArray*) languages;
++ (NSArray *)defaultLanguages;
+
++ (ISO639LangRef)languageForShortCode:(NSInteger)code;
++ (ISO639LangRef)languageForCode:(const char *)code;
++ (ISO639LangRef)languageForQTCode:(short)code;
++ (ISO639LangRef)languageForEnglishName:(NSString *)english;
+
++ (NSString *)englishNameForCode:(const char *)code;
+
++ (NSString *)codeForEnglishName:(NSString *)english;
++ (NSString *)shortCodeForEnglishName:(NSString *)english;
+
++ (NSInteger)shortCodeForLanguage:(ISO639LangRef)lang;
 
 @end

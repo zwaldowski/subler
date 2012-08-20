@@ -157,11 +157,6 @@
     return result;
 }
 
-- (NSString*)langForTrack: (AVAssetTrack *)track
-{
-    return [NSString stringWithUTF8String:lang_for_qtcode([[track languageCode] integerValue])->eng_name];
-}
-
 - (id <MP42FileImporter>)initWithFile:(NSURL *)URL delegate:(id <MP42FileImporterDelegate>)del error:(NSError **)outError {
     if ((self = [super init])) {
         delegate = del;
@@ -231,8 +226,7 @@
             newTrack.Id = [track trackID];
             newTrack.sourceURL = fileURL;
             newTrack.sourceFileHandle = localAsset;
-            //newTrack.name = [[[AVMetadataItem metadataItemsFromArray:trackMetadata withKey:@"name" keySpace:nil] lastObject] value];
-            newTrack.language = [self langForTrack:track];
+            newTrack.language = [SBLanguages englishNameForCode: track.languageCode.UTF8String];
 
             CMTimeRange timeRange = [track timeRange];
             newTrack.duration = timeRange.duration.value / timeRange.duration.timescale * 1000;

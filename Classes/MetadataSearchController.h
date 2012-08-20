@@ -60,7 +60,6 @@
 #pragma mark Initialization
 - (id)initWithDelegate:(id <MetadataSearchControllerDelegate>)del;
 + (NSDictionary *) parseFilename: (NSString *) filename;
-+ (NSString *)langCodeFor:(NSString *)language;
 
 #pragma mark Search input fields
 - (void) updateSearchButtonVisibility;

@@ -84,7 +84,7 @@
     if ([updatedProperty valueForKey:@"start_offset"])
         setTrackStartOffset(fileHandle, Id, startOffset);
     if ([updatedProperty valueForKey:@"language"] || !muxed)
-        MP4SetTrackLanguage(fileHandle, Id, lang_for_english([language UTF8String])->iso639_2);
+        MP4SetTrackLanguage(fileHandle, Id, [[SBLanguages codeForEnglishName: language] UTF8String]);
     if ([updatedProperty valueForKey:@"enabled"] || !muxed) {
         if (enabled) enableTrack(fileHandle, Id);
         else disableTrack(fileHandle, Id);

@@ -11,6 +11,7 @@
 #import "MP42File.h"
 #import "MP42FileImporter.h"
 #import "MetadataSearchController.h"
+#import "SBLanguages.h"
 
 #define SublerBatchTableViewDataType @"SublerBatchTableViewDataType"
 #define kOptionsPanelHeight 88
@@ -265,14 +266,14 @@
     if ([@"movie" isEqualToString:(NSString *) [parsed valueForKey:@"type"]]) {
         currentSearcher = [[TheMovieDB alloc] init];
         NSArray *results = [((TheMovieDB *) currentSearcher) searchForResults:[parsed valueForKey:@"title"]
-                                            mMovieLanguage:[MetadataSearchController langCodeFor:language]];
+                                            mMovieLanguage:[SBLanguages shortCodeForEnglishName: language]];
         if ([results count])
             metadata = [((TheMovieDB *) currentSearcher) loadAdditionalMetadata:[results objectAtIndex:0] mMovieLanguage:language];
 
     } else if ([@"tv" isEqualToString:(NSString *) [parsed valueForKey:@"type"]]) {
         currentSearcher = [[TheTVDB alloc] init];
         NSArray *results = [((TheTVDB *) currentSearcher) searchForResults:[parsed valueForKey:@"seriesName"]
-                                         seriesLanguage:[MetadataSearchController langCodeFor:language] 
+                                         seriesLanguage:[SBLanguages shortCodeForEnglishName: language]
                                               seasonNum:[parsed valueForKey:@"seasonNum"]
                                              episodeNum:[parsed valueForKey:@"episodeNum"]];
         if ([results count])

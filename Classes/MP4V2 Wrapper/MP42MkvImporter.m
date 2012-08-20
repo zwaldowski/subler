@@ -195,8 +195,7 @@ u_int32_t MP4AV_Ac3GetSamplingRate(u_int8_t* pHdr);
 
                 if ([self matroskaTrackName:mkvTrack])
                     newTrack.name = [self matroskaTrackName:mkvTrack];
-                iso639_lang_t *isoLanguage = lang_for_code2(mkvTrack->Language);
-                newTrack.language = [NSString stringWithUTF8String:isoLanguage->eng_name];
+                newTrack.language = [SBLanguages englishNameForCode: mkvTrack->Language];
 
                 [tracksArray addObject:newTrack];
                 [newTrack release];

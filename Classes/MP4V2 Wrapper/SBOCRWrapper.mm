@@ -83,7 +83,7 @@ using namespace tesseract;
 
 		path = [path stringByAppendingPathComponent: @"tessdata/"];
 
-		_tessBaseAPI.Init([path UTF8String], lang_for_english([_language UTF8String])->iso639_2, OEM_DEFAULT);
+		_tessBaseAPI.Init(path.UTF8String, [[SBLanguages codeForEnglishName: _language] UTF8String], OEM_DEFAULT);
     }
     return self;
 }
@@ -94,7 +94,7 @@ using namespace tesseract;
     {
         _language = [language retain];
 
-        NSString * lang = [NSString stringWithUTF8String:lang_for_english([_language UTF8String])->iso639_2];
+        NSString * lang = [SBLanguages codeForEnglishName: _language];
         NSURL *dataURL = [self appSupportUrl];
         if (![self tessdataAvailableForLanguage:lang]) {
             lang = @"eng";

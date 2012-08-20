@@ -60,7 +60,7 @@
 {
     [super windowControllerDidLoadNib:aController];
 
-    languages = [[[SBLanguages defaultManager] languages] copy];
+    languages = [[SBLanguages defaultLanguages] copy];
 
     MovieViewController *controller = [[MovieViewController alloc] initWithNibName:@"MovieView" bundle:nil];
     [controller setFile:mp4File];

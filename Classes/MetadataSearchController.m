@@ -239,12 +239,6 @@
 
 #pragma mark Search for results
 
-+ (NSString *)langCodeFor:(NSString *)language {
-    iso639_lang_t *lang = lang_for_english([language cStringUsingEncoding:NSUTF8StringEncoding]);
-    if (lang == NULL) return nil;
-    else return [NSString stringWithFormat:@"%s", lang->iso639_1];
-}
-
 - (IBAction) searchForResults: (id) sender {
     if (currentSearcher) {
         [currentSearcher cancel];
@@ -259,7 +253,7 @@
         [progressText setHidden:NO];
         currentSearcher = [[TheMovieDB alloc] init];
         [((TheMovieDB *) currentSearcher) searchForResults:[movieName stringValue] 
-                                            mMovieLanguage:[MetadataSearchController langCodeFor:[movieLanguage titleOfSelectedItem]] 
+                                            mMovieLanguage:[SBLanguages shortCodeForEnglishName: [movieLanguage titleOfSelectedItem]]
                                                   callback:self];
     } else if ([[[searchMode selectedTabViewItem] label] isEqualToString:@"TV Episode"]) {
         [progress startAnimation:self];
@@ -268,7 +262,7 @@
         [progressText setHidden:NO];
         currentSearcher = [[TheTVDB alloc] init];
         [((TheTVDB *) currentSearcher) searchForResults:[tvSeriesName stringValue]
-                                         seriesLanguage:[MetadataSearchController langCodeFor:[tvLanguage titleOfSelectedItem]] 
+                                         seriesLanguage:[SBLanguages shortCodeForEnglishName: [tvLanguage titleOfSelectedItem]]
                                               seasonNum:[tvSeasonNum stringValue]
                                              episodeNum:[tvEpisodeNum stringValue]
                                                callback:self];        
@@ -307,7 +301,7 @@
         [progressText setHidden:NO];
         currentSearcher = [[TheMovieDB alloc] init];
         [((TheMovieDB *) currentSearcher) loadAdditionalMetadata:selectedResult 
-                                                  mMovieLanguage:[MetadataSearchController langCodeFor:[movieLanguage titleOfSelectedItem]] 
+                                                  mMovieLanguage:[SBLanguages shortCodeForEnglishName: [movieLanguage titleOfSelectedItem]]
                                                         callback:self];
     } else if ([[[searchMode selectedTabViewItem] label] isEqualToString:@"TV Episode"]) {
         [self loadAdditionalMetadataDone:selectedResult];

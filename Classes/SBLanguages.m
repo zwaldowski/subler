@@ -11,7 +11,7 @@
 #include <string.h>
 #include <ctype.h>
 
-static const iso639_lang_t languages[] =
+static const struct _ISO639Lang languages[] =
 { { "Unknown", "", "", "und", "", 32767 },
     { "Abkhazian", "Аҧсуа", "ab", "abk", "", -1 },
     { "Acehnese, Achinese", "Bahsa Acèh", "", "ace", "", -1 },
@@ -496,36 +496,62 @@ static const iso639_lang_t languages[] =
     { "Zuni", "Shiwi", "", "zun", "", -1 },
     { NULL, NULL, NULL, NULL, NULL, -1 } };
 
-iso639_lang_t * lang_for_code( int code )
-{
-    char code_string[2];
-    iso639_lang_t * lang;
-    
+@implementation SBLanguages
+
++ (NSArray *)defaultLanguages {
+	static dispatch_once_t onceToken;
+	static NSArray *languagesArray = nil;
+	dispatch_once(&onceToken, ^{
+		NSMutableArray *languagesArray = [[NSMutableArray alloc] init];
+		
+		ISO639LangRef _languages;
+		for ( _languages = (ISO639LangRef) languages; _languages->iso639_2; _languages++ )
+			[languagesArray addObject:[NSString stringWithUTF8String:_languages->eng_name]];
+
+		NSArray *top_languages = [NSArray arrayWithObjects:  @"Unknown", @"English", @"French", @"German" , @"Italian", @"Dutch",
+								  @"Swedish" , @"Spanish" , @"Danish" , @"Portuguese", @"Norwegian", @"Hebrew",
+								  @"Japanese", @"Arabic", @"Finnish", @"Modern Greek", @"Icelandic", @"Maltese", @"Turkish",
+								  @"Croatian", @"Chinese", @"Urdu", @"Hindi", @"Thai", @"Korean", @"Lithuanian", @"Polish",
+								  @"Hungarian", @"Estonian", @"Latvian", @"Northern Sami", @"Faroese", @"Persian", @"Romanian", @"Russian",
+								  @"Irish", @"Serbian", @"Albanian", @"Bulgarian", @"Czech", @"Slovak", @"Slovenian", nil];
+
+		[languagesArray removeObjectsInArray:top_languages];
+
+		[top_languages enumerateObjectsWithOptions: NSEnumerationReverse usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			[languagesArray insertObject: obj atIndex: 0];
+		}];
+	});
+	return languagesArray;
+}
+
++ (ISO639LangRef)languageForShortCode:(NSInteger)code {
+	char code_string[2];
+    ISO639LangRef lang;
+
     code_string[0] = tolower( ( code >> 8 ) & 0xFF );
     code_string[1] = tolower( code & 0xFF );
-    
-    for( lang = (iso639_lang_t*) languages; lang->eng_name; lang++ )
+
+    for( lang = (ISO639LangRef) languages; lang->eng_name; lang++ )
     {
         if( !strncmp( lang->iso639_1, code_string, 2 ) )
         {
             return lang;
         }
     }
-    
-    return (iso639_lang_t*) languages;
+
+    return (ISO639LangRef) languages;
 }
 
-iso639_lang_t * lang_for_code2( const char *code )
-{
++ (ISO639LangRef)languageForCode:(const char *)code {
     char code_string[4];
-    iso639_lang_t * lang;
-    
+    ISO639LangRef lang;
+
     code_string[0] = tolower( code[0] );
     code_string[1] = tolower( code[1] );
     code_string[2] = tolower( code[2] );
     code_string[3] = 0;
-    
-    for( lang = (iso639_lang_t*) languages; lang->eng_name; lang++ )
+
+    for( lang = (ISO639LangRef)languages; lang->eng_name; lang++ )
     {
         if( !strcmp( lang->iso639_2, code_string ) )
         {
@@ -536,82 +562,69 @@ iso639_lang_t * lang_for_code2( const char *code )
             return lang;
         }
     }
-    
-    return (iso639_lang_t*) languages;
+
+    return (ISO639LangRef) languages;
 }
 
-iso639_lang_t * lang_for_qtcode( short code )
-{
-    iso639_lang_t * lang;
-    
-    for( lang = (iso639_lang_t*) languages; lang->eng_name; lang++ )
++ (ISO639LangRef)languageForQTCode:(short)code {
+	ISO639LangRef lang;
+
+    for( lang = (ISO639LangRef) languages; lang->eng_name; lang++ )
     {
         if( lang->qtLang == code )
         {
             return lang;
         }
     }
-    
-    return (iso639_lang_t*) languages;
+
+    return (ISO639LangRef) languages;
+
 }
 
-int lang_to_code(const iso639_lang_t *lang)
-{
-    int code = 0;
-    
-    if (lang)
-        code = (lang->iso639_1[0] << 8) | lang->iso639_1[1];
-    
-    return code;
-}
++ (ISO639LangRef)languageForEnglishName:(NSString *)english {
+    ISO639LangRef lang;
+	const char *englishString = english.UTF8String;
 
-iso639_lang_t * lang_for_english( const char * english )
-{
-    iso639_lang_t * lang;
-    
-    for( lang = (iso639_lang_t*) languages; lang->eng_name; lang++ )
+    for( lang = (ISO639LangRef) languages; lang->eng_name; lang++ )
     {
-        if( !strcmp( lang->eng_name, english ) )
+        if( !strcmp( lang->eng_name, englishString ) )
         {
             return lang;
         }
     }
-    
-    return (iso639_lang_t*) languages;
+
+    return (ISO639LangRef) languages;
 }
 
-@implementation SBLanguages
-
-+ (SBLanguages *)defaultManager
-{
-	static dispatch_once_t onceToken;
-	static SBLanguages *defaultManager = nil;
-	dispatch_once(&onceToken, ^{
-		defaultManager = [SBLanguages new];
-	});
-    return defaultManager;
++ (NSString *)englishNameForCode:(const char *)code {
+	return [NSString stringWithUTF8String: [self languageForCode: code]->eng_name];
 }
 
-- (NSArray*) languages {
-    NSMutableArray *languagesArray = [[NSMutableArray alloc] init];
-    iso639_lang_t *_languages;
-    for ( _languages = (iso639_lang_t*) languages; _languages->iso639_2; _languages++ )
-        [languagesArray addObject:[NSString stringWithUTF8String:_languages->eng_name]];
++ (NSString *)englishNameForQTCode:(short)code {
+	return [NSString stringWithUTF8String: [self languageForQTCode: code]->eng_name];
+}
 
-    NSArray *top_languages = [NSArray arrayWithObjects:  @"Unknown", @"English", @"French", @"German" , @"Italian", @"Dutch",
-				  @"Swedish" , @"Spanish" , @"Danish" , @"Portuguese", @"Norwegian", @"Hebrew",
-				  @"Japanese", @"Arabic", @"Finnish", @"Modern Greek", @"Icelandic", @"Maltese", @"Turkish",
-				  @"Croatian", @"Chinese", @"Urdu", @"Hindi", @"Thai", @"Korean", @"Lithuanian", @"Polish",
-				  @"Hungarian", @"Estonian", @"Latvian", @"Northern Sami", @"Faroese", @"Persian", @"Romanian", @"Russian",
-				  @"Irish", @"Serbian", @"Albanian", @"Bulgarian", @"Czech", @"Slovak", @"Slovenian", nil];
++ (NSString *)codeForEnglishName:(NSString *)english {
+	ISO639LangRef language = [self languageForEnglishName: english];
+	if (language == NULL)
+		return nil;
+	return [NSString stringWithFormat: @"%s", language->iso639_2];
+}
 
-    [languagesArray removeObjectsInArray:top_languages];
++ (NSString *)shortCodeForEnglishName:(NSString *)english {
+	ISO639LangRef language = [self languageForEnglishName: english];
+	if (language == NULL)
+		return nil;
+	return [NSString stringWithFormat: @"%s", language->iso639_1];
+}
 
-    for (NSString* lang in [top_languages reverseObjectEnumerator]) {
-        [languagesArray insertObject:lang atIndex:0];
-    }
++ (NSInteger)shortCodeForLanguage:(ISO639LangRef)lang {
+    NSInteger code = 0;
 
-    return [languagesArray autorelease];
+    if (lang)
+        code = (lang->iso639_1[0] << 8) | lang->iso639_1[1];
+
+    return code;
 }
 
 @end

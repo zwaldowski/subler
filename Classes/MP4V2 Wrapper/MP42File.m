@@ -558,7 +558,7 @@ NSString * const MP42FileTypeM4B = @"m4b";
             if ([track isMemberOfClass:[MP42VideoTrack class]])
                 language = ((MP42VideoTrack*) track).language;
 
-        MP4SetTrackLanguage(fileHandle, jpegTrack, lang_for_english([language UTF8String])->iso639_2);
+        MP4SetTrackLanguage(fileHandle, jpegTrack, [[SBLanguages codeForEnglishName: language] UTF8String]);
 
         MP4SetTrackIntegerProperty(fileHandle, jpegTrack, "tkhd.layer", 1);
         disableTrack(fileHandle, jpegTrack);

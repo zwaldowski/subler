@@ -292,12 +292,9 @@ NSString* getHumanReadableTrackMediaDataName(MP4FileHandle fileHandle, MP4TrackI
 
 NSString* getHumanReadableTrackLanguage(MP4FileHandle fileHandle, MP4TrackId Id)
 {
-    NSString *language;
     char lang[4] = "";
     MP4GetTrackLanguage(fileHandle, Id, lang);
-    language = [NSString stringWithFormat:@"%s", lang_for_code2(lang)->eng_name];
-
-    return language;
+	return [SBLanguages englishNameForCode: lang];
 }
 
 // if the subtitle filename is something like title.en.srt or movie.fre.srt
@@ -326,7 +323,7 @@ NSString* getFilenameLanguage(CFStringRef filename)
 
 		langStr = CFStringCreateWithSubstring(NULL, baseName, findResult);
 		CFStringGetCString(langStr, langCStr, 4, kCFStringEncodingASCII);
-        lang = [NSString stringWithFormat:@"%s", lang_for_code2(langCStr)->eng_name];
+		lang = [SBLanguages englishNameForCode: langCStr];
 
 		CFRelease(langStr);
 
@@ -336,7 +333,7 @@ NSString* getFilenameLanguage(CFStringRef filename)
 
 		langStr = CFStringCreateWithSubstring(NULL, baseName, findResult);
 		CFStringGetCString(langStr, langCStr, 3, kCFStringEncodingASCII);
-        lang = [NSString stringWithFormat:@"%s", lang_for_code2(langCStr)->eng_name];
+		lang = [SBLanguages englishNameForCode: langCStr];
 
 		CFRelease(langStr);
 	}
