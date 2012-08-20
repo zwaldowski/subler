@@ -56,7 +56,7 @@
 
 - (void) awakeFromNib
 {
-    NSToolbar * toolbar = [[[NSToolbar alloc] initWithIdentifier: @"Preferences Toolbar"] autorelease];
+    NSToolbar * toolbar = [[NSToolbar alloc] initWithIdentifier: @"Preferences Toolbar"];
     [toolbar setDelegate: self];
     [toolbar setAllowsUserCustomization: NO];
     [toolbar setDisplayMode: NSToolbarDisplayModeIconAndLabel];
@@ -140,9 +140,7 @@
     if(attachedWindow) {
         [[self window] removeChildWindow:attachedWindow];
         [attachedWindow orderOut:self];
-        [attachedWindow release];
         attachedWindow = nil;
-        [controller release];
         controller = nil;
     }
 }
@@ -190,9 +188,7 @@
     else {
         [[self window] removeChildWindow:attachedWindow];
         [attachedWindow orderOut:self];
-        [attachedWindow release];
         attachedWindow = nil;
-        [controller release];
         controller = nil;
     }
 
@@ -260,7 +256,7 @@
     [item setImage:image];
     [item setAction:@selector(setPrefView:)];
     [item setAutovalidates:NO];
-    return [item autorelease];
+    return item;
 }
 
 @end

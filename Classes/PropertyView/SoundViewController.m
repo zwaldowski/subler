@@ -18,9 +18,9 @@
     if ([[track format] isEqualToString:@"AC-3"]) {
         for (id fileTrack in [mp4file tracks]) {
             if ([fileTrack isMemberOfClass:[MP42AudioTrack class]] && [[fileTrack format] isEqualToString:@"AAC"]) {
-                NSMenuItem *newItem = [[[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"Track %d", [fileTrack Id]]
+                NSMenuItem *newItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"Track %d", [fileTrack Id]]
                                                                   action:@selector(setFallbackTrack:)
-                                                           keyEquivalent:@""] autorelease];
+                                                           keyEquivalent:@""];
                 [newItem setTarget:self];
                 [newItem setTag: [fileTrack Id]];
                 [[fallback menu] addItem:newItem];
@@ -35,9 +35,9 @@
     
     for (id fileTrack in [mp4file tracks]) {
         if ([fileTrack isMemberOfClass:[MP42SubtitleTrack class]]) {
-            NSMenuItem *newItem = [[[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"Track %d", [fileTrack Id]]
+            NSMenuItem *newItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"Track %d", [fileTrack Id]]
                                                               action:@selector(setFollowsTrack:)
-                                                       keyEquivalent:@""] autorelease];
+                                                       keyEquivalent:@""];
             [newItem setTarget:self];
             [newItem setTag: [fileTrack Id]];
             [[follows menu] addItem:newItem];

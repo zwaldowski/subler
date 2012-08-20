@@ -117,10 +117,6 @@
     return Id;
 }
 
-- (void) dealloc
-{
-    [super dealloc];
-}
 
 @synthesize width;
 @synthesize height;

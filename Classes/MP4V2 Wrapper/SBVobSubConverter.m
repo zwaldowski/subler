@@ -225,7 +225,6 @@ static ComponentResult ReadPacketControls(UInt8 *packet, UInt32 palette[16], Pac
                 [outputSamplesBuffer addObject:subSample];    
             }
 
-            [subSample release];
 
             [inputSamplesBuffer removeObjectAtIndex:0];
 
@@ -269,7 +268,6 @@ static ComponentResult ReadPacketControls(UInt8 *packet, UInt32 palette[16], Pac
             @synchronized(outputSamplesBuffer) {
                 [outputSamplesBuffer addObject:subSample];
             }
-            [subSample release];
             
             [inputSamplesBuffer removeObjectAtIndex:0];
 
@@ -354,7 +352,6 @@ static ComponentResult ReadPacketControls(UInt8 *packet, UInt32 palette[16], Pac
             @synchronized(outputSamplesBuffer) {
                 [outputSamplesBuffer addObject:subSample];
             }
-            [subSample release];
 
             CGImageRelease(cgImage);
             CGDataProviderRelease(provider);
@@ -421,7 +418,6 @@ static ComponentResult ReadPacketControls(UInt8 *packet, UInt32 palette[16], Pac
     }
     @synchronized(outputSamplesBuffer) {
         sample = [outputSamplesBuffer objectAtIndex:0];
-        [sample retain];
         [outputSamplesBuffer removeObjectAtIndex:0];
     }
     
@@ -468,8 +464,6 @@ static ComponentResult ReadPacketControls(UInt8 *packet, UInt32 palette[16], Pac
         av_freep(&subtitle.rects);
     }
 
-    [ocr release];
-    [super dealloc];
 }
 
 @end

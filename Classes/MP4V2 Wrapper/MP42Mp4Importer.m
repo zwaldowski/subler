@@ -29,10 +29,6 @@
     return self;
 }
 
-- (void) dealloc {
-    
-    [super dealloc];
-}
 @end
 
 
@@ -44,7 +40,7 @@
 {
     if ((self = [super init])) {
         delegate = del;
-        fileURL = [URL retain];
+        fileURL = URL;
 
         MP42File *sourceFile = [[MP42File alloc] initWithExistingFile:fileURL andDelegate:self];
 
@@ -53,18 +49,16 @@
                 *outError = MP42Error(@"The movie could not be opened.", @"The file is not a mp4 file.", 100);          
             }
 
-            [self release];
             return nil;
         }
 
-        tracksArray = [[sourceFile tracks] retain];
+        tracksArray = [sourceFile tracks];
         for (MP42Track * track in tracksArray) {
             [track setSourceFormat:[track format]];
         }
 
-        metadata = [[sourceFile metadata] retain];
+        metadata = [sourceFile metadata];
 
-        [sourceFile release];
     }
 
     return self;
@@ -119,7 +113,7 @@
             [ac3Info appendBytes:&lfeon length:sizeof(uint64_t)];
             [ac3Info appendBytes:&bit_rate_code length:sizeof(uint64_t)];
 
-            return [ac3Info autorelease];
+            return ac3Info;
             
         } else if (!strcmp(media_data_name, "alac")) {
             if (MP4HaveTrackAtom(fileHandle, srcTrackId, "mdia.minf.stbl.stsd.alac.alac")) {
@@ -156,7 +150,7 @@
     {
         if (!strcmp(media_data_name, "avc1")) {
             // Extract and rewrite some kind of avcC extradata from the mp4 file.
-            NSMutableData *avcCData = [[[NSMutableData alloc] init] autorelease];
+            NSMutableData *avcCData = [[NSMutableData alloc] init];
 
             uint8_t configurationVersion = 1;
             uint8_t AVCProfileIndication;
@@ -220,10 +214,8 @@
             free(pictheadersize);
             
             magicCookie = [avcCData copy];
-            [seqData release];
-            [pictData release];
 
-            return [magicCookie autorelease];
+            return magicCookie;
         }
     }
 
@@ -232,75 +224,74 @@
 
 - (void) fillMovieSampleBuffer: (id)sender
 {
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-    if (!fileHandle)
-        fileHandle = MP4Read([[fileURL path] UTF8String]);
+    @autoreleasepool {
+        if (!fileHandle)
+            fileHandle = MP4Read([[fileURL path] UTF8String]);
 
-    NSInteger tracksNumber = [activeTracks count];
-    NSInteger tracksDone = 0;
-    Mp4TrackHelper * trackHelper;
+        NSInteger tracksNumber = [activeTracks count];
+        NSInteger tracksDone = 0;
+        Mp4TrackHelper * trackHelper;
 
-    for (MP42Track * track in activeTracks) {
-        if (track.trackDemuxerHelper == nil) {
-            track.trackDemuxerHelper = [[[Mp4TrackHelper alloc] init] autorelease];
+        for (MP42Track * track in activeTracks) {
+            if (track.trackDemuxerHelper == nil) {
+                track.trackDemuxerHelper = [[Mp4TrackHelper alloc] init];
 
-            trackHelper = track.trackDemuxerHelper;
-            trackHelper->totalSampleNumber = MP4GetTrackNumberOfSamples(fileHandle, [track Id]);
+                trackHelper = track.trackDemuxerHelper;
+                trackHelper->totalSampleNumber = MP4GetTrackNumberOfSamples(fileHandle, [track Id]);
+            }
         }
-    }
 
-    for (MP42Track * track in activeTracks) {
-        while (!cancelled) {
-            while ([samplesBuffer count] >= 200) {
-                usleep(200);
+        for (MP42Track * track in activeTracks) {
+            while (!cancelled) {
+                while ([samplesBuffer count] >= 200) {
+                    usleep(200);
+                }
+
+                MP4TrackId srcTrackId = [track sourceId];
+                uint8_t *pBytes = NULL;
+                uint32_t numBytes = 0;
+                MP4Duration duration;
+                MP4Duration renderingOffset;
+                MP4Timestamp pStartTime;
+                bool isSyncSample;
+
+                trackHelper = track.trackDemuxerHelper;
+                trackHelper->currentSampleId = trackHelper->currentSampleId + 1;
+
+                if (!MP4ReadSample(fileHandle,
+                                   srcTrackId,
+                                   trackHelper->currentSampleId,
+                                   &pBytes, &numBytes,
+                                   &pStartTime, &duration, &renderingOffset,
+                                   &isSyncSample)) {
+                    tracksDone++;
+                    break;
+                }
+
+                MP42SampleBuffer *sample = [[MP42SampleBuffer alloc] init];
+                sample->sampleData = pBytes;
+                sample->sampleSize = numBytes;
+                sample->sampleDuration = duration;
+                sample->sampleOffset = renderingOffset;
+                sample->sampleTimestamp = pStartTime;
+                sample->sampleIsSync = isSyncSample;
+                sample->sampleTrackId = track.Id;
+                if(track.needConversion)
+                    sample->sampleSourceTrack = track;
+
+                @synchronized(samplesBuffer) {
+                    [samplesBuffer addObject:sample];
+                }
+
+                progress = ((trackHelper->currentSampleId / (CGFloat) trackHelper->totalSampleNumber ) * 100 / tracksNumber) +
+                            (tracksDone / (CGFloat) tracksNumber * 100);
             }
-
-            MP4TrackId srcTrackId = [track sourceId];
-            uint8_t *pBytes = NULL;
-            uint32_t numBytes = 0;
-            MP4Duration duration;
-            MP4Duration renderingOffset;
-            MP4Timestamp pStartTime;
-            bool isSyncSample;
-
-            trackHelper = track.trackDemuxerHelper;
-            trackHelper->currentSampleId = trackHelper->currentSampleId + 1;
-
-            if (!MP4ReadSample(fileHandle,
-                               srcTrackId,
-                               trackHelper->currentSampleId,
-                               &pBytes, &numBytes,
-                               &pStartTime, &duration, &renderingOffset,
-                               &isSyncSample)) {
-                tracksDone++;
-                break;
-            }
-
-            MP42SampleBuffer *sample = [[MP42SampleBuffer alloc] init];
-            sample->sampleData = pBytes;
-            sample->sampleSize = numBytes;
-            sample->sampleDuration = duration;
-            sample->sampleOffset = renderingOffset;
-            sample->sampleTimestamp = pStartTime;
-            sample->sampleIsSync = isSyncSample;
-            sample->sampleTrackId = track.Id;
-            if(track.needConversion)
-                sample->sampleSourceTrack = track;
-
-            @synchronized(samplesBuffer) {
-                [samplesBuffer addObject:sample];
-                [sample release];
-            }
-
-            progress = ((trackHelper->currentSampleId / (CGFloat) trackHelper->totalSampleNumber ) * 100 / tracksNumber) +
-                        (tracksDone / (CGFloat) tracksNumber * 100);
         }
+
+        if (tracksDone >= tracksNumber)
+            readerStatus = 1;
+
     }
-
-    if (tracksDone >= tracksNumber)
-        readerStatus = 1;
-
-    [pool release];
 }
 
 - (MP42SampleBuffer*)copyNextSample
@@ -323,7 +314,6 @@
     if (readerStatus)
         if ([samplesBuffer count] == 0) {
             readerStatus = 0;
-            [dataReader release];
             dataReader = nil;
             return nil;
         }
@@ -332,7 +322,6 @@
 
     @synchronized(samplesBuffer) {
         sample = [samplesBuffer objectAtIndex:0];
-        [sample retain];
         [samplesBuffer removeObjectAtIndex:0];
     }
 
@@ -388,22 +377,12 @@
 
 - (void) dealloc
 {
-    if (dataReader)
-        [dataReader release];
 
     if (fileHandle)
         MP4Close(fileHandle, 0);
 
-    if (activeTracks)
-        [activeTracks release];
-    if (samplesBuffer)
-        [samplesBuffer release];
 
-    [metadata release];
-	[fileURL release];
-    [tracksArray release];
 
-    [super dealloc];
 }
 
 @end

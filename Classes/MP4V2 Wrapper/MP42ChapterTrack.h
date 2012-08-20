@@ -28,6 +28,6 @@
 
 - (BOOL)exportToURL:(NSURL *)url error:(NSError **)error;
 
-@property (readonly, retain) NSArray * chapters;
+@property (readonly, strong) NSArray * chapters;
 
 @end

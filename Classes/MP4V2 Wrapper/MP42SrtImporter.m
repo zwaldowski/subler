@@ -19,7 +19,7 @@
 - (id <MP42FileImporter>)initWithFile:(NSURL *)URL delegate:(id <MP42FileImporterDelegate>)del error:(NSError **)outError {
     if ((self = [super init])) {
         delegate = del;
-        fileURL = [URL retain];
+        fileURL = URL;
 
         NSInteger trackCount =1;
         tracksArray = [[NSMutableArray alloc] initWithCapacity:trackCount];
@@ -33,7 +33,7 @@
         newTrack.sourceFormat = @"Srt";
         newTrack.sourceURL = fileURL;
         newTrack.alternate_group = 2;
-        newTrack.language = getFilenameLanguage((CFStringRef)[fileURL path]);
+        newTrack.language = getFilenameLanguage((__bridge CFStringRef)[fileURL path]);
 
         ss = [[SBSubSerializer alloc] init];
         if ([[fileURL pathExtension] caseInsensitiveCompare: @"srt"] == NSOrderedSame) {
@@ -49,8 +49,6 @@
             if (outError)
                 *outError = MP42Error(@"The file could not be opened.", @"The file is not a srt file, or it does not contain any subtitles.", 100);
             
-            [newTrack release];
-            [self release];
 
             return nil;
         }
@@ -58,7 +56,6 @@
         [ss setFinished:YES];
 
         [tracksArray addObject:newTrack];
-        [newTrack release];
     }
 
     return self;
@@ -93,7 +90,7 @@
 
 - (MP42SampleBuffer*)nextSampleForTrack:(MP42Track *)track
 {
-    return [[self copyNextSample] autorelease];
+    return [self copyNextSample];
 }
 
 - (MP42SampleBuffer*)copyNextSample {
@@ -125,13 +122,5 @@
     return 100.0;
 }
 
-- (void) dealloc
-{
-    [ss release];
-	[fileURL release];
-    [tracksArray release];
-
-    [super dealloc];
-}
 
 @end

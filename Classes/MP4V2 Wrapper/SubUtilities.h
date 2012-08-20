@@ -14,7 +14,7 @@
     NSString *title;
 }
 
-@property(readwrite, retain) NSString *title;
+@property(readwrite, strong) NSString *title;
 @property(readwrite) MP4Duration timestamp;
 
 @end

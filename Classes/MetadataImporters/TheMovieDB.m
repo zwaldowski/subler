@@ -37,22 +37,21 @@
             if (metadata) [results addObject:metadata];
         }
     }
-    [xml release];
 
-    return [results autorelease];
+    return results;
 }
 
 - (void) searchForResults:(NSString *)aMovieTitle mMovieLanguage:(NSString *)aMovieLanguage callback:(MetadataSearchController *)aCallback {
     mCallback = aCallback;
 
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        NSArray *results = [self searchForResults:aMovieTitle mMovieLanguage:aMovieLanguage];
+        @autoreleasepool {
+            NSArray *results = [self searchForResults:aMovieTitle mMovieLanguage:aMovieLanguage];
 
-        if (!isCancelled)
-            [mCallback performSelectorOnMainThread:@selector(searchForResultsDone:) withObject:results waitUntilDone:YES];
+            if (!isCancelled)
+                [mCallback performSelectorOnMainThread:@selector(searchForResultsDone:) withObject:results waitUntilDone:YES];
 
-        [pool release];
+        }
     });
 }
 
@@ -75,7 +74,6 @@
                 [self metadata:mMetadata forNode:[nodes objectAtIndex:0]];
             }
         }
-        [xml release];
     }
 
     return mMetadata;
@@ -85,13 +83,13 @@
     mCallback = aCallback;
 
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        [self loadAdditionalMetadata:aMetadata mMovieLanguage:aMovieLanguage];
+        @autoreleasepool {
+            [self loadAdditionalMetadata:aMetadata mMovieLanguage:aMovieLanguage];
 
-        if (!isCancelled)
-            [mCallback performSelectorOnMainThread:@selector(loadAdditionalMetadataDone:) withObject:mMetadata waitUntilDone:YES];
+            if (!isCancelled)
+                [mCallback performSelectorOnMainThread:@selector(loadAdditionalMetadataDone:) withObject:mMetadata waitUntilDone:YES];
 
-        [pool release];
+        }
 
     });
 }
@@ -102,7 +100,7 @@
     NSError *err;
     NSArray *tag = [node nodesForXPath:query error:&err];
     if ([tag count]) {
-        NSMutableArray *elements = [[[NSMutableArray alloc] initWithCapacity:[tag count]] autorelease];
+        NSMutableArray *elements = [[NSMutableArray alloc] initWithCapacity:[tag count]];
         NSEnumerator *tagEnum = [tag objectEnumerator];
         NSXMLNode *element;
         while ((element = [tagEnum nextObject])) {
@@ -119,7 +117,7 @@
     if (aMetadata == nil) {
         metadata = [[MP42Metadata alloc] init];
     } else {
-        metadata = [aMetadata retain];
+        metadata = aMetadata;
     }
     metadata.mediaKind = 9; // movie
     NSArray *tag;
@@ -192,17 +190,14 @@
         [metadata setArtworkFullsizeURLs:artworkFullsizeURLs];
     }
 
-    [artworkThumbURLs release];
-    [artworkFullsizeURLs release];
 
-    return [metadata autorelease];
+    return metadata;
 }
 
 #pragma mark Finishing up
 
 - (void) dealloc {
     mCallback = nil;
-    [super dealloc];
 }
 
 - (void)cancel

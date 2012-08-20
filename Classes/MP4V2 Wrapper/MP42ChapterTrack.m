@@ -53,9 +53,9 @@
 
             char * title = chapter_list[i-1].title;
             if ((title[0] == '\xfe' && title[1] == '\xff') || (title[0] == '\xff' && title[1] == '\xfe')) {
-                chapter.title = [[[NSString alloc] initWithBytes:title
+                chapter.title = [[NSString alloc] initWithBytes:title
 														  length:chapter_list[i-1].titleLength
-														encoding:NSUTF16StringEncoding] autorelease];
+														encoding:NSUTF16StringEncoding];
             }
             else {
                 chapter.title = [NSString stringWithCString:chapter_list[i-1].title encoding: NSUTF8StringEncoding];
@@ -64,7 +64,6 @@
             chapter.timestamp = sum;
             sum = chapter_list[i-1].duration + sum;
             [chapters addObject:chapter];
-            [chapter release];
             i++;
         }
         MP4Free(chapter_list);
@@ -79,7 +78,7 @@
     {
         name = @"Chapter Track";
         format = @"Text";
-        sourceURL = [URL retain];
+        sourceURL = URL;
         language = @"English";
         isEdited = YES;
         muxed = NO;
@@ -95,7 +94,7 @@
 
 + (id) chapterTrackFromFile:(NSURL *)URL
 {
-    return [[[MP42ChapterTrack alloc] initWithTextFile:URL] autorelease];
+    return [[MP42ChapterTrack alloc] initWithTextFile:URL];
 }
 
 - (void) addChapter:(NSString *)title duration:(uint64_t)timestamp
@@ -108,7 +107,6 @@
 
     [chapters addObject:newChapter];
     [chapters sortUsingSelector:@selector(compare:)];
-    [newChapter release];
 }
 
 - (void) removeChapterAtIndex:(NSUInteger)index
@@ -207,7 +205,7 @@
 
 - (BOOL)exportToURL:(NSURL *)url error:(NSError **)error
 {
-	NSMutableString* file = [[[NSMutableString alloc] init] autorelease];
+	NSMutableString* file = [[NSMutableString alloc] init];
 	NSUInteger x = 0;
 
 	for (SBTextSample * chapter in chapters) {
@@ -222,11 +220,6 @@
 {
 }
 
-- (void) dealloc
-{
-    [chapters release];
-    [super dealloc];
-}
 
 @synthesize chapters;
 
@@ -241,7 +234,7 @@
 {
     self = [super initWithCoder:decoder];
 
-    chapters = [[decoder decodeObjectForKey:@"chapters"] retain];
+    chapters = [decoder decodeObjectForKey:@"chapters"];
 
     return self;
 }

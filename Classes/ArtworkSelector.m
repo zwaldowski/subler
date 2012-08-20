@@ -18,18 +18,11 @@
 
 @implementation myImageObject
 
-- (void) dealloc {
-    [_url release];
-    [_urlString release];
-    [super dealloc];
-}
 
 - (void) setURL:(NSURL *)url {
     if(_url != url){
-        [_url release];
-        [_urlString release];
-        _url = [url retain];
-        _urlString = [[url absoluteString] retain];
+        _url = url;
+        _urlString = [url absoluteString];
     }
 }
 
@@ -75,7 +68,6 @@
         [m setURL:[imageURLsUnloaded objectAtIndex:0]];
         [imageURLsUnloaded removeObjectAtIndex:0];
         [images addObject:m];
-        [m release];
     }
     [loadMoreArtworkButton setEnabled:([imageURLsUnloaded count] > 0)];
     [imageBrowser reloadData];
@@ -89,7 +81,6 @@
         [m setURL:[imageURLsUnloaded objectAtIndex:0]];
         [imageURLsUnloaded removeObjectAtIndex:0];
         [images addObject:m];
-        [m release];
     }
     [loadMoreArtworkButton setEnabled:([imageURLsUnloaded count] > 0)];
     [imageBrowser reloadData];
@@ -106,7 +97,7 @@
 
 - (IBAction) addArtwork:(id)sender {
 	NSURL *u = [[images objectAtIndex:[[imageBrowser selectionIndexes] firstIndex]] url];
-	[delegate artworkSelector: self didSelect: [[u retain] autorelease]];
+	[delegate artworkSelector: self didSelect: u];
 }
 
 - (IBAction) addNoArtwork:(id)sender {
@@ -114,11 +105,6 @@
 
 }
 
-- (void) dealloc {
-    [images release];
-    [imageURLsUnloaded release];
-    [super dealloc];
-}
 
 #pragma mark -
 #pragma mark IKImageBrowserDataSource

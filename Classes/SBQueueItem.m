@@ -20,7 +20,7 @@
 - (id)initWithURL:(NSURL*)URL {
     self = [super init];
     if (self) {
-        fileURL = [URL retain];
+        fileURL = URL;
 
         NSFileManager *fileManager = [NSFileManager defaultManager];
         unsigned long long originalFileSize = [[[fileManager attributesOfItemAtPath:[fileURL path] error:nil] valueForKey:NSFileSize] unsignedLongLongValue];
@@ -35,15 +35,15 @@
 - (id)initWithMP4:(MP42File*)MP4 {
     self = [super init];
     if (self) {
-        mp4File = [MP4 retain];
+        mp4File = MP4;
 
         if ([MP4 URL])
-            fileURL = [[MP4 URL] retain];
+            fileURL = [MP4 URL];
         else {
             for (NSUInteger i = 0; i < [mp4File tracksCount]; i++) {
                 MP42Track *track = [mp4File trackAtIndex:i];
                 if ([track sourceURL]) {
-                    fileURL = [[track sourceURL] retain];
+                    fileURL = [track sourceURL];
                     break;
                 }
             }
@@ -59,10 +59,10 @@
 {
     if (self = [super init])
     {
-        mp4File = [MP4 retain];
-        fileURL = [URL retain];
-        destURL = [URL retain];
-        attributes = [dict retain];
+        mp4File = MP4;
+        fileURL = URL;
+        destURL = URL;
+        attributes = dict;
 
         status = SBQueueItemStatusReady;
     }
@@ -70,15 +70,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    [attributes release];
-    [fileURL release];
-    [destURL release];
-    [mp4File release];
-    
-    [super dealloc];
-}
 
 - (void)encodeWithCoder:(NSCoder *)coder
 {
@@ -97,11 +88,11 @@
 {
     self = [super init];
 
-    mp4File = [[decoder decodeObjectForKey:@"SBQueueItemMp4File"] retain];
+    mp4File = [decoder decodeObjectForKey:@"SBQueueItemMp4File"];
 
-    fileURL = [[decoder decodeObjectForKey:@"SBQueueItemFileURL"] retain];
-    destURL = [[decoder decodeObjectForKey:@"SBQueueItemDestURL"] retain];
-    attributes = [[decoder decodeObjectForKey:@"SBQueueItemAttributes"] retain];
+    fileURL = [decoder decodeObjectForKey:@"SBQueueItemFileURL"];
+    destURL = [decoder decodeObjectForKey:@"SBQueueItemDestURL"];
+    attributes = [decoder decodeObjectForKey:@"SBQueueItemAttributes"];
 
     status = [decoder decodeIntForKey:@"SBQueueItemStatus"];
     humanEdited = [decoder decodeIntForKey:@"SBQueueItemHumanEdited"];

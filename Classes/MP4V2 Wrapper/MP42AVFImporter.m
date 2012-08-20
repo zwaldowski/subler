@@ -30,10 +30,6 @@
     return self;
 }
 
-- (void) dealloc
-{
-    [super dealloc];
-}
 @end
 
 @implementation MP42AVFImporter
@@ -47,7 +43,7 @@
     CMFormatDescriptionRef formatDescription = NULL;
     NSArray *formatDescriptions = track.formatDescriptions;
     if ([formatDescriptions count] > 0)
-        formatDescription = (CMFormatDescriptionRef)[formatDescriptions objectAtIndex:0];
+        formatDescription = (__bridge CMFormatDescriptionRef)[formatDescriptions objectAtIndex:0];
     
     if (formatDescription) {
         FourCharCode code = CMFormatDescriptionGetMediaSubType(formatDescription);
@@ -160,9 +156,9 @@
 - (id <MP42FileImporter>)initWithFile:(NSURL *)URL delegate:(id <MP42FileImporterDelegate>)del error:(NSError **)outError {
     if ((self = [super init])) {
         delegate = del;
-        fileURL = [URL retain];
+        fileURL = URL;
 
-        localAsset = [[AVAsset assetWithURL:fileURL] retain];
+        localAsset = [AVAsset assetWithURL:fileURL];
 
         tracksArray = [[NSMutableArray alloc] init];
         NSArray *tracks = [localAsset tracks];
@@ -173,7 +169,7 @@
             CMFormatDescriptionRef formatDescription = NULL;
             NSArray *formatDescriptions = track.formatDescriptions;
 			if ([formatDescriptions count] > 0)
-				formatDescription = (CMFormatDescriptionRef)[formatDescriptions objectAtIndex:0];
+				formatDescription = (__bridge CMFormatDescriptionRef)[formatDescriptions objectAtIndex:0];
 
             //NSArray *trackMetadata = [track metadataForFormat:AVMetadataFormatQuickTimeUserData];
 
@@ -232,7 +228,6 @@
             newTrack.duration = timeRange.duration.value / timeRange.duration.timescale * 1000;
 
             [tracksArray addObject:newTrack];
-            [newTrack release];
         }
     }
 
@@ -253,7 +248,7 @@
     CMFormatDescriptionRef formatDescription = NULL;
     NSArray *formatDescriptions = assetTrack.formatDescriptions;
     if ([formatDescriptions count] > 0)
-        formatDescription = (CMFormatDescriptionRef)[formatDescriptions objectAtIndex:0];
+        formatDescription = (__bridge CMFormatDescriptionRef)[formatDescriptions objectAtIndex:0];
         if ([[assetTrack mediaType] isEqualToString:AVMediaTypeAudio]) {
             const AudioStreamBasicDescription* const asbd =
             CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription);
@@ -280,7 +275,7 @@
     CMFormatDescriptionRef formatDescription = NULL;
     NSArray *formatDescriptions = assetTrack.formatDescriptions;
     if ([formatDescriptions count] > 0)
-        formatDescription = (CMFormatDescriptionRef)[formatDescriptions objectAtIndex:0];
+        formatDescription = (__bridge CMFormatDescriptionRef)[formatDescriptions objectAtIndex:0];
 
     if (formatDescription) {
         FourCharCode code = CMFormatDescriptionGetMediaSubType(formatDescription);
@@ -290,7 +285,7 @@
                 CFDictionaryRef atoms = CFDictionaryGetValue(extentions, kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms);
                 CFDataRef avcC = CFDictionaryGetValue(atoms, @"avcC");
 
-                return (NSData*)avcC;
+                return (__bridge NSData*)avcC;
             }
         }
         else if ([[assetTrack mediaType] isEqualToString:AVMediaTypeAudio]) {
@@ -324,16 +319,16 @@
 
 - (void) fillMovieSampleBuffer: (id)sender
 {
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-	BOOL success = YES;
+    @autoreleasepool {
+		BOOL success = YES;
     OSStatus err = noErr;
 
     AVFTrackHelper * trackHelper=nil; 
 
     NSError *localError;
     AVAssetReader *assetReader = [[AVAssetReader alloc] initWithAsset:localAsset error:&localError];
-	success = (assetReader != nil);
-	if (success) {
+		success = (assetReader != nil);
+		if (success) {
         for (MP42Track * track in activeTracks) {
             AVAssetReaderOutput *assetReaderOutput = [AVAssetReaderTrackOutput assetReaderTrackOutputWithTrack:[localAsset trackWithTrackID:track.sourceId] outputSettings:nil];
             if (! [assetReader canAddOutput: assetReaderOutput])
@@ -341,7 +336,7 @@
 
             [assetReader addOutput:assetReaderOutput];
 
-            track.trackDemuxerHelper = [[[AVFTrackHelper alloc] init] autorelease];
+            track.trackDemuxerHelper = [[AVFTrackHelper alloc] init];
 
             trackHelper = track.trackDemuxerHelper;
             trackHelper->assetReaderOutput = assetReaderOutput;
@@ -349,8 +344,8 @@
     }
 
     success = [assetReader startReading];
-	if (!success)
-		localError = [assetReader error];
+		if (!success)
+			localError = [assetReader error];
 
     for (MP42Track * track in activeTracks) {
         AVAssetReaderOutput *assetReaderOutput = ((AVFTrackHelper*)track.trackDemuxerHelper)->assetReaderOutput;
@@ -378,7 +373,7 @@
                     BOOL sync = 1;
                     CFArrayRef attachmentsArray = CMSampleBufferGetSampleAttachmentsArray(sampleBuffer, NO);
                     if (attachmentsArray) {
-                        for (NSDictionary *dict in (NSArray*)attachmentsArray) {
+                        for (NSDictionary *dict in (__bridge NSArray*)attachmentsArray) {
                             if ([dict valueForKey:(NSString*)kCMSampleAttachmentKey_NotSync])
                                 sync = 0;
                         }
@@ -394,7 +389,6 @@
 
                     @synchronized(samplesBuffer) {
                         [samplesBuffer addObject:sample];
-                        [sample release];
                     }
                 }
                 else {
@@ -450,7 +444,7 @@
                         BOOL sync = 1;
                         CFArrayRef attachmentsArray = CMSampleBufferGetSampleAttachmentsArray(sampleBuffer, NO);
                         if (attachmentsArray) {
-                            for (NSDictionary *dict in (NSArray*)attachmentsArray) {
+                            for (NSDictionary *dict in (__bridge NSArray*)attachmentsArray) {
                                 if ([dict valueForKey:(NSString*)kCMSampleAttachmentKey_NotSync])
                                     sync = 0;
                             }
@@ -469,7 +463,6 @@
 
                         @synchronized(samplesBuffer) {
                             [samplesBuffer addObject:sample];
-                            [sample release];
                         }
                     }
 
@@ -491,9 +484,8 @@
         }
     }
 
-    [assetReader release];
     readerStatus = 1;
-    [pool release];
+    }
 }
 
 - (MP42SampleBuffer*)copyNextSample
@@ -513,7 +505,6 @@
     if (readerStatus)
         if ([samplesBuffer count] == 0) {
             readerStatus = 0;
-            [dataReader release];
             dataReader = nil;
             return nil;
         }
@@ -522,7 +513,6 @@
     
     @synchronized(samplesBuffer) {
         sample = [samplesBuffer objectAtIndex:0];
-        [sample retain];
         [samplesBuffer removeObjectAtIndex:0];
     }
     
@@ -573,22 +563,5 @@
     return YES;
 }
 
-- (void) dealloc
-{
-    if (dataReader)
-        [dataReader release];
-
-	[fileURL release];
-    [tracksArray release];
-
-    if (activeTracks)
-        [activeTracks release];
-    if (samplesBuffer)
-        [samplesBuffer release];
-
-    [localAsset release];
-
-    [super dealloc];
-}
 
 @end

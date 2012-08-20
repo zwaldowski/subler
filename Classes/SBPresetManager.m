@@ -51,7 +51,6 @@ NSString *SBPresetManagerUpdatedNotification = @"SBPresetManagerUpdatedNotificat
 {
     id newSet = [set copy];
     [presets addObject:newSet];
-    [newSet release];
 
     [self savePresets];
     [self updateNotification];

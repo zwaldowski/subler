@@ -26,16 +26,16 @@
 {
 	if ((self = [super init]))
 	{
-		sourceURL = [URL retain];
+		sourceURL = URL;
 		Id = trackID;
         isEdited = NO;
         muxed = YES;
         updatedProperty = [[NSMutableDictionary alloc] init];
 
         if (fileHandle) {
-            format = [getHumanReadableTrackMediaDataName(fileHandle, Id) retain];
-            name = [getTrackName(fileHandle, Id) retain];
-            language = [getHumanReadableTrackLanguage(fileHandle, Id) retain];
+            format = getHumanReadableTrackMediaDataName(fileHandle, Id);
+            name = getTrackName(fileHandle, Id);
+            language = getHumanReadableTrackLanguage(fileHandle, Id);
             bitrate = MP4GetTrackBitRate(fileHandle, Id);
             duration = MP4ConvertFromTrackDuration(fileHandle, Id,
                                                    MP4GetTrackDuration(fileHandle, Id),
@@ -93,21 +93,6 @@
     return success;
 }
 
-- (void) dealloc
-{
-    if (trackDemuxerHelper)
-        [trackDemuxerHelper release];
-    if (trackConverterHelper)
-        [trackConverterHelper release];
-
-    [updatedProperty release];
-    [format release];
-    [sourceURL release];
-    [name release];
-    [language release];
-    [sourceFileHandle release];
-    [super dealloc];
-}
 
 - (NSString *) timeString
 {
@@ -129,8 +114,7 @@
 
 - (void) setName: (NSString *) newName
 {
-    [name autorelease];
-    name = [newName retain];
+    name = newName;
     isEdited = YES;
     [updatedProperty setValue:@"True" forKey:@"name"];
 }
@@ -141,8 +125,7 @@
 
 - (void) setLanguage: (NSString *) newLang
 {
-    [language autorelease];
-    language = [newLang retain];
+    language = newLang;
     isEdited = YES;
     [updatedProperty setValue:@"True" forKey:@"language"];
 }
@@ -183,7 +166,7 @@
 
 - (NSString *) formatSummary
 {
-    return [[format retain] autorelease];
+    return format;
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder
@@ -222,11 +205,11 @@
     Id = [decoder decodeInt64ForKey:@"Id"];
     sourceId = [decoder decodeInt64ForKey:@"sourceId"];
 
-    sourceURL = [[decoder decodeObjectForKey:@"sourceURL"] retain];
-    sourceFormat = [[decoder decodeObjectForKey:@"sourceFormat"] retain];
-    format = [[decoder decodeObjectForKey:@"format"] retain];
-    name = [[decoder decodeObjectForKey:@"name"] retain];
-    language = [[decoder decodeObjectForKey:@"language"] retain];
+    sourceURL = [decoder decodeObjectForKey:@"sourceURL"];
+    sourceFormat = [decoder decodeObjectForKey:@"sourceFormat"];
+    format = [decoder decodeObjectForKey:@"format"];
+    name = [decoder decodeObjectForKey:@"name"];
+    language = [decoder decodeObjectForKey:@"language"];
 
     enabled = [decoder decodeBoolForKey:@"enabled"];
 
@@ -241,7 +224,7 @@
     bitrate = [decoder decodeInt32ForKey:@"bitrate"];
     duration = [decoder decodeInt64ForKey:@"duration"];
 
-    updatedProperty = [[decoder decodeObjectForKey:@"updatedProperty"] retain];
+    updatedProperty = [decoder decodeObjectForKey:@"updatedProperty"];
 
     return self;
 }

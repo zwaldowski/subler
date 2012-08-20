@@ -54,7 +54,7 @@
         NSURL* queueURL = [self queueURL];
 
         if ([[NSFileManager defaultManager] fileExistsAtPath:[queueURL path]]) {
-            filesArray = [[NSKeyedUnarchiver unarchiveObjectWithFile:[queueURL path]] retain];
+            filesArray = [NSKeyedUnarchiver unarchiveObjectWithFile:[queueURL path]];
             for (SBQueueItem *item in filesArray)
                 if ([item status] == SBQueueItemStatusWorking)
                     [item setStatus:SBQueueItemStatusFailed];
@@ -93,7 +93,7 @@
     [tableScrollView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
     [optionsBox setAutoresizingMask:NSViewWidthSizable | NSViewMaxYMargin];
 
-    docImg = [[[NSWorkspace sharedWorkspace] iconForFileType:NSFileTypeForHFSTypeCode('MOOV')] retain];
+    docImg = [[NSWorkspace sharedWorkspace] iconForFileType:NSFileTypeForHFSTypeCode('MOOV')];
     [docImg setSize:NSMakeSize(16, 16)];
 
     [self prepareDestPopup];
@@ -141,7 +141,7 @@
 
     [folderItem setImage:menuItemIcon];
 
-    return [folderItem autorelease];
+    return folderItem;
 }
 
 - (void)prepareDestPopup
@@ -149,7 +149,7 @@
     NSMenuItem *folderItem = nil;
 
     if ([[NSUserDefaults standardUserDefaults] valueForKey:@"SBQueueDestination"]) {
-        destination = [[NSURL fileURLWithPath:[[NSUserDefaults standardUserDefaults] valueForKey:@"SBQueueDestination"]] retain];
+        destination = [NSURL fileURLWithPath:[[NSUserDefaults standardUserDefaults] valueForKey:@"SBQueueDestination"]];
         if (![[NSFileManager defaultManager] fileExistsAtPath:[destination path] isDirectory:nil])
             destination = nil;
     }
@@ -159,7 +159,7 @@
                                                                 NSUserDomainMask,
                                                                 YES);
         if ([allPaths count])
-            destination = [[NSURL fileURLWithPath:[allPaths lastObject]] retain];;
+            destination = [NSURL fileURLWithPath:[allPaths lastObject]];;
     }
 
     folderItem = [self prepareDestPopupItem:destination];
@@ -230,12 +230,11 @@
                     [tracksArray addObject:track];
                 }
 				
-                [fileImporter release];
             }
         }
     }
 
-    return [tracksArray autorelease];
+    return tracksArray;
 }
 
 - (NSImage*)loadArtwork:(NSURL*)url
@@ -246,7 +245,7 @@
         if (imageRep != nil) {
             NSImage *artwork = [[NSImage alloc] initWithSize:[imageRep size]];
             [artwork addRepresentation:imageRep];
-            return [artwork autorelease];
+            return artwork;
         }
     }
 
@@ -284,7 +283,6 @@
         [metadata setArtwork:[self loadArtwork:[metadata.artworkFullsizeURLs lastObject]]];
     }
 
-    [currentSearcher release];
     return metadata;
 }
 
@@ -308,7 +306,6 @@
             [track setTrackImporterHelper:fileImporter];
             [mp4File addTrack:track];
         }
-        [fileImporter release];
     }
 
     // Search for external subtitles files
@@ -331,7 +328,7 @@
         [[mp4File metadata] mergeMetadata:metadata];
     }
 
-    return [mp4File autorelease];
+    return mp4File;
 }
 
 - (SBQueueItem*)firstItemInQueue
@@ -368,7 +365,7 @@
 
             NSURL * url = [item URL];
             NSURL * destURL = nil;
-            MP42File *mp4File = [[item mp4File] retain];
+            MP42File *mp4File = [item mp4File];
             [mp4File setDelegate:self];
 
             [item setStatus:SBQueueItemStatusWorking];
@@ -391,7 +388,7 @@
 
             // The file has been added directly to the queue
             if (!mp4File && url) {
-                mp4File = [[self prepareQueueItem:url error:&outError] retain];
+                mp4File = [self prepareQueueItem:url error:&outError];
             }
 
             currentItem = mp4File;
@@ -423,7 +420,6 @@
                     NSLog(@"Error: %@", [outError localizedDescription]);
             }
 
-            [mp4File release];
 
             // Update the UI
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -456,7 +452,6 @@
         });
     });
 
-    [attributes release];
 }
 
 - (void)stop:(id)sender
@@ -521,10 +516,9 @@
             NSMutableArray *items = [[NSMutableArray alloc] init];
 
             for (NSURL *url in [panel URLs])
-                [items addObject: [[[SBQueueItem alloc] initWithURL:url] autorelease]];
+                [items addObject: [[SBQueueItem alloc] initWithURL:url]];
 
             [self addItems:items atIndexes:nil];
-            [items release];
 
             [self updateUI];
 
@@ -545,7 +539,7 @@
     [panel setPrompt:@"Select"];
     [panel beginSheetModalForWindow:[self window] completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton) {
-            destination = [[panel URL] retain];
+            destination = [panel URL];
 
             NSMenuItem *folderItem = [self prepareDestPopupItem:[panel URL]];
 
@@ -629,7 +623,6 @@
             [self updateDockTile];
         }
     }
-    [rowIndexes release];
 }
 
 - (IBAction)removeSelectedItems:(id)sender
@@ -665,7 +658,6 @@
         }
     }
     
-    [indexes release];
 }
 
 - (BOOL)validateUserInterfaceItem:(id < NSValidatedUserInterfaceItem >)anItem
@@ -751,14 +743,12 @@
             NSMutableIndexSet *indexes = [[NSMutableIndexSet alloc] init];
 
             for (NSURL * url in items) {
-                [queueItems addObject: [[[SBQueueItem alloc] initWithURL: url] autorelease]];
+                [queueItems addObject: [[SBQueueItem alloc] initWithURL: url]];
                 [indexes addIndex:row];
             }
 
             [self addItems:queueItems atIndexes:indexes];
 
-            [queueItems release];
-            [indexes release];
             [self updateUI];
 
             if ([AutoStartOption state])
@@ -811,7 +801,6 @@
     if ([AutoStartOption state])
         [self start:self];
 
-    [mutableIndexes release];
 }
 
 - (void)removeItems:(NSArray*)items
@@ -832,7 +821,6 @@
     if ([undo isUndoing] || [undo isRedoing])
         [self updateUI];
 
-    [indexes release];
 }
 
 @end

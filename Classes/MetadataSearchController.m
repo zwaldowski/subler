@@ -23,14 +23,14 @@
 	if ((self = [super initWithWindowNibName:@"MetadataSearchController"])) {        
 		delegate = del;
         
-        NSMutableParagraphStyle * ps = [[[NSParagraphStyle defaultParagraphStyle] mutableCopy] autorelease];
+        NSMutableParagraphStyle * ps = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
         [ps setHeadIndent: -10.0];
         [ps setAlignment:NSRightTextAlignment];
-        detailBoldAttr = [[NSDictionary dictionaryWithObjectsAndKeys:
+        detailBoldAttr = [NSDictionary dictionaryWithObjectsAndKeys:
                            [NSFont boldSystemFontOfSize:[NSFont smallSystemFontSize]], NSFontAttributeName,
                            ps, NSParagraphStyleAttributeName,
                            [NSColor grayColor], NSForegroundColorAttributeName,
-                           nil] retain];
+                           nil];
     }
 
 	return self;
@@ -133,7 +133,7 @@
         [results setValue:@"1" forKey:@"seasonNum"];
         [results setValue:[NSString stringWithFormat:@"%ld", episodeNumber] forKey:@"episodeNum"];
 
-        return [results autorelease];
+        return results;
     }
 
     NSTask *task = [[NSTask alloc] init];
@@ -187,12 +187,8 @@
         }
     }
     
-    [outputString release];
-    [stdOut release];
-    [args release];
-    [task release];
     
-    return [results autorelease];
+    return results;
 }
 
 #pragma mark Search input fields
@@ -228,10 +224,8 @@
 }
 
 - (void) searchForTVSeriesNameDone:(NSMutableArray *)seriesArray {
-    if (tvSeriesNameSearchArray)
-        [tvSeriesNameSearchArray release];
 
-    tvSeriesNameSearchArray = [seriesArray retain];
+    tvSeriesNameSearchArray = seriesArray;
     [tvSeriesNameSearchArray sortUsingSelector:@selector(compare:)];
     [tvSeriesName noteNumberOfItemsChanged];
     [tvSeriesName reloadData];
@@ -242,7 +236,6 @@
 - (IBAction) searchForResults: (id) sender {
     if (currentSearcher) {
         [currentSearcher cancel];
-        [currentSearcher release];
         currentSearcher = nil;
     }
 
@@ -270,13 +263,11 @@
 }
 
 - (void) searchForResultsDone:(NSArray *)_resultsArray {
-    if (resultsArray)
-        [resultsArray release];
 
     [progressText setHidden:YES];
     [progress setHidden:YES];
     [progress stopAnimation:self];
-    resultsArray = [_resultsArray retain];
+    resultsArray = _resultsArray;
     selectedResult = nil;
     [resultsTable reloadData];
     [metadataTable reloadData];
@@ -289,7 +280,6 @@
 - (IBAction) loadAdditionalMetadata:(id) sender {
     if (currentSearcher) {
         [currentSearcher cancel];
-        [currentSearcher release];
         currentSearcher = nil;
     }
 
@@ -324,7 +314,7 @@
             selectedResult.artworkURL = [selectedResult.artworkFullsizeURLs objectAtIndex:0];
             [self loadArtwork];
         } else {
-			ArtworkSelector *sheet = [[[ArtworkSelector alloc] initWithDelegate:self imageURLs:selectedResult.artworkThumbURLs] autorelease];
+			ArtworkSelector *sheet = [[ArtworkSelector alloc] initWithDelegate:self imageURLs:selectedResult.artworkThumbURLs];
             [NSApp beginSheet: [sheet window] modalForWindow: [self window] modalDelegate: nil didEndSelector: NULL contextInfo: nil];
         }
     } else {
@@ -337,7 +327,6 @@
     if (i != NSNotFound) {
         [NSApp endSheet: selector.window];
         [selector.window orderOut:self];
-        [selector release];
         selectedResult.artworkURL = [selectedResult.artworkFullsizeURLs objectAtIndex:i];
     }
     [self loadArtwork];
@@ -360,7 +349,7 @@
         [metadataTable setEnabled:NO];
 
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            artworkData = [[NSData dataWithContentsOfURL:selectedResult.artworkURL] retain];
+            artworkData = [NSData dataWithContentsOfURL:selectedResult.artworkURL];
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (artworkData && [artworkData length]) {
@@ -370,8 +359,6 @@
                         NSImage *artwork = [[NSImage alloc] initWithSize:[imageRep size]];
                         [artwork addRepresentation:imageRep];
                         selectedResult.artwork = artwork;
-                        [artworkData release];
-                        [artwork release];
                     }
                 }
                 [self addMetadata];
@@ -417,17 +404,11 @@
 
 - (void) dealloc
 {
-    [detailBoldAttr release];
 
     //[selectedResult release];
-    [selectedResultTagsArray release];
-    [tvSeriesNameSearchArray release];
-    [resultsArray release];
 
     [currentSearcher cancel];
-    [currentSearcher release];
 
-    [super dealloc];
 }
 
 #pragma mark -
@@ -445,7 +426,7 @@
 #pragma mark Miscellaneous
 
 - (NSAttributedString *) boldString: (NSString *) string {
-    return [[[NSAttributedString alloc] initWithString:string attributes:detailBoldAttr] autorelease];
+    return [[NSAttributedString alloc] initWithString:string attributes:detailBoldAttr];
 }
 
 + (NSString *) urlEncoded:(NSString *)s {
@@ -455,7 +436,7 @@
                                                                     NULL,
                                                                     (CFStringRef) @"!*'\"();:@&=+$,/?%#[]% ",
                                                                     kCFStringEncodingUTF8);
-    return [(NSString *)urlString autorelease];
+    return (__bridge_transfer NSString *)urlString;
 }
 
 #pragma mark Logos
@@ -501,7 +482,6 @@
             [tvSeriesNameSearchArray addObject:@"searching…"];
             [tvSeriesName reloadData];
             [currentSearcher cancel];
-            [currentSearcher release];
             currentSearcher = [[TheTVDB alloc] init];
             [((TheTVDB *) currentSearcher) searchForTVSeriesName:[tvSeriesName stringValue] callback:self];
         } else {
@@ -579,8 +559,8 @@
 static NSInteger sortFunction (id ldict, id rdict, void *context) {
     NSComparisonResult rc;
     
-    NSInteger right = [(NSArray*) context indexOfObject:rdict];
-    NSInteger left = [(NSArray*) context indexOfObject:ldict];
+    NSInteger right = [(__bridge NSArray*) context indexOfObject:rdict];
+    NSInteger left = [(__bridge NSArray*) context indexOfObject:ldict];
     
     if (right < left)
         rc = NSOrderedDescending;
@@ -595,8 +575,7 @@ static NSInteger sortFunction (id ldict, id rdict, void *context) {
         if (resultsArray && [resultsArray count] > 0) {
             selectedResult = [resultsArray objectAtIndex:[resultsTable selectedRow]];
             selectedResultTags = selectedResult.tagsDict;
-            if (selectedResultTagsArray) [selectedResultTagsArray release];
-            selectedResultTagsArray = [[[selectedResultTags allKeys] sortedArrayUsingFunction:sortFunction context:[selectedResult availableMetadata]] retain];
+            selectedResultTagsArray = [[selectedResultTags allKeys] sortedArrayUsingFunction:sortFunction context:(__bridge void *)([selectedResult availableMetadata])];
             [metadataTable reloadData];
             [addButton setEnabled:YES];
             [addButton setKeyEquivalent:@"\r"];

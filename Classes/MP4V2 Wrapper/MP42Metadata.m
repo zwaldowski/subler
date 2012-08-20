@@ -395,17 +395,14 @@ static const genreType_t genreType_strings[] = {
         NSImage *artworkImage = nil;
         artworkImage = [[NSImage alloc] initByReferencingFile:imageFilePath];
         if([artworkImage isValid]) {
-            [artwork release];
             artwork = artworkImage;
             isEdited =YES;
             isArtworkEdited = YES;
             return YES;
         } else {
-            [artworkImage release];
             return NO;
         }
     } else {
-        [artwork release];
         artwork = nil;
         isEdited =YES;
         isArtworkEdited = YES;
@@ -423,7 +420,7 @@ static const genreType_t genreType_strings[] = {
     if (rating)
         [ratingsArray replaceObjectAtIndex:[ratingsArray count]-1 withObject:[NSString stringWithFormat:@"Unknown (%@)",rating]];
 
-    return [ratingsArray autorelease];
+    return ratingsArray;
 }
 
 - (NSString *) genreFromIndex: (NSInteger)index {
@@ -782,8 +779,7 @@ static const genreType_t genreType_strings[] = {
                 if ([ratingItems count] >= 4)
                     [tagsDict setObject:[ratingItems objectAtIndex:3] forKey:@"Rating Annotation"];
                 
-                rating = [ratingString retain];
-                [ratingString release];
+                rating = ratingString;
             }
         }
         MP4ItmfItemListFree(list);
@@ -1091,7 +1087,6 @@ static const genreType_t genreType_strings[] = {
                                                      mutabilityOption:NSPropertyListMutableContainersAndLeaves
                                                      format:nil
                                                      errorDescription:nil];
-                [iTunMovi release];
                 iTunMovi = [dma mutableCopy];
             }
         }
@@ -1168,7 +1163,6 @@ static const genreType_t genreType_strings[] = {
         }
     }
 
-    [iTunMovi release];
 
     return YES;
 }
@@ -1177,14 +1171,13 @@ static const genreType_t genreType_strings[] = {
 {
     NSString * tagValue;
 
-    [newMetadata retain];
 
     for (NSString * key in [self writableMetadata])
             if((tagValue = [newMetadata.tagsDict valueForKey:key]))
                 [tagsDict setObject:tagValue forKey:key];
 
     if ([newMetadata artwork]) {
-        artwork = [[newMetadata artwork] retain];
+        artwork = [newMetadata artwork];
         isArtworkEdited = YES;
     }
 
@@ -1195,7 +1188,6 @@ static const genreType_t genreType_strings[] = {
 
     isEdited = YES;
 
-    [newMetadata release];
 
     return YES;
 }
@@ -1235,10 +1227,10 @@ static const genreType_t genreType_strings[] = {
 {
     self = [super init];
 
-    presetName = [[decoder decodeObjectForKey:@"MP42SetName"] retain];
+    presetName = [decoder decodeObjectForKey:@"MP42SetName"];
 
-    tagsDict = [[decoder decodeObjectForKey:@"MP42TagsDict"] retain];
-    artwork = [[decoder decodeObjectForKey:@"MP42Artwork"] retain];
+    tagsDict = [decoder decodeObjectForKey:@"MP42TagsDict"];
+    artwork = [decoder decodeObjectForKey:@"MP42Artwork"];
 
     mediaKind = [decoder decodeIntForKey:@"MP42MediaKind"];
     contentRating = [decoder decodeIntForKey:@"MP42ContentRating"];
@@ -1268,20 +1260,6 @@ static const genreType_t genreType_strings[] = {
     return newObject;
 }
 
--(void) dealloc
-{
-    [presetName release];
-
-    [artwork release];
-    [artworkURL release];
-    [artworkThumbURLs release];
-    [artworkFullsizeURLs release];
-
-    [rating release];
-
-    [tagsDict release];
-    [super dealloc];
-}
 
 @synthesize tagsDict;
 

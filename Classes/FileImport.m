@@ -17,7 +17,7 @@
 	if ((self = [super initWithWindowNibName:@"FileImport"]))
 	{
 		delegate = del;
-        fileURL = [file retain];
+        fileURL = file;
 		fileImporter = [MP42Utilities fileImporterForURL: file delegate: delegate error: outError];
         if (!fileImporter)
             return nil;
@@ -81,7 +81,7 @@
         [actionCell setBordered:NO];
 
         if ([track isMemberOfClass:[MP42VideoTrack class]]) {
-            NSMenuItem *item = [[[NSMenuItem alloc] initWithTitle:@"Passthru" action:NULL keyEquivalent:@""] autorelease];
+            NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:@"Passthru" action:NULL keyEquivalent:@""];
             [item setTag:0];
             [item setEnabled:YES];
             [[actionCell menu] addItem:item];
@@ -94,7 +94,7 @@
 
         else if ([track isMemberOfClass:[MP42SubtitleTrack class]]) {
             NSInteger tag = 0;
-            NSMenuItem *item = [[[NSMenuItem alloc] initWithTitle:@"Passthru" action:NULL keyEquivalent:@""] autorelease];
+            NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:@"Passthru" action:NULL keyEquivalent:@""];
             [item setTag:tag++];
             if (!trackNeedConversion(track.format))
                 [item setEnabled:YES];
@@ -104,7 +104,7 @@
 
             NSArray *formatArray = [NSArray arrayWithObjects:@"3GPP Text", nil];
             for (NSString* format in formatArray) {
-                item = [[[NSMenuItem alloc] initWithTitle:format action:NULL keyEquivalent:@""] autorelease];
+                item = [[NSMenuItem alloc] initWithTitle:format action:NULL keyEquivalent:@""];
                 [item setTag:tag++];
                 [item setEnabled:YES];
                 [[actionCell menu] addItem:item];
@@ -112,7 +112,7 @@
         }
         else if ([track isMemberOfClass:[MP42AudioTrack class]]) {
             NSInteger tag = 0;
-            NSMenuItem *item = [[[NSMenuItem alloc] initWithTitle:@"Passthru" action:NULL keyEquivalent:@""] autorelease];
+            NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:@"Passthru" action:NULL keyEquivalent:@""];
             [item setTag:tag++];
             if (!trackNeedConversion(track.format))
                 [item setEnabled:YES];
@@ -122,21 +122,21 @@
 
             NSArray *formatArray = [NSArray arrayWithObjects:@"AAC - Dolby Pro Logic II", @"AAC - Dolby Pro Logic", @"AAC - Stereo", @"AAC - Mono", @"AAC - Multi-channel", nil];
             for (NSString* format in formatArray) {
-                item = [[[NSMenuItem alloc] initWithTitle:format action:NULL keyEquivalent:@""] autorelease];
+                item = [[NSMenuItem alloc] initWithTitle:format action:NULL keyEquivalent:@""];
                 [item setTag:tag++];
                 [item setEnabled:YES];
                 [[actionCell menu] addItem:item];
             }
         }
         else if ([track isMemberOfClass:[MP42ChapterTrack class]]) {
-            NSMenuItem *item = [[[NSMenuItem alloc] initWithTitle:@"Text" action:NULL keyEquivalent:@""] autorelease];
+            NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:@"Text" action:NULL keyEquivalent:@""];
             [item setTag:0];
             [item setEnabled:YES];
             [[actionCell menu] addItem:item];
         }
         cell = actionCell;
 
-        return [cell autorelease];
+        return cell;
     }
 
     return [tableColumn dataCell];
@@ -239,22 +239,12 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 
     MP42Metadata *metadata = nil;
     if ([importMetadata state])
-        metadata = [[[fileImporter metadata] retain] autorelease];
+        metadata = [fileImporter metadata];
 	
 	if (delegate)
 		[delegate fileImport: self didCompleteWithTracks: tracks metadata: metadata];
 	
-    [tracks release];
 }
 
-- (void) dealloc
-{
-    [importCheckArray release];
-    [actionArray release];
-	[fileURL release];
-    [fileImporter release];
-
-    [super dealloc];
-}
 
 @end

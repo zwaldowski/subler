@@ -40,7 +40,7 @@ extern NSString * const MP42FileTypeM4A;
 @private
     MP4FileHandle  fileHandle;
     NSURL          *fileURL;
-    id <MP42FileDelegate> delegate;
+    id <MP42FileDelegate> __unsafe_unretained delegate;
 
     NSMutableArray  *tracksToBeDeleted;
     NSMutableArray  *fileImporters;
@@ -53,7 +53,7 @@ extern NSString * const MP42FileTypeM4A;
     MP42Muxer       *muxer;
 }
 
-@property (nonatomic, assign) id <MP42FileDelegate> delegate;
+@property (nonatomic, unsafe_unretained) id <MP42FileDelegate> delegate;
 @property (readonly) NSURL  *URL;
 @property (readonly) NSMutableArray  *tracks;
 @property (readonly) MP42Metadata    *metadata;

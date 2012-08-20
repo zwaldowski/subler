@@ -1254,7 +1254,6 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
     
     inFile = fopen(filePath, "r");
     if (inFile == NULL) {
-		[avcCData release];
 		return nil;
 	};
     
@@ -1265,7 +1264,6 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
         if (LoadNal(&nal) == false) {
             // fprintf(stderr, "%s: Could not find sequence header\n", ProgName);
             fclose(inFile);
-			[avcCData release];
             return nil;
         }
         uint32_t header_size = nal.buffer[2] == 1 ? 3 : 4;
@@ -1300,13 +1298,11 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
             [avcCData appendBytes:&iy length:sizeof(uint8_t)];
             [avcCData appendData:seqData];
 
-            [seqData release];
 
             // skip the nal type byte
             if (h264_read_seq_info(nal.buffer, nal.buffer_on, &h264_dec) == -1)
             {
                 // fprintf(stderr, "%s: Could not decode Sequence header\n", ProgName);
-				[avcCData release];
                 fclose(inFile);
                 return nil;
             }
@@ -1332,13 +1328,12 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
             [avcCData appendBytes:&iy length:sizeof(uint8_t)];
             [avcCData appendData:pictData];
             
-            [pictData release];
 
         }
     }
 
     fclose(inFile);
-    return [avcCData autorelease];
+    return avcCData;
 }
 
 @implementation MP42H264Importer
@@ -1348,7 +1343,7 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
 - (id <MP42FileImporter>)initWithFile:(NSURL *)URL delegate:(id <MP42FileImporterDelegate>)del error:(NSError **)outError {
     if ((self = [super init])) {
         delegate = del;
-        fileURL = [URL retain];
+        fileURL = URL;
 
         tracksArray = [[NSMutableArray alloc] initWithCapacity:1];
 
@@ -1376,7 +1371,6 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
         }
 
         [tracksArray addObject:newTrack];
-        [newTrack release];
     }
 
     return self;
@@ -1416,148 +1410,147 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
 
 - (void) fillMovieSampleBuffer: (id)sender
 {
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-    if (!inFile)
-        inFile = fopen([[fileURL path] UTF8String], "rb");
+    @autoreleasepool {
+        if (!inFile)
+            inFile = fopen([[fileURL path] UTF8String], "rb");
 
-    MP42Track *track = [activeTracks lastObject];
-    MP4TrackId dstTrackId = [track Id];
+        MP42Track *track = [activeTracks lastObject];
+        MP4TrackId dstTrackId = [track Id];
 
-    framerate_t * framerate;
+        framerate_t * framerate;
 
-    for (framerate = (framerate_t*) framerates; framerate->code; framerate++)
-        if([track sourceId] == framerate->code)
-            break;
+        for (framerate = (framerate_t*) framerates; framerate->code; framerate++)
+            if([track sourceId] == framerate->code)
+                break;
 
-    timescale = framerate->timescale;
-    mp4FrameDuration = framerate->duration;
+        timescale = framerate->timescale;
+        mp4FrameDuration = framerate->duration;
 
 
-    // the current syntactical object
-    // typically 1:1 with a sample
-    // but not always, i.e. non-VOP's
-    // the current sample
-    MP4SampleId sampleId = 1;
+        // the current syntactical object
+        // typically 1:1 with a sample
+        // but not always, i.e. non-VOP's
+        // the current sample
+        MP4SampleId sampleId = 1;
 
-    // track configuration info
-    nal_reader_t nal;
-    h264_decode_t h264_dec;
+        // track configuration info
+        nal_reader_t nal;
+        h264_decode_t h264_dec;
 
-    memset(&nal, 0, sizeof(nal));
-    nal.ifile = inFile;
+        memset(&nal, 0, sizeof(nal));
+        nal.ifile = inFile;
 
-    if (timescale == 0) {
-        fprintf(stderr, "%s: Must specify a timescale when reading H.264 files", 
-                ProgName);
-        timescale = 30000;
-        mp4FrameDuration = 1001;
-    }
+        if (timescale == 0) {
+            fprintf(stderr, "%s: Must specify a timescale when reading H.264 files", 
+                    ProgName);
+            timescale = 30000;
+            mp4FrameDuration = 1001;
+        }
 
-    rewind(nal.ifile);
-    nal.buffer_size = 0;
-    nal.buffer_on = 0;
-    nal.buffer_size_max = 0;
-    free(nal.buffer);
-    nal.buffer = NULL;
+        rewind(nal.ifile);
+        nal.buffer_size = 0;
+        nal.buffer_on = 0;
+        nal.buffer_size_max = 0;
+        free(nal.buffer);
+        nal.buffer = NULL;
 
-    uint8_t *nal_buffer = NULL;
-    uint32_t nal_buffer_size = 0, nal_buffer_size_max = 0;
-    bool first = true;
-    bool nal_is_sync = false;
-    bool slice_is_idr = false;
-    int32_t poc = 0;
-    
-    // now process the rest of the video stream
-    memset(&h264_dec, 0, sizeof(h264_dec));
-    DpbInit(&h264_dpb);
-    
-    while ( (LoadNal(&nal) != false) && !cancelled) {
-        uint32_t header_size;
-        header_size = nal.buffer[2] == 1 ? 3 : 4;
-        bool boundary = h264_detect_boundary(nal.buffer, 
-                                             nal.buffer_on,
-                                             &h264_dec);
+        uint8_t *nal_buffer = NULL;
+        uint32_t nal_buffer_size = 0, nal_buffer_size_max = 0;
+        bool first = true;
+        bool nal_is_sync = false;
+        bool slice_is_idr = false;
+        int32_t poc = 0;
+        
+        // now process the rest of the video stream
+        memset(&h264_dec, 0, sizeof(h264_dec));
+        DpbInit(&h264_dpb);
+        
+        while ( (LoadNal(&nal) != false) && !cancelled) {
+            uint32_t header_size;
+            header_size = nal.buffer[2] == 1 ? 3 : 4;
+            bool boundary = h264_detect_boundary(nal.buffer, 
+                                                 nal.buffer_on,
+                                                 &h264_dec);
 
-        if (boundary && first == false) {
-            // write the previous sample
-            if (nal_buffer_size != 0) {
-                samplesWritten++;
-                
-                void* sampleData = malloc(nal_buffer_size);
-                memcpy(sampleData, nal_buffer, nal_buffer_size);
-                
-                MP42SampleBuffer *sample = [[MP42SampleBuffer alloc] init];
-                sample->sampleData = sampleData;
-                sample->sampleSize = nal_buffer_size;
-                sample->sampleDuration = mp4FrameDuration;
-                sample->sampleOffset = 0;
-                sample->sampleTimestamp = 0;
-                sample->sampleIsSync = nal_is_sync;
-                sample->sampleTrackId = dstTrackId;
-                if(track.needConversion)
-                    sample->sampleSourceTrack = track;
-                
-                @synchronized(samplesBuffer) {
-                    [samplesBuffer addObject:sample];
-                    [sample release];
+            if (boundary && first == false) {
+                // write the previous sample
+                if (nal_buffer_size != 0) {
+                    samplesWritten++;
+                    
+                    void* sampleData = malloc(nal_buffer_size);
+                    memcpy(sampleData, nal_buffer, nal_buffer_size);
+                    
+                    MP42SampleBuffer *sample = [[MP42SampleBuffer alloc] init];
+                    sample->sampleData = sampleData;
+                    sample->sampleSize = nal_buffer_size;
+                    sample->sampleDuration = mp4FrameDuration;
+                    sample->sampleOffset = 0;
+                    sample->sampleTimestamp = 0;
+                    sample->sampleIsSync = nal_is_sync;
+                    sample->sampleTrackId = dstTrackId;
+                    if(track.needConversion)
+                        sample->sampleSourceTrack = track;
+                    
+                    @synchronized(samplesBuffer) {
+                        [samplesBuffer addObject:sample];
+                    }
+
+                    sampleId++;
+                    DpbAdd( &h264_dpb, poc, slice_is_idr );
+                    nal_is_sync = false;
+                    nal_buffer_size = 0;
                 }
-
-                sampleId++;
-                DpbAdd( &h264_dpb, poc, slice_is_idr );
-                nal_is_sync = false;
-                nal_buffer_size = 0;
             }
-        }
-        bool copy_nal_to_buffer = false;
-        if (Verbosity) {
-            printf("H264 type %x size %u\n",
-                   h264_dec.nal_unit_type, nal.buffer_on);
-        }
-        if (h264_nal_unit_type_is_slice(h264_dec.nal_unit_type)) {
+            bool copy_nal_to_buffer = false;
+            if (Verbosity) {
+                printf("H264 type %x size %u\n",
+                       h264_dec.nal_unit_type, nal.buffer_on);
+            }
+            if (h264_nal_unit_type_is_slice(h264_dec.nal_unit_type)) {
 			h264_get_frame_dependency(&h264_dec);
-            // copy all seis, etc before indicating first
-            first = false;
-            copy_nal_to_buffer = true;
-            slice_is_idr = h264_dec.nal_unit_type == H264_NAL_TYPE_IDR_SLICE;
-            poc = h264_dec.pic_order_cnt;
-            
-            nal_is_sync = h264_slice_is_idr(&h264_dec);
-        } else {
-            
-            switch (h264_dec.nal_unit_type) {
-                case H264_NAL_TYPE_SEQ_PARAM:
-                    // doesn't get added to sample buffer
-                    // remove header
-                    //MP4AddH264SequenceParameterSet(mp4File, trackId, 
-                    //                               nal.buffer + header_size, 
-                    //                               nal.buffer_on - header_size);
-                    break;
-                case H264_NAL_TYPE_PIC_PARAM:
-                    // doesn't get added to sample buffer
-                    //MP4AddH264PictureParameterSet(mp4File, trackId, 
-                    //                              nal.buffer + header_size, 
-                    //                              nal.buffer_on - header_size);
-                    break;
-                case H264_NAL_TYPE_FILLER_DATA:
-                    // doesn't get copied
-                    break;
-                case H264_NAL_TYPE_SEI:
-                    copy_nal_to_buffer = remove_unused_sei_messages(&nal, header_size);
-                    break;
-                case H264_NAL_TYPE_ACCESS_UNIT: 
-                    // note - may not want to copy this - not needed
-                default:
-                    copy_nal_to_buffer = true;
-                    break;
+                // copy all seis, etc before indicating first
+                first = false;
+                copy_nal_to_buffer = true;
+                slice_is_idr = h264_dec.nal_unit_type == H264_NAL_TYPE_IDR_SLICE;
+                poc = h264_dec.pic_order_cnt;
+                
+                nal_is_sync = h264_slice_is_idr(&h264_dec);
+            } else {
+                
+                switch (h264_dec.nal_unit_type) {
+                    case H264_NAL_TYPE_SEQ_PARAM:
+                        // doesn't get added to sample buffer
+                        // remove header
+                        //MP4AddH264SequenceParameterSet(mp4File, trackId, 
+                        //                               nal.buffer + header_size, 
+                        //                               nal.buffer_on - header_size);
+                        break;
+                    case H264_NAL_TYPE_PIC_PARAM:
+                        // doesn't get added to sample buffer
+                        //MP4AddH264PictureParameterSet(mp4File, trackId, 
+                        //                              nal.buffer + header_size, 
+                        //                              nal.buffer_on - header_size);
+                        break;
+                    case H264_NAL_TYPE_FILLER_DATA:
+                        // doesn't get copied
+                        break;
+                    case H264_NAL_TYPE_SEI:
+                        copy_nal_to_buffer = remove_unused_sei_messages(&nal, header_size);
+                        break;
+                    case H264_NAL_TYPE_ACCESS_UNIT: 
+                        // note - may not want to copy this - not needed
+                    default:
+                        copy_nal_to_buffer = true;
+                        break;
+                }
             }
-        }
-        if (copy_nal_to_buffer) {
-            uint32_t to_write;
-            to_write = nal.buffer_on - header_size;
-            if (to_write + 4 + nal_buffer_size > nal_buffer_size_max) {
-                nal_buffer_size_max += nal.buffer_on + 4;
-                nal_buffer = (uint8_t *)realloc(nal_buffer, nal_buffer_size_max);
-            }
+            if (copy_nal_to_buffer) {
+                uint32_t to_write;
+                to_write = nal.buffer_on - header_size;
+                if (to_write + 4 + nal_buffer_size > nal_buffer_size_max) {
+                    nal_buffer_size_max += nal.buffer_on + 4;
+                    nal_buffer = (uint8_t *)realloc(nal_buffer, nal_buffer_size_max);
+                }
 			if (nal_buffer) {
 				nal_buffer[nal_buffer_size] = (to_write >> 24) & 0xff;
 				nal_buffer[nal_buffer_size + 1] = (to_write >> 16) & 0xff;
@@ -1568,40 +1561,39 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
 					   to_write);
 			}
 
-            nal_buffer_size += to_write + 4;
+                nal_buffer_size += to_write + 4;
+            }
         }
-    }
 
-    if (nal_buffer_size != 0) {
-        samplesWritten++;
-    
-        void* sampleData = malloc(nal_buffer_size);
-        memcpy(sampleData, nal_buffer, nal_buffer_size);
+        if (nal_buffer_size != 0) {
+            samplesWritten++;
         
-        MP42SampleBuffer *sample = [[MP42SampleBuffer alloc] init];
-        sample->sampleData = sampleData;
-        sample->sampleSize = nal_buffer_size;
-        sample->sampleDuration = mp4FrameDuration;
-        sample->sampleOffset = 0;
-        sample->sampleTimestamp = 0;
-        sample->sampleIsSync = nal_is_sync;
-        sample->sampleTrackId = dstTrackId;
-        if(track.needConversion)
-            sample->sampleSourceTrack = track;
+            void* sampleData = malloc(nal_buffer_size);
+            memcpy(sampleData, nal_buffer, nal_buffer_size);
+            
+            MP42SampleBuffer *sample = [[MP42SampleBuffer alloc] init];
+            sample->sampleData = sampleData;
+            sample->sampleSize = nal_buffer_size;
+            sample->sampleDuration = mp4FrameDuration;
+            sample->sampleOffset = 0;
+            sample->sampleTimestamp = 0;
+            sample->sampleIsSync = nal_is_sync;
+            sample->sampleTrackId = dstTrackId;
+            if(track.needConversion)
+                sample->sampleSourceTrack = track;
 
-        @synchronized(samplesBuffer) {
-            [samplesBuffer addObject:sample];
-            [sample release];
+            @synchronized(samplesBuffer) {
+                [samplesBuffer addObject:sample];
+            }
+
+            DpbAdd(&h264_dpb, h264_dec.pic_order_cnt, slice_is_idr);
         }
-
-        DpbAdd(&h264_dpb, h264_dec.pic_order_cnt, slice_is_idr);
-    }
 	
 	free(nal_buffer);
 
-    DpbFlush(&h264_dpb);
+        DpbFlush(&h264_dpb);
 
-    [pool release];
+    }
     readerStatus = 1;
 }
 
@@ -1649,7 +1641,6 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
     if (readerStatus)
         if ([samplesBuffer count] == 0) {
             readerStatus = 0;
-            [dataReader release];
             dataReader = nil;
             return nil;
         }
@@ -1658,7 +1649,6 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
 
     @synchronized(samplesBuffer) {
         sample = [samplesBuffer objectAtIndex:0];
-        [sample retain];
         [samplesBuffer removeObjectAtIndex:0];
     }
 
@@ -1679,19 +1669,10 @@ NSData* H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
 
 - (void) dealloc
 {
-    if (dataReader)
-        [dataReader release];
-    if (samplesBuffer)
-        [samplesBuffer release];
 
     fclose(inFile);
 
-    [avcC release];
-	[fileURL release];
-    [tracksArray release];
-    [activeTracks release];
 
-    [super dealloc];
 }
 
 @end

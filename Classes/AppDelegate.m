@@ -143,7 +143,6 @@ void logCallback(MP4LogLevel loglevel, const char* fmt, va_list ap)
             if (allowNeverAgain)
                 [[NSUserDefaults standardUserDefaults] setBool:([[alert suppressionButton] state] != NSOnState) forKey:@"WarningDonate"];
 
-            [alert release];
         }
     }
 

@@ -92,7 +92,7 @@ using namespace tesseract;
 {
     if ((self = [super init]))
     {
-        _language = [language retain];
+        _language = language;
 
         NSString * lang = [SBLanguages codeForEnglishName: _language];
         NSURL *dataURL = [self appSupportUrl];
@@ -146,8 +146,4 @@ using namespace tesseract;
 
 }
 
-- (void) dealloc {
-    [_language release];
-    [super dealloc];
-}
 @end

@@ -96,7 +96,6 @@
     if ([self fileURL]) {
         MP42File *newFile = [[MP42File alloc] initWithExistingFile:[self fileURL] andDelegate:self];
         if (newFile) {
-            [mp4File release];
             mp4File = newFile;
             [fileTracksTable reloadData];
             [self tableViewSelectionDidChange:nil];
@@ -121,7 +120,6 @@
 
 - (BOOL)revertToContentsOfURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError
 {
-    [mp4File release];
     mp4File = [[MP42File alloc] initWithExistingFile:absoluteURL andDelegate:self];
 
     [fileTracksTable reloadData];
@@ -150,7 +148,6 @@
         didPresentSelector:NULL
                contextInfo:NULL];
 
-        [outError release];
     }
 
     [self reloadFile:self];
@@ -163,8 +160,6 @@
   didSaveSelector:(SEL)didSaveSelector
 	  contextInfo:(void *)contextInfo
 {
-    __block NSError	 *outError;
-
     [optBar setIndeterminate:YES];
     [optBar startAnimation:nil];
     [saveOperationName setStringValue:@"Saving…"];
@@ -174,19 +169,20 @@
     [documentWindow setTitle:[[absoluteURL path] lastPathComponent]];
 
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        BOOL success = [self saveToURL:absoluteURL ofType:typeName forSaveOperation:saveOperation error:&outError];
+		NSError *err = nil;
+        BOOL success = [self saveToURL:absoluteURL ofType:typeName forSaveOperation:saveOperation error:&err];
 
         [self setFileURL:absoluteURL];
         [self setFileModificationDate:[[[NSFileManager defaultManager]  
                                         attributesOfItemAtPath:[absoluteURL path] error:nil]  
                                        fileModificationDate]];
-        if (success && outError)
-            outError = nil;
+        if (success && err)
+            err = nil;
         else
-            [outError retain];
+            ;
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self saveDidComplete:outError];
+            [self saveDidComplete: err];
         });
     });
 }
@@ -221,7 +217,6 @@
         [mp4File optimize];
         _optimize = NO;
     }
-    [attributes release];
     return success;
 }
 
@@ -293,7 +288,6 @@
     /* send to itunes after save */
     NSAppleScript *myScript = [[NSAppleScript alloc] initWithSource: [NSString stringWithFormat: @"%@%@%@", @"tell application \"iTunes\" to open (POSIX file \"", [[self fileURL] path], @"\")"]];
     [myScript executeAndReturnError: nil];
-    [myScript release];
 }
 
 #pragma mark Interface validation
@@ -463,8 +457,7 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 
     [[self undoManager] removeAllActionsWithTarget:propertyView];  // remove the undo items from the dealloced view
 
-	if (propertyView != nil)
-		[propertyView release];		// remove the current view controller
+			// remove the current view controller
 
     NSInteger row = [fileTracksTable selectedRow];
     if (row == -1)
@@ -581,7 +574,6 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
     if ([mp4File hasFileRepresentation]) {
         SBQueueItem *item = [[SBQueueItem alloc] initWithMP4: mp4File];
         [queue addItem:item];
-		[item release];
         [self close];
     }
     else {
@@ -598,9 +590,7 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 
                 SBQueueItem *item = [[SBQueueItem alloc] initWithMP4:mp4File url:[panel URL] attributes:attributes];
                 [queue addItem:item];
-				[item release];
 
-                [attributes release];
                 [self close];
             }
         }];
@@ -692,9 +682,9 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 	NSWindowController *controller = nil;
 
     if ([[fileURL pathExtension] isEqualToString:@"h264"] || [[fileURL pathExtension] isEqualToString:@"264"])
-        controller = [[[VideoFramerate alloc] initWithDelegate:self andFile:fileURL] autorelease];
+        controller = [[VideoFramerate alloc] initWithDelegate:self andFile:fileURL];
     else
-		controller = [[[FileImport alloc] initWithDelegate:self andFile:fileURL error:&error] autorelease];
+		controller = [[FileImport alloc] initWithDelegate:self andFile:fileURL error:&error];
 
     if (controller) {
         [NSApp beginSheet:controller.window modalForWindow:documentWindow
@@ -721,7 +711,6 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 
     [NSApp endSheet: import.window];
     [import.window orderOut:self];
-    [import release];
 }
 
 - (void)searchController:(MetadataSearchController *)controller didImportMetadata:(MP42Metadata *)metadata {
@@ -747,7 +736,6 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 	
     [NSApp endSheet: controller.window];
     [controller.window orderOut:self];
-    [controller release];
 }
 
 - (void) metadataImportDone: (MP42Metadata*) metadataToBeImported
@@ -774,7 +762,7 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 
     [NSApp endSheet:[importWindow window]];
     [[importWindow window] orderOut:self];
-    [importWindow autorelease], importWindow = nil;
+    importWindow = nil;
 }
 
 - (void) addMetadata: (NSURL *) URL
@@ -784,7 +772,6 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 
     [self tableViewSelectionDidChange:nil];
     [self updateChangeCount:NSChangeDone];
-    [file release];
 }
 
 - (IBAction) selectMetadataFile: (id) sender
@@ -834,7 +821,6 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
                 [alert setAlertStyle: NSWarningAlertStyle];
                 
                 [alert runModal];
-                [alert release];
             }
 
         }
@@ -851,7 +837,6 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
         chapterTrack = [[MP42ChapterTrack alloc] init];
         [chapterTrack setDuration:[mp4File movieDuration]];
         [mp4File addTrack:chapterTrack];
-        [chapterTrack release];
     }
 
     if (minutes) {
@@ -922,12 +907,6 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
     return NO;
 }
 
--(void) dealloc
-{
-    [propertyView release];
-    [mp4File release];
-    [super dealloc];
-}
 
 -(MP42File *) mp4File {
     return mp4File;

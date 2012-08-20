@@ -20,7 +20,7 @@
 - (id <MP42FileImporter>)initWithFile:(NSURL *)URL delegate:(id <MP42FileImporterDelegate>)del error:(NSError **)outError {
     if ((self = [super init])) {
         delegate = del;
-        fileURL = [URL retain];
+        fileURL = URL;
 
         tracksArray = [[NSMutableArray alloc] initWithCapacity:1];
 
@@ -31,7 +31,6 @@
         newTrack.sourceURL = fileURL;
 
         [tracksArray addObject:newTrack];
-        [newTrack release];
     }
 
     return self;
@@ -120,82 +119,117 @@ static int ParseByte(const char *string, UInt8 *byte, Boolean hex)
 
 - (void) fillMovieSampleBuffer: (id)sender
 {
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-    MP4TrackId dstTrackId = [[activeTracks lastObject] Id];
+    @autoreleasepool {
+        MP4TrackId dstTrackId = [[activeTracks lastObject] Id];
 
-    NSString *scc = STStandardizeStringNewlines(STLoadFileWithUnknownEncoding([fileURL path]));
-    if (!scc) return;
+        NSString *scc = STStandardizeStringNewlines(STLoadFileWithUnknownEncoding([fileURL path]));
+        if (!scc) return;
 
-    NSScanner *sc = [NSScanner scannerWithString:scc];
+        NSScanner *sc = [NSScanner scannerWithString:scc];
 	NSString *res=nil;
 	[sc setCharactersToBeSkipped:nil];
 
-    [sc scanUpToString:@"\n" intoString:&res];
-    if (![res isEqualToString:@"Scenarist_SCC V1.0"])
-        return;
+        [sc scanUpToString:@"\n" intoString:&res];
+        if (![res isEqualToString:@"Scenarist_SCC V1.0"])
+            return;
 
-    unsigned startTime=0;
-    BOOL firstSample = YES;
+        unsigned startTime=0;
+        BOOL firstSample = YES;
 	NSRegularExpression *splitLine = [NSRegularExpression regularExpressionWithPattern: @"\\n+" options: 0 error: NULL];
-    NSRegularExpression *splitTimestamp  = [NSRegularExpression regularExpressionWithPattern: @"\\t+" options: 0 error: NULL];
+        NSRegularExpression *splitTimestamp  = [NSRegularExpression regularExpressionWithPattern: @"\\t+" options: 0 error: NULL];
 	NSRegularExpression *splitBytes = [NSRegularExpression regularExpressionWithPattern: @"\\s+" options: 0 error: NULL];
-    NSUInteger i = 0;
-    NSArray  *fileArray = [splitLine  arrayBySeparatingMatchesInString: scc];
+        NSUInteger i = 0;
+        NSArray  *fileArray = [splitLine  arrayBySeparatingMatchesInString: scc];
 
-    NSMutableArray *sampleArray = [[NSMutableArray alloc] initWithCapacity:[fileArray count]];
+        NSMutableArray *sampleArray = [[NSMutableArray alloc] initWithCapacity:[fileArray count]];
 
 	uint64_t dropFrame = 0;
-    uint64_t frameDrop = 0;
-    uint64_t minutesDrop = 0;
+        uint64_t frameDrop = 0;
+        uint64_t minutesDrop = 0;
 
-    for (NSString *line in fileArray) {
-        NSArray *lineArray = [splitTimestamp arrayBySeparatingMatchesInString: line];
+        for (NSString *line in fileArray) {
+            NSArray *lineArray = [splitTimestamp arrayBySeparatingMatchesInString: line];
 
-        if ([lineArray count] < 2)
-            continue;
+            if ([lineArray count] < 2)
+                continue;
 
-        startTime = ParseTimeCode([[lineArray objectAtIndex:0] UTF8String], 30000, NO, &dropFrame);
-        SBTextSample *sample = [[SBTextSample alloc] init];
-        sample.timestamp = startTime;
-        sample.title = [lineArray lastObject];
-        
-        [sampleArray addObject:[sample autorelease]];
-    }
-
-    for (SBTextSample *ccSample in sampleArray) {
-        MP4Duration sampleDuration = 0;
-        NSArray  *bytesArray = [splitBytes arrayBySeparatingMatchesInString: ccSample.title];
-
-        NSUInteger byteCount = [bytesArray count] *2;
-        UInt8 *bytes = malloc(sizeof(UInt8)*byteCount*2 + (sizeof(UInt8)*8));
-        UInt8 *bytesPos = bytes;
-
-        // Write out the size of the atom
-        *(long*)bytesPos = EndianS32_NtoB(8 + byteCount);
-        bytesPos += sizeof(long);
-
-        // Write out the atom type
-        *(OSType*)bytesPos = EndianU32_NtoB('cdat');
-        bytesPos += sizeof(OSType);
-
-        for (NSString *hexByte in bytesArray) {
-            ParseByte([hexByte UTF8String], bytesPos , 1);
-            ParseByte([hexByte UTF8String] + 2, bytesPos + 1, 1);
-            bytesPos +=2;
+            startTime = ParseTimeCode([[lineArray objectAtIndex:0] UTF8String], 30000, NO, &dropFrame);
+            SBTextSample *sample = [[SBTextSample alloc] init];
+            sample.timestamp = startTime;
+            sample.title = [lineArray lastObject];
+            
+            [sampleArray addObject:sample];
         }
 
-        if (firstSample && ccSample.timestamp != 0 && i == 0) {
-            SBTextSample *boh = [sampleArray objectAtIndex:1];
-            sampleDuration = boh.timestamp - ccSample.timestamp;
-            firstSample = NO;
-            u_int8_t *emptyBuffer = malloc(sizeof(u_int8_t)*8);
-            u_int8_t empty[8] = {0,0,0,8,'c','d','a','t'};
-            memcpy(emptyBuffer, empty, sizeof(u_int8_t)*8);
+        for (SBTextSample *ccSample in sampleArray) {
+            MP4Duration sampleDuration = 0;
+            NSArray  *bytesArray = [splitBytes arrayBySeparatingMatchesInString: ccSample.title];
+
+            NSUInteger byteCount = [bytesArray count] *2;
+            UInt8 *bytes = malloc(sizeof(UInt8)*byteCount*2 + (sizeof(UInt8)*8));
+            UInt8 *bytesPos = bytes;
+
+            // Write out the size of the atom
+            *(long*)bytesPos = EndianS32_NtoB(8 + byteCount);
+            bytesPos += sizeof(long);
+
+            // Write out the atom type
+            *(OSType*)bytesPos = EndianU32_NtoB('cdat');
+            bytesPos += sizeof(OSType);
+
+            for (NSString *hexByte in bytesArray) {
+                ParseByte([hexByte UTF8String], bytesPos , 1);
+                ParseByte([hexByte UTF8String] + 2, bytesPos + 1, 1);
+                bytesPos +=2;
+            }
+
+            if (firstSample && ccSample.timestamp != 0 && i == 0) {
+                SBTextSample *boh = [sampleArray objectAtIndex:1];
+                sampleDuration = boh.timestamp - ccSample.timestamp;
+                firstSample = NO;
+                u_int8_t *emptyBuffer = malloc(sizeof(u_int8_t)*8);
+                u_int8_t empty[8] = {0,0,0,8,'c','d','a','t'};
+                memcpy(emptyBuffer, empty, sizeof(u_int8_t)*8);
+
+                MP42SampleBuffer *sample = [[MP42SampleBuffer alloc] init];
+                sample->sampleData = emptyBuffer;
+                sample->sampleSize = 8;
+                sample->sampleDuration = ccSample.timestamp *= 1001;
+                sample->sampleOffset = 0;
+                sample->sampleTimestamp = 0;
+                sample->sampleIsSync = 1;
+                sample->sampleTrackId = dstTrackId;
+
+                @synchronized(samplesBuffer) {
+                    [samplesBuffer addObject:sample];
+                }
+
+                frameDrop += ccSample.timestamp;
+                minutesDrop += frameDrop;
+            }
+            else if (i+1 < [sampleArray count]) {
+                SBTextSample *boh = [sampleArray objectAtIndex:i+1];
+                sampleDuration = boh.timestamp - ccSample.timestamp;
+                frameDrop += sampleDuration;
+                minutesDrop += sampleDuration;
+
+                if (frameDrop >= 1800 && dropFrame) {
+                    if (minutesDrop > 18000)
+                        minutesDrop -= 16200;
+                    else {
+                        sampleDuration -= 2;
+                    }
+
+                    frameDrop -= 1800;
+                }
+            }
+            else
+                sampleDuration = 6;
 
             MP42SampleBuffer *sample = [[MP42SampleBuffer alloc] init];
-            sample->sampleData = emptyBuffer;
-            sample->sampleSize = 8;
-            sample->sampleDuration = ccSample.timestamp *= 1001;
+            sample->sampleData = bytes;
+            sample->sampleSize = byteCount + 8;
+            sample->sampleDuration = sampleDuration * 1001;
             sample->sampleOffset = 0;
             sample->sampleTimestamp = 0;
             sample->sampleIsSync = 1;
@@ -203,50 +237,12 @@ static int ParseByte(const char *string, UInt8 *byte, Boolean hex)
 
             @synchronized(samplesBuffer) {
                 [samplesBuffer addObject:sample];
-                [sample release];
             }
 
-            frameDrop += ccSample.timestamp;
-            minutesDrop += frameDrop;
-        }
-        else if (i+1 < [sampleArray count]) {
-            SBTextSample *boh = [sampleArray objectAtIndex:i+1];
-            sampleDuration = boh.timestamp - ccSample.timestamp;
-            frameDrop += sampleDuration;
-            minutesDrop += sampleDuration;
-
-            if (frameDrop >= 1800 && dropFrame) {
-                if (minutesDrop > 18000)
-                    minutesDrop -= 16200;
-                else {
-                    sampleDuration -= 2;
-                }
-
-                frameDrop -= 1800;
-            }
-        }
-        else
-            sampleDuration = 6;
-
-        MP42SampleBuffer *sample = [[MP42SampleBuffer alloc] init];
-        sample->sampleData = bytes;
-        sample->sampleSize = byteCount + 8;
-        sample->sampleDuration = sampleDuration * 1001;
-        sample->sampleOffset = 0;
-        sample->sampleTimestamp = 0;
-        sample->sampleIsSync = 1;
-        sample->sampleTrackId = dstTrackId;
-
-        @synchronized(samplesBuffer) {
-            [samplesBuffer addObject:sample];
-            [sample release];
+            i++;
         }
 
-        i++;
     }
-
-    [sampleArray release];
-    [pool release];
     readerStatus = 1;
 }
 
@@ -275,7 +271,6 @@ static int ParseByte(const char *string, UInt8 *byte, Boolean hex)
 
     @synchronized(samplesBuffer) {
         sample = [samplesBuffer objectAtIndex:0];
-        [sample retain];
         [samplesBuffer removeObjectAtIndex:0];
     }
 
@@ -293,12 +288,5 @@ static int ParseByte(const char *string, UInt8 *byte, Boolean hex)
     return 100.0;
 }
 
-- (void) dealloc
-{
-	[fileURL release];
-    [tracksArray release];
-
-    [super dealloc];
-}
 
 @end

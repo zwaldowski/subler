@@ -17,7 +17,7 @@
 	if ((self = [super initWithWindowNibName:@"VideoFramerate"]))
 	{        
 		delegate = del;
-        fileURL = [URL retain];
+        fileURL = URL;
     }
 
 	return self;
@@ -49,13 +49,7 @@ uint8_t H264Info(const char *filePath, uint32_t *pic_width, uint32_t *pic_height
 	if (delegate)
 		[delegate fileImport: self didCompleteWithTracks: tracks metadata: nil];
 	
-    [tracks release];
 }
 
-- (void) dealloc
-{
-    [fileURL release];
-    [super dealloc];
-}
 
 @end

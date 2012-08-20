@@ -34,24 +34,22 @@
                 if ([node count]) [results addObject:[[node objectAtIndex:0] stringValue]];
             }
         }
-        [x release];
     }
 
-    [u release];
 
-    return [results autorelease];
+    return results;
 }
 
 - (void) searchForTVSeriesName:(NSString *)_seriesName callback:(MetadataSearchController *)_callback {
     callback = _callback;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        NSArray *results = [self searchForTVSeriesName:_seriesName];
+        @autoreleasepool {
+            NSArray *results = [self searchForTVSeriesName:_seriesName];
 
-        if (!isCancelled)
-            [callback performSelectorOnMainThread:@selector(searchForTVSeriesNameDone:) withObject:results waitUntilDone:YES];
+            if (!isCancelled)
+                [callback performSelectorOnMainThread:@selector(searchForTVSeriesNameDone:) withObject:results waitUntilDone:YES];
 
-        [pool release];
+        }
     });
 }
 
@@ -82,7 +80,7 @@
     // read output into dictionary
     NSFileHandle *outputFile = [outputPipe fileHandleForReading];
     NSData *outputData = [outputFile readDataToEndOfFile];
-    NSString *plistFilename = [[[[NSString alloc] initWithData:outputData encoding:NSUTF8StringEncoding] autorelease] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *plistFilename = [[[NSString alloc] initWithData:outputData encoding:NSUTF8StringEncoding] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     NSDictionary *plist = [NSDictionary dictionaryWithContentsOfFile:plistFilename];
     // construct result
     NSArray *results = [self metadataForResults:plist];
@@ -90,8 +88,6 @@
         [[NSFileManager defaultManager] removeItemAtPath:plistFilename error:NULL];
     // return results
 
-    [args release];
-    [cmd release];
 
     return results;
 }
@@ -101,14 +97,14 @@
     callback = _callback;
 
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        NSArray *results = [self searchForResults:_seriesName seriesLanguage:_seriesLanguage seasonNum:_seasonNum episodeNum:_episodeNum];
+        @autoreleasepool {
+            NSArray *results = [self searchForResults:_seriesName seriesLanguage:_seriesLanguage seasonNum:_seasonNum episodeNum:_episodeNum];
 
-        // return results
-        if (!isCancelled)
-            [callback performSelectorOnMainThread:@selector(searchForResultsDone:) withObject:results waitUntilDone:YES];
+            // return results
+            if (!isCancelled)
+                [callback performSelectorOnMainThread:@selector(searchForResultsDone:) withObject:results waitUntilDone:YES];
 
-        [pool release];
+        }
     });
 }
 
@@ -171,8 +167,6 @@
         [metadata setArtworkThumbURLs: artworkThumbURLs];
         [metadata setArtworkFullsizeURLs: artworkFullsizeURLs];
         
-        [artworkThumbURLs release];
-        [artworkFullsizeURLs release];
 
         // cast
         NSString *actors = [((NSArray *) [dict valueForKey:@"actors"]) componentsJoinedByString:@", "];
@@ -191,9 +185,8 @@
         // TheTVDB does not provide the following fields normally associated with TV shows in MP42Metadata:
         // "TV Network", "Genre", "Copyright", "Comments", "Rating", "Producers", "Artist"
         [returnArray addObject:metadata];
-        [metadata release];
     }
-    return [returnArray autorelease];
+    return returnArray;
 }
 
 #pragma mark Finishing up
@@ -201,7 +194,6 @@
 - (void) dealloc {
     callback = nil;
 
-    [super dealloc];
 }
 
 - (void)cancel
@@ -227,11 +219,9 @@
     // read output into dictionary
     NSFileHandle *outputFile = [outputPipe fileHandleForReading];
     NSData *outputData = [outputFile readDataToEndOfFile];
-    NSString *output = [[[[NSString alloc] initWithData:outputData encoding:NSUTF8StringEncoding] autorelease] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *output = [[[NSString alloc] initWithData:outputData encoding:NSUTF8StringEncoding] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     [[NSFileManager defaultManager] removeItemAtPath:[output stringByAppendingPathComponent:@"tvdb_api"] error:NULL];
 
-    [cmd release];
-    [args release];
 }
 
 @end

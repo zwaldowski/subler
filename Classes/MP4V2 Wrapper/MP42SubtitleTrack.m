@@ -147,7 +147,7 @@ struct style_record {
     uint32_t timeScale = MP4GetTrackTimeScale(fileHandle, srcTrackId);
     uint64_t samples = MP4GetTrackNumberOfSamples(fileHandle, srcTrackId);
 
-    NSMutableString *srtFile = [[[NSMutableString alloc] init] autorelease];
+    NSMutableString *srtFile = [[NSMutableString alloc] init];
 
     for (sampleId = 1; sampleId <= samples; sampleId++) {
         uint8_t *pBytes = NULL;
@@ -171,9 +171,9 @@ struct style_record {
         NSUInteger textSampleLength = ((pBytes[0] << 8) & 0xff00) + pBytes[1];
 
         if (textSampleLength) {
-            sampleText = [[[NSMutableString alloc] initWithBytes:(pBytes+2)
+            sampleText = [[NSMutableString alloc] initWithBytes:(pBytes+2)
                                                           length:textSampleLength
-                                                        encoding:NSUTF8StringEncoding] autorelease];
+                                                        encoding:NSUTF8StringEncoding];
         }
 
         // Let's see if there is an atom after the text sample
@@ -265,9 +265,5 @@ struct style_record {
     return forcedTrackId;
 }
 
-- (void) dealloc
-{
-    [super dealloc];
-}
 
 @end

@@ -133,11 +133,11 @@ enum rating_type {
 
 @property(readonly) NSMutableDictionary *tagsDict;
 
-@property(readwrite, retain) NSString   *presetName;
-@property(readwrite, retain) NSImage    *artwork;
-@property(readwrite, retain) NSURL      *artworkURL;
-@property(readwrite, retain) NSArray    *artworkThumbURLs;
-@property(readwrite, retain) NSArray    *artworkFullsizeURLs;
+@property(readwrite, strong) NSString   *presetName;
+@property(readwrite, strong) NSImage    *artwork;
+@property(readwrite, strong) NSURL      *artworkURL;
+@property(readwrite, strong) NSArray    *artworkThumbURLs;
+@property(readwrite, strong) NSArray    *artworkFullsizeURLs;
 @property(readwrite) uint8_t    mediaKind;
 @property(readwrite) uint8_t    contentRating;
 @property(readwrite) uint8_t    hdVideo;

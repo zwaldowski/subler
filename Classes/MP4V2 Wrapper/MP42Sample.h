@@ -21,7 +21,7 @@
     BOOL          sampleIsSync;
     BOOL          sampleIsCompressed;
     BOOL          sampleIsForced;
-    MP42Track    *sampleSourceTrack;
+    MP42Track    *__unsafe_unretained sampleSourceTrack;
 }
 
 @property(readwrite) void         *sampleData;
@@ -33,6 +33,6 @@
 @property(readwrite) BOOL          sampleIsSync;
 @property(readwrite) BOOL          sampleIsCompressed;
 @property(readwrite) BOOL          sampleIsForced;
-@property(assign)    MP42Track    *sampleSourceTrack;
+@property(unsafe_unretained)    MP42Track    *sampleSourceTrack;
 
 @end

@@ -13,7 +13,6 @@
 
 -(void) dealloc {
     free(sampleData);
-    [super dealloc];
 }
 
 @synthesize  sampleData;

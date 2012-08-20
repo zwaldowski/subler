@@ -33,20 +33,20 @@
 
     NSMutableDictionary *updatedProperty;
 
-    id <MP42FileImporter> trackImporterHelper;
+    id <MP42FileImporter> __unsafe_unretained trackImporterHelper;
     id trackDemuxerHelper;
     id trackConverterHelper;
 }
 
 @property(readwrite) MP4TrackId Id;
 @property(readwrite) MP4TrackId sourceId;
-@property(readwrite, retain) id sourceFileHandle;
+@property(readwrite, strong) id sourceFileHandle;
 
-@property(readwrite, retain) NSURL *sourceURL;
-@property(readwrite, retain) NSString *sourceFormat;
-@property(readwrite, retain) NSString *format;
-@property(readwrite, retain) NSString *name;
-@property(readwrite, retain) NSString *language;
+@property(readwrite, strong) NSURL *sourceURL;
+@property(readwrite, strong) NSString *sourceFormat;
+@property(readwrite, strong) NSString *format;
+@property(readwrite, strong) NSString *name;
+@property(readwrite, strong) NSString *language;
 
 @property(readwrite) BOOL     enabled;
 @property(readwrite) uint64_t alternate_group;
@@ -60,11 +60,11 @@
 @property(readwrite) BOOL muxed;
 @property(readwrite) BOOL needConversion;
 
-@property(nonatomic, assign) id <MP42FileImporter> trackImporterHelper;
-@property(nonatomic, retain) id trackDemuxerHelper;
-@property(nonatomic, retain) id trackConverterHelper;
+@property(nonatomic, unsafe_unretained) id <MP42FileImporter> trackImporterHelper;
+@property(nonatomic, strong) id trackDemuxerHelper;
+@property(nonatomic, strong) id trackConverterHelper;
 
-@property(nonatomic, retain) NSMutableDictionary *updatedProperty;
+@property(nonatomic, strong) NSMutableDictionary *updatedProperty;
 
 - (id) initWithSourceURL:(NSURL *)URL trackID:(NSInteger)trackID fileHandle:(MP4FileHandle)fileHandle;
 - (BOOL) writeToFile:(MP4FileHandle)fileHandle error:(NSError **)outError;

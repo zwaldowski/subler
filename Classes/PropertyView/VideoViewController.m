@@ -115,9 +115,9 @@ static NSString *getLevelName(uint8_t level) {
         
         for (id fileTrack in [mp4file tracks]) {
             if ([fileTrack isMemberOfClass:[MP42SubtitleTrack class]]) {
-                NSMenuItem *newItem = [[[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"Track %d", [fileTrack Id]]
+                NSMenuItem *newItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"Track %d", [fileTrack Id]]
                                                                   action:@selector(setForcedTrack:)
-                                                           keyEquivalent:@""] autorelease];
+                                                           keyEquivalent:@""];
                 [newItem setTarget:self];
                 [newItem setTag: [fileTrack Id]];
                 [[forced menu] addItem:newItem];

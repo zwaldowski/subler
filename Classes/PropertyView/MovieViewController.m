@@ -28,7 +28,7 @@ NSString *MetadataPBoardType = @"MetadataPBoardType";
                                              selector:@selector(updateSetsMenu:)
                                                  name:@"SBPresetManagerUpdatedNotification" object:nil];
 
-    tagsMenu = [[metadata writableMetadata] retain];
+    tagsMenu = [metadata writableMetadata];
     for (id tag in tagsMenu)
         [tagList addItemWithTitle:tag];
 
@@ -41,12 +41,12 @@ NSString *MetadataPBoardType = @"MetadataPBoardType";
         if ([rating length]) {
             NSMenuItem *item;
             if ([rating hasPrefix:@"--"]) {
-                item = [[[NSMenuItem alloc] initWithTitle:[rating substringFromIndex:3] action:NULL keyEquivalent:@""] autorelease];
+                item = [[NSMenuItem alloc] initWithTitle:[rating substringFromIndex:3] action:NULL keyEquivalent:@""];
                 [item setEnabled:NO];
                 [[ratingCell menu] addItem:item];
             }
             else {
-                item = [[[NSMenuItem alloc] initWithTitle:rating action:NULL keyEquivalent:@""] autorelease];
+                item = [[NSMenuItem alloc] initWithTitle:rating action:NULL keyEquivalent:@""];
                 [item setIndentationLevel:1];
                 [[ratingCell menu] addItem:item];
             }
@@ -66,15 +66,15 @@ NSString *MetadataPBoardType = @"MetadataPBoardType";
     [genreCell setEditable:YES];
     [genreCell addItemsWithObjectValues:[metadata availableGenres]];
 
-    NSMutableParagraphStyle * ps = [[[NSParagraphStyle defaultParagraphStyle] mutableCopy] autorelease];
+    NSMutableParagraphStyle * ps = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     [ps setHeadIndent: -10.0];
     [ps setAlignment:NSRightTextAlignment];
 
-    detailBoldAttr = [[NSDictionary dictionaryWithObjectsAndKeys:
+    detailBoldAttr = [NSDictionary dictionaryWithObjectsAndKeys:
                       [NSFont boldSystemFontOfSize:11.0], NSFontAttributeName,
                       ps, NSParagraphStyleAttributeName,
                       [NSColor grayColor], NSForegroundColorAttributeName,
-                       nil] retain];
+                       nil];
 
     [imageView setImage:[metadata artwork]];
 
@@ -84,7 +84,7 @@ NSString *MetadataPBoardType = @"MetadataPBoardType";
     [gapless setState:metadata.gapless];
     [podcast setState:metadata.podcast];
 
-    tabCol = [[[tagsTableView tableColumns] objectAtIndex:1] retain];
+    tabCol = [[tagsTableView tableColumns] objectAtIndex:1];
 	
 	[self updateTagsArray];
 
@@ -109,8 +109,7 @@ NSString *MetadataPBoardType = @"MetadataPBoardType";
 
 - (void) updateTagsArray
 {
-	if (tagsArray)
-		[tagsArray release]; tagsArray = nil;
+	 tagsArray = nil;
     tagsArray = [tags.allKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
 		NSArray *context = [metadata availableMetadata];
 		NSInteger right = [context indexOfObject:obj2];
@@ -170,7 +169,7 @@ NSString *MetadataPBoardType = @"MetadataPBoardType";
 - (IBAction) removeTag: (id) sender {
     NSIndexSet *rowIndexes = [tagsTableView selectedRowIndexes];
     NSUInteger current_index = [rowIndexes lastIndex];
-    NSMutableDictionary *tagDict = [[[NSMutableDictionary alloc] init] autorelease];
+    NSMutableDictionary *tagDict = [[NSMutableDictionary alloc] init];
 
     while (current_index != NSNotFound) {
         if ([tagsTableView editedRow] == -1) {
@@ -184,7 +183,7 @@ NSString *MetadataPBoardType = @"MetadataPBoardType";
 
 - (void) updateMetadata:(id)value forKey:(NSString *)key
 {
-    NSString *oldValue = [[[metadata tagsDict] valueForKey:key] retain];
+    NSString *oldValue = [[metadata tagsDict] valueForKey:key];
 
     if ([metadata setTag:value forKey:key]) {
 
@@ -198,7 +197,6 @@ NSString *MetadataPBoardType = @"MetadataPBoardType";
             [undo setActionName:@"Editing"];
         }
     }
-    [oldValue release];
 }
 
 - (NSArray *) allSet
@@ -232,7 +230,7 @@ NSString *MetadataPBoardType = @"MetadataPBoardType";
         [mediaKind selectItemWithTag:metadata.mediaKind];
     }
 
-    NSMutableDictionary *tagDict = [[[NSMutableDictionary alloc] init] autorelease];
+    NSMutableDictionary *tagDict = [[NSMutableDictionary alloc] init];
     for (NSString *key in metadataKeys) {
         if (![[metadata tagsDict] valueForKey:key])
             [tagDict setValue:@"" forKey:key];
@@ -250,7 +248,7 @@ NSString *MetadataPBoardType = @"MetadataPBoardType";
 
     NSArray *metadataKeys = [[newTags tagsDict] allKeys];
 
-    NSMutableDictionary *tagDict = [[[NSMutableDictionary alloc] init] autorelease];
+    NSMutableDictionary *tagDict = [[NSMutableDictionary alloc] init];
     for (NSString *key in metadataKeys) {
             [tagDict setValue:[[newTags tagsDict] valueForKey:key] forKey:key];
     }
@@ -285,23 +283,23 @@ NSString *MetadataPBoardType = @"MetadataPBoardType";
     while ([setListMenu numberOfItems] > 1)
         [setListMenu removeItemAtIndex: 1];
     
-    NSMenuItem *newItem = [[[NSMenuItem alloc] initWithTitle:@"Save Set" action:@selector(showSaveSet:) keyEquivalent:@""] autorelease];
+    NSMenuItem *newItem = [[NSMenuItem alloc] initWithTitle:@"Save Set" action:@selector(showSaveSet:) keyEquivalent:@""];
     [newItem setTarget:self];
     [setListMenu addItem:newItem];
 
     [setListMenu addItem:[NSMenuItem separatorItem]];
 
-    newItem = [[[NSMenuItem alloc] initWithTitle:@"All" action:@selector(addMetadataSet:) keyEquivalent:@""] autorelease];
+    newItem = [[NSMenuItem alloc] initWithTitle:@"All" action:@selector(addMetadataSet:) keyEquivalent:@""];
     [newItem setTarget:self];
     [newItem setTag: 0];
     [setListMenu addItem:newItem];
 
-    newItem = [[[NSMenuItem alloc] initWithTitle:@"Movie" action:@selector(addMetadataSet:) keyEquivalent:@""] autorelease];
+    newItem = [[NSMenuItem alloc] initWithTitle:@"Movie" action:@selector(addMetadataSet:) keyEquivalent:@""];
     [newItem setTarget:self];
     [newItem setTag: 1];
     [setListMenu addItem:newItem];
 
-    newItem = [[[NSMenuItem alloc] initWithTitle:@"TV Show" action:@selector(addMetadataSet:) keyEquivalent:@""] autorelease];
+    newItem = [[NSMenuItem alloc] initWithTitle:@"TV Show" action:@selector(addMetadataSet:) keyEquivalent:@""];
     [newItem setTarget:self];
     [newItem setTag: 2];
     [setListMenu addItem:newItem];
@@ -317,7 +315,6 @@ NSString *MetadataPBoardType = @"MetadataPBoardType";
         [newItem setTag:i++];
 
         [setListMenu addItem:newItem];
-        [newItem release];
     }
 }
 
@@ -385,7 +382,6 @@ NSString *MetadataPBoardType = @"MetadataPBoardType";
     [pb declareTypes:types owner:nil];
     [pb setString:string forType: NSStringPboardType];
     [pb setData:[NSArchiver archivedDataWithRootObject:data] forType:MetadataPBoardType];
-    [data release];
 }
 
 - (void)_cutSelectionFromTableView:(NSTableView *)tableView;
@@ -405,7 +401,7 @@ NSString *MetadataPBoardType = @"MetadataPBoardType";
 
 - (NSAttributedString *) boldString: (NSString *) string
 {
-    return [[[NSAttributedString alloc] initWithString:string attributes:detailBoldAttr] autorelease];
+    return [[NSAttributedString alloc] initWithString:string attributes:detailBoldAttr];
 }
 
 /* TableView delegate methods */
@@ -604,14 +600,6 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 {
     [[NSNotificationCenter defaultCenter] removeObserver: self];
 
-    [tagsArray release];
-    [tagsMenu release];
-    [tabCol release];
-    [detailBoldAttr release];
-    [ratingCell release];
-    [genreCell release];
-    [dct release];
-    [super dealloc];
 }
 
 @end

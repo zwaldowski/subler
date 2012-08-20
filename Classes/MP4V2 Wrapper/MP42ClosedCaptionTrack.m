@@ -43,9 +43,5 @@
     return Id;
 }
 
-- (void) dealloc
-{
-    [super dealloc];
-}
 
 @end

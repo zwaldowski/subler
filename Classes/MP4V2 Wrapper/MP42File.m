@@ -63,7 +63,6 @@ NSString * const MP42FileTypeM4B = @"m4b";
 		fileHandle = MP4Read([[URL path] UTF8String]);
 
         if (!fileHandle) {
-            [self release];
 			return nil;
         }
 
@@ -72,12 +71,11 @@ NSString * const MP42FileTypeM4B = @"m4b";
         if (brand != NULL) {
             if (!strcmp(brand, "qt  ")) {
                 MP4Close(fileHandle, 0);
-                [self release];
                 return nil;
             }
         }
 
-        fileURL = [URL retain];
+        fileURL = URL;
         hasFileRepresentation = YES;
 
         tracks = [[NSMutableArray alloc] init];
@@ -110,7 +108,6 @@ NSString * const MP42FileTypeM4B = @"m4b";
 
             track = [track initWithSourceURL:fileURL trackID:trackId fileHandle:fileHandle];
             [tracks addObject:track];
-            [track release];
         }
 
         tracksToBeDeleted = [[NSMutableArray alloc] init];
@@ -141,7 +138,7 @@ NSString * const MP42FileTypeM4B = @"m4b";
         if ([track isMemberOfClass:[MP42ChapterTrack class]])
             chapterTrack = (MP42ChapterTrack*) track;
 
-    return [[chapterTrack retain] autorelease];
+    return chapterTrack;
 }
 
 - (void)removeTracksAtIndexes:(NSIndexSet *)indexes
@@ -205,43 +202,41 @@ NSString * const MP42FileTypeM4B = @"m4b";
 
 - (void) moveTrackAtIndex: (NSUInteger)index toIndex:(NSUInteger) newIndex
 {
-    id track = [[tracks objectAtIndex:index] retain];
+    id track = [tracks objectAtIndex:index];
 
     [tracks removeObjectAtIndex:index];
     if (newIndex > [tracks count] || newIndex > index)
         newIndex--;
     [tracks insertObject:track atIndex:newIndex];
-    [track release];
 }
 
 - (void) optimize
 {
     __block BOOL noErr = NO;
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    @autoreleasepool {
 
-    NSFileManager *fileManager = [[NSFileManager alloc] init];
-    unsigned long long originalFileSize = [[[fileManager attributesOfItemAtPath:[fileURL path] error:nil] valueForKey:NSFileSize] unsignedLongLongValue];
+        NSFileManager *fileManager = [[NSFileManager alloc] init];
+        unsigned long long originalFileSize = [[[fileManager attributesOfItemAtPath:[fileURL path] error:nil] valueForKey:NSFileSize] unsignedLongLongValue];
 
-    NSString * tempPath = [NSString stringWithFormat:@"%@%@", [fileURL path], @".tmp"];
+        NSString * tempPath = [NSString stringWithFormat:@"%@%@", [fileURL path], @".tmp"];
 
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        noErr = MP4Optimize([[fileURL path] UTF8String], [tempPath UTF8String]);
-    });
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            noErr = MP4Optimize([[fileURL path] UTF8String], [tempPath UTF8String]);
+        });
 
-    while (!noErr) {
-        unsigned long long fileSize = [[[fileManager attributesOfItemAtPath:tempPath error:nil] valueForKey:NSFileSize] unsignedLongLongValue];
+        while (!noErr) {
+            unsigned long long fileSize = [[[fileManager attributesOfItemAtPath:tempPath error:nil] valueForKey:NSFileSize] unsignedLongLongValue];
 		if (delegate)
 			[delegate file: self didUpdateProgress: ((CGFloat)fileSize / originalFileSize) * 100];
-        usleep(450000);
-    }
+            usleep(450000);
+        }
 
-    if (noErr) {
-        [fileManager removeItemAtURL:fileURL error:nil];
-        [fileManager moveItemAtPath:tempPath toPath:[fileURL path] error:nil];
-    }
+        if (noErr) {
+            [fileManager removeItemAtURL:fileURL error:nil];
+            [fileManager moveItemAtPath:tempPath toPath:[fileURL path] error:nil];
+        }
 
-    [fileManager release];
-    [pool release];
+    }
 }
 
 - (BOOL) writeToUrl:(NSURL *)url withAttributes:(NSDictionary *)attributes error:(NSError **)outError
@@ -264,14 +259,13 @@ NSString * const MP42FileTypeM4B = @"m4b";
 					[delegate file: self didUpdateProgress: ((CGFloat)fileSize / originalFileSize) * 100];
                 usleep(450000);
             }
-            [fileManager release];
         }
 
-        fileURL = [url retain];
+        fileURL = url;
         success = [self updateMP4FileWithAttributes:attributes error:outError];
     }
     else {
-        fileURL = [url retain];
+        fileURL = url;
 
         NSString *fileExtension = [fileURL pathExtension];
         char* majorBrand = "mp42";
@@ -355,17 +349,14 @@ NSString * const MP42FileTypeM4B = @"m4b";
                 } else if (sourceURL && (fileImporter = [MP42Utilities fileImporterForURL: track.sourceURL delegate: nil error: outError])) {
 					[track setTrackImporterHelper:fileImporter];
 					[_fileImporters setObject:fileImporter forKey:[[track sourceURL] path]];
-					[fileImporter release];
 				}
             }
             [muxer addTrack:track];
     }
 
-    [_fileImporters release];
 
     success = [muxer prepareWork:fileHandle error:outError];
     if ( !success && outError != NULL) {
-        [muxer release];
         muxer = nil;
 
         return NO;
@@ -373,7 +364,6 @@ NSString * const MP42FileTypeM4B = @"m4b";
     else
         [muxer start:fileHandle];
 
-    [muxer release];
     muxer = nil;
 
     // Update modified tracks properties
@@ -450,168 +440,164 @@ NSString * const MP42FileTypeM4B = @"m4b";
                 decodable = 0;
 
     if (chapterTrack && !jpegTrack && decodable) {
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        NSMutableArray * previewImages = [NSMutableArray arrayWithCapacity:[chapterTrack chapterCount]];
+        @autoreleasepool {
+            NSMutableArray * previewImages = [NSMutableArray arrayWithCapacity:[chapterTrack chapterCount]];
 
-        // If we are on 10.7, use the AVFoundation path
-        if (NSClassFromString(@"AVAsset")) {
-            AVAsset *asset = [AVAsset assetWithURL:fileURL];
+            // If we are on 10.7, use the AVFoundation path
+            if (NSClassFromString(@"AVAsset")) {
+                AVAsset *asset = [AVAsset assetWithURL:fileURL];
 
-            if ([asset tracksWithMediaCharacteristic:AVMediaCharacteristicVisual]) {
-                AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:asset];
-                generator.appliesPreferredTrackTransform = YES;
-                generator.apertureMode = AVAssetImageGeneratorApertureModeCleanAperture;
-                generator.requestedTimeToleranceBefore = kCMTimeZero;
-                generator.requestedTimeToleranceAfter  = kCMTimeZero;
+                if ([asset tracksWithMediaCharacteristic:AVMediaCharacteristicVisual]) {
+                    AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:asset];
+                    generator.appliesPreferredTrackTransform = YES;
+                    generator.apertureMode = AVAssetImageGeneratorApertureModeCleanAperture;
+                    generator.requestedTimeToleranceBefore = kCMTimeZero;
+                    generator.requestedTimeToleranceAfter  = kCMTimeZero;
+
+                    for (SBTextSample * chapter in [chapterTrack chapters]) {
+                        CMTime time = CMTimeMake([chapter timestamp] + 1800, 1000);
+                        CGImageRef imgRef = [generator copyCGImageAtTime:time actualTime:NULL error:&error];
+                        if (imgRef) {
+                            NSSize size = NSMakeSize(CGImageGetWidth(imgRef), CGImageGetHeight(imgRef));
+                            NSImage *previewImage = [[NSImage alloc] initWithCGImage:imgRef size:size];
+
+                            [previewImages addObject:previewImage];
+                        }
+                        else
+                            NSLog(@"code: %ld, domain: %@, userInfo: %@", [error code], [error domain], [error userInfo]);
+
+                        CGImageRelease(imgRef);
+                    }
+                }
+            }
+            // Else fall back to QTKit
+            else {
+                __block QTMovie * qtMovie;
+                // QTMovie objects must always be create on the main thread.
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    NSDictionary *movieAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                     fileURL, QTMovieURLAttribute,
+                                                     [NSNumber numberWithBool:NO], QTMovieAskUnresolvedDataRefsAttribute,
+                                                     [NSNumber numberWithBool:YES], @"QTMovieOpenForPlaybackAttribute",
+                                                     [NSNumber numberWithBool:NO], @"QTMovieOpenAsyncRequiredAttribute",
+                                                     [NSNumber numberWithBool:NO], @"QTMovieOpenAsyncOKAttribute",
+                                                     QTMovieApertureModeClean, QTMovieApertureModeAttribute,
+                                                     nil];
+                    qtMovie = [[QTMovie alloc] initWithAttributes:movieAttributes error:nil];
+                });
+
+                if (!qtMovie)
+                    return NO;
+
+                for (QTTrack* qtTrack in [qtMovie tracksOfMediaType:@"sbtl"])
+                    [qtTrack setAttribute:[NSNumber numberWithBool:NO] forKey:QTTrackEnabledAttribute];
+
+                NSDictionary *attributes = [NSDictionary dictionaryWithObject:QTMovieFrameImageTypeNSImage forKey:QTMovieFrameImageType];
 
                 for (SBTextSample * chapter in [chapterTrack chapters]) {
-                    CMTime time = CMTimeMake([chapter timestamp] + 1800, 1000);
-                    CGImageRef imgRef = [generator copyCGImageAtTime:time actualTime:NULL error:&error];
-                    if (imgRef) {
-                        NSSize size = NSMakeSize(CGImageGetWidth(imgRef), CGImageGetHeight(imgRef));
-                        NSImage *previewImage = [[NSImage alloc] initWithCGImage:imgRef size:size];
+                    QTTime chapterTime = {
+                        [chapter timestamp] + 1500, // Add a short offset, hopefully we will get a better image
+                        1000,                       // if there is a fade
+                        0
+                    };
 
+                    NSImage *previewImage = [qtMovie frameImageAtTime:chapterTime withAttributes:attributes error:&error];
+                    if (previewImage)
                         [previewImages addObject:previewImage];
-                        [previewImage release];
-                    }
-                    else
+                    else {
                         NSLog(@"code: %ld, domain: %@, userInfo: %@", [error code], [error domain], [error userInfo]);
 
-                    CGImageRelease(imgRef);
+                        [previewImages addObject:[NSNull null]];
+                    }
                 }
-            }
-        }
-        // Else fall back to QTKit
-        else {
-            __block QTMovie * qtMovie;
-            // QTMovie objects must always be create on the main thread.
-            dispatch_sync(dispatch_get_main_queue(), ^{
-                NSDictionary *movieAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                 fileURL, QTMovieURLAttribute,
-                                                 [NSNumber numberWithBool:NO], QTMovieAskUnresolvedDataRefsAttribute,
-                                                 [NSNumber numberWithBool:YES], @"QTMovieOpenForPlaybackAttribute",
-                                                 [NSNumber numberWithBool:NO], @"QTMovieOpenAsyncRequiredAttribute",
-                                                 [NSNumber numberWithBool:NO], @"QTMovieOpenAsyncOKAttribute",
-                                                 QTMovieApertureModeClean, QTMovieApertureModeAttribute,
-                                                 nil];
-                qtMovie = [[QTMovie alloc] initWithAttributes:movieAttributes error:nil];
-            });
 
-            if (!qtMovie)
+                // Release the movie, we don't want to keep it open while we are writing in it using another library.
+                // I am not sure if it is safe to release a QTMovie from a background thread, let's do it on the main just to be sure.
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                });
+            }
+            // If we haven't got enought images, return.
+            if (([previewImages count] < [[chapterTrack chapters] count]) || [previewImages count] == 0 ) {
+                return NO;
+            }
+
+            // Reopen the mp4v2 fileHandle
+            fileHandle = MP4Modify([[fileURL path] UTF8String], 0);
+            if (fileHandle == MP4_INVALID_FILE_HANDLE)
                 return NO;
 
-            for (QTTrack* qtTrack in [qtMovie tracksOfMediaType:@"sbtl"])
-                [qtTrack setAttribute:[NSNumber numberWithBool:NO] forKey:QTTrackEnabledAttribute];
+            MP4TrackId refTrack = findFirstVideoTrack(fileHandle);
+            if (!refTrack)
+                refTrack = 1;
 
-            NSDictionary *attributes = [NSDictionary dictionaryWithObject:QTMovieFrameImageTypeNSImage forKey:QTMovieFrameImageType];
-
-            for (SBTextSample * chapter in [chapterTrack chapters]) {
-                QTTime chapterTime = {
-                    [chapter timestamp] + 1500, // Add a short offset, hopefully we will get a better image
-                    1000,                       // if there is a fade
-                    0
-                };
-
-                NSImage *previewImage = [qtMovie frameImageAtTime:chapterTime withAttributes:attributes error:&error];
-                if (previewImage)
-                    [previewImages addObject:previewImage];
-                else {
-                    NSLog(@"code: %ld, domain: %@, userInfo: %@", [error code], [error domain], [error userInfo]);
-
-                    [previewImages addObject:[NSNull null]];
-                }
+            CGFloat maxWidth = 640;
+            NSSize imageSize = [[previewImages objectAtIndex:0] size];
+            if (imageSize.width > maxWidth) {
+                imageSize.height = maxWidth / imageSize.width * imageSize.height;
+                imageSize.width = maxWidth;
             }
 
-            // Release the movie, we don't want to keep it open while we are writing in it using another library.
-            // I am not sure if it is safe to release a QTMovie from a background thread, let's do it on the main just to be sure.
-            dispatch_sync(dispatch_get_main_queue(), ^{
-                [qtMovie release];
-            });
+            jpegTrack = MP4AddJpegVideoTrack(fileHandle, MP4GetTrackTimeScale(fileHandle, [chapterTrack Id]),
+                                              MP4_INVALID_DURATION, imageSize.width, imageSize.height);
+
+            NSString *language = @"Unknown";
+            for (MP42Track * track in tracks)
+                if ([track isMemberOfClass:[MP42VideoTrack class]])
+                    language = ((MP42VideoTrack*) track).language;
+
+            MP4SetTrackLanguage(fileHandle, jpegTrack, [[SBLanguages codeForEnglishName: language] UTF8String]);
+
+            MP4SetTrackIntegerProperty(fileHandle, jpegTrack, "tkhd.layer", 1);
+            disableTrack(fileHandle, jpegTrack);
+
+            NSInteger i = 0;
+            MP4Duration duration = 0;
+
+            for (SBTextSample *chapterT in [chapterTrack chapters]) {
+                duration = MP4GetSampleDuration(fileHandle, [chapterTrack Id], i+1);
+
+                // Scale the image.
+                NSRect newRect = NSMakeRect(0.0, 0.0, imageSize.width, imageSize.height);
+                NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL
+                                                                                   pixelsWide:newRect.size.width
+                                                                                   pixelsHigh:newRect.size.height
+                                                                                bitsPerSample:8
+                                                                              samplesPerPixel:4
+                                                                                     hasAlpha:YES
+                                                                                     isPlanar:NO
+                                                                               colorSpaceName:NSCalibratedRGBColorSpace
+                                                                                 bitmapFormat:NSAlphaFirstBitmapFormat
+                                                                                  bytesPerRow:0
+                                                                                 bitsPerPixel:32];
+                [NSGraphicsContext saveGraphicsState];
+                [NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep:bitmap]];
+
+                [[previewImages objectAtIndex:0] drawInRect:newRect fromRect:NSZeroRect operation:NSCompositeCopy fraction:1.0];
+
+                [NSGraphicsContext restoreGraphicsState];
+
+                NSData * jpegData = [bitmap representationUsingType:NSJPEGFileType properties:nil];
+
+                i++;
+                MP4WriteSample(fileHandle,
+                               jpegTrack,
+                               [jpegData bytes],
+                               [jpegData length],
+                               duration,
+                               0,
+                               true);
+
+                [previewImages removeObjectAtIndex:0];
+            }
+
+            MP4RemoveAllTrackReferences(fileHandle, "tref.chap", refTrack);
+            MP4AddTrackReference(fileHandle, "tref.chap", [chapterTrack Id], refTrack);
+            MP4AddTrackReference(fileHandle, "tref.chap", jpegTrack, refTrack);
+            copyTrackEditLists(fileHandle, [chapterTrack Id], jpegTrack);
+
+            MP4Close(fileHandle, 0);
+
         }
-        // If we haven't got enought images, return.
-        if (([previewImages count] < [[chapterTrack chapters] count]) || [previewImages count] == 0 ) {
-            [pool release];
-            return NO;
-        }
-
-        // Reopen the mp4v2 fileHandle
-        fileHandle = MP4Modify([[fileURL path] UTF8String], 0);
-        if (fileHandle == MP4_INVALID_FILE_HANDLE)
-            return NO;
-
-        MP4TrackId refTrack = findFirstVideoTrack(fileHandle);
-        if (!refTrack)
-            refTrack = 1;
-
-        CGFloat maxWidth = 640;
-        NSSize imageSize = [[previewImages objectAtIndex:0] size];
-        if (imageSize.width > maxWidth) {
-            imageSize.height = maxWidth / imageSize.width * imageSize.height;
-            imageSize.width = maxWidth;
-        }
-
-        jpegTrack = MP4AddJpegVideoTrack(fileHandle, MP4GetTrackTimeScale(fileHandle, [chapterTrack Id]),
-                                          MP4_INVALID_DURATION, imageSize.width, imageSize.height);
-
-        NSString *language = @"Unknown";
-        for (MP42Track * track in tracks)
-            if ([track isMemberOfClass:[MP42VideoTrack class]])
-                language = ((MP42VideoTrack*) track).language;
-
-        MP4SetTrackLanguage(fileHandle, jpegTrack, [[SBLanguages codeForEnglishName: language] UTF8String]);
-
-        MP4SetTrackIntegerProperty(fileHandle, jpegTrack, "tkhd.layer", 1);
-        disableTrack(fileHandle, jpegTrack);
-
-        NSInteger i = 0;
-        MP4Duration duration = 0;
-
-        for (SBTextSample *chapterT in [chapterTrack chapters]) {
-            duration = MP4GetSampleDuration(fileHandle, [chapterTrack Id], i+1);
-
-            // Scale the image.
-            NSRect newRect = NSMakeRect(0.0, 0.0, imageSize.width, imageSize.height);
-            NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL
-                                                                               pixelsWide:newRect.size.width
-                                                                               pixelsHigh:newRect.size.height
-                                                                            bitsPerSample:8
-                                                                          samplesPerPixel:4
-                                                                                 hasAlpha:YES
-                                                                                 isPlanar:NO
-                                                                           colorSpaceName:NSCalibratedRGBColorSpace
-                                                                             bitmapFormat:NSAlphaFirstBitmapFormat
-                                                                              bytesPerRow:0
-                                                                             bitsPerPixel:32];
-            [NSGraphicsContext saveGraphicsState];
-            [NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep:bitmap]];
-
-            [[previewImages objectAtIndex:0] drawInRect:newRect fromRect:NSZeroRect operation:NSCompositeCopy fraction:1.0];
-
-            [NSGraphicsContext restoreGraphicsState];
-
-            NSData * jpegData = [bitmap representationUsingType:NSJPEGFileType properties:nil];
-            [bitmap release];
-
-            i++;
-            MP4WriteSample(fileHandle,
-                           jpegTrack,
-                           [jpegData bytes],
-                           [jpegData length],
-                           duration,
-                           0,
-                           true);
-
-            [previewImages removeObjectAtIndex:0];
-        }
-
-        MP4RemoveAllTrackReferences(fileHandle, "tref.chap", refTrack);
-        MP4AddTrackReference(fileHandle, "tref.chap", [chapterTrack Id], refTrack);
-        MP4AddTrackReference(fileHandle, "tref.chap", jpegTrack, refTrack);
-        copyTrackEditLists(fileHandle, [chapterTrack Id], jpegTrack);
-
-        MP4Close(fileHandle, 0);
-
-        [pool release];
         return YES;
     }
     else if (chapterTrack && jpegTrack) {
@@ -656,13 +642,13 @@ NSString * const MP42FileTypeM4B = @"m4b";
 {
     self = [super init];
 
-    fileURL = [[decoder decodeObjectForKey:@"fileUrl"] retain];
-    tracksToBeDeleted = [[decoder decodeObjectForKey:@"tracksToBeDeleted"] retain];
+    fileURL = [decoder decodeObjectForKey:@"fileUrl"];
+    tracksToBeDeleted = [decoder decodeObjectForKey:@"tracksToBeDeleted"];
 
     hasFileRepresentation = [decoder decodeBoolForKey:@"hasFileRepresentation"];
 
-    tracks = [[decoder decodeObjectForKey:@"tracks"] retain];
-    metadata = [[decoder decodeObjectForKey:@"metadata"] retain];
+    tracks = [decoder decodeObjectForKey:@"tracks"];
+    metadata = [decoder decodeObjectForKey:@"metadata"];
 
     /*for (MP42Track *track in tracks)
         NSLog(@"Track Source URL: %@", [[track sourceURL] absoluteString]);*/
@@ -670,14 +656,5 @@ NSString * const MP42FileTypeM4B = @"m4b";
     return self;
 }
 
-- (void) dealloc
-{
-    [fileURL release];
-    [tracks release];
-    [fileImporters release];
-    [tracksToBeDeleted release];
-    [metadata release];
-    [super dealloc];
-}
 
 @end

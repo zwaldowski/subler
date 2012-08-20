@@ -15,15 +15,15 @@
 
 - (void) awakeFromNib
 {
-    NSMutableParagraphStyle * ps = [[[NSParagraphStyle defaultParagraphStyle] mutableCopy] autorelease];
+    NSMutableParagraphStyle * ps = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     [ps setHeadIndent: -10.0];
     [ps setAlignment:NSRightTextAlignment];
     
-    detailBoldAttr = [[NSDictionary dictionaryWithObjectsAndKeys:
+    detailBoldAttr = [NSDictionary dictionaryWithObjectsAndKeys:
                        [NSFont boldSystemFontOfSize:11.0], NSFontAttributeName,
                        ps, NSParagraphStyleAttributeName,
                        [NSColor grayColor], NSForegroundColorAttributeName,
-                       nil] retain];
+                       nil];
 }
 
 - (void) setTrack:(MP42ChapterTrack *) chapterTrack
@@ -33,7 +33,7 @@
 
 - (NSAttributedString *) boldString: (NSString *) string
 {
-    return [[[NSAttributedString alloc] initWithString:string attributes:detailBoldAttr] autorelease];
+    return [[NSAttributedString alloc] initWithString:string attributes:detailBoldAttr];
 }
 
 - (NSInteger) numberOfRowsInTableView: (NSTableView *) t
@@ -104,10 +104,5 @@
     [[[[[self view]window] windowController] document] updateChangeCount:NSChangeDone];
 }
 
-- (void) dealloc
-{
-    [detailBoldAttr release];
-    [super dealloc];
-}
 
 @end

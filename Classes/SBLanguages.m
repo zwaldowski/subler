@@ -42,7 +42,6 @@ NSString *const SBLanguageQTCodeKey = @"qtLang";
 
 		languagesArray = [topLanguages copy];
 
-		[otherLanguages release];
 	});
 	return languagesArray;
 }
@@ -96,7 +95,7 @@ NSString *const SBLanguageQTCodeKey = @"qtLang";
 		return nil;
 	NSMutableDictionary *dict = [[[self languages] objectForKey: code] mutableCopy];
 	[dict setObject: code forKey: SBLanguageEnglishNameKey];
-	return [dict autorelease];
+	return dict;
 }
 
 + (NSString *)englishNameForCode:(const char *)code {

@@ -19,6 +19,6 @@
     NSArray *_pasteboardTypes;
 }
 - (void)keyDown:(NSEvent *)event;
-@property(readwrite, retain) NSArray* _pasteboardTypes;
+@property(readwrite, strong) NSArray* _pasteboardTypes;
 @end
 

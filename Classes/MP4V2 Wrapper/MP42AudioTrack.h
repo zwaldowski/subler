@@ -26,6 +26,6 @@
 @property MP4TrackId fallbackTrackId;
 @property MP4TrackId followsTrackId;
 
-@property(readwrite, retain) NSString *mixdownType;
+@property(readwrite, strong) NSString *mixdownType;
 
 @end

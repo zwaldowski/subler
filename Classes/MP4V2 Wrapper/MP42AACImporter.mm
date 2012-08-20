@@ -712,7 +712,7 @@ static bool GetFirstHeader(FILE* inFile)
 - (id <MP42FileImporter>)initWithFile:(NSURL *)URL delegate:(id <MP42FileImporterDelegate>)del error:(NSError **)outError {
     if ((self = [super init])) {
         delegate = del;
-        fileURL = [URL retain];
+        fileURL = URL;
 
         tracksArray = [[NSMutableArray alloc] initWithCapacity:1];
 
@@ -735,7 +735,6 @@ static bool GetFirstHeader(FILE* inFile)
 
         if (!GetFirstHeader(inFile)) {
             //*outError = MP42Error(@"The audio could not be opened.", @"Data in file doesn't appear to be valid audio.", 100);
-            [newTrack release];
             return nil;
         }
 
@@ -744,7 +743,6 @@ static bool GetFirstHeader(FILE* inFile)
         if (aacProfileLevel == 2) {
             if (profile > MP4_MPEG4_AAC_SSR_AUDIO_TYPE) {
                 //*outError = MP42Error(@"The audio could not be opened.", @"Can't convert profile to mpeg2", 100);
-                [newTrack release];
                 return nil;
             }
         }
@@ -767,7 +765,6 @@ static bool GetFirstHeader(FILE* inFile)
         free(pConfig);
 
         [tracksArray addObject:newTrack];
-        [newTrack release];
     }
 
     return self;
@@ -803,53 +800,52 @@ static bool GetFirstHeader(FILE* inFile)
 
 - (void) fillMovieSampleBuffer: (id)sender
 {
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-    if (!inFile)
-        inFile = fopen([[fileURL path] UTF8String], "rb");
+    @autoreleasepool {
+        if (!inFile)
+            inFile = fopen([[fileURL path] UTF8String], "rb");
 
-    MP42Track *track = [activeTracks lastObject];
-    MP4TrackId dstTrackId = [track Id];
+        MP42Track *track = [activeTracks lastObject];
+        MP4TrackId dstTrackId = [track Id];
 
-    // parse the ADTS frames, and write the MP4 samples
-    u_int8_t sampleBuffer[8 * 1024];
-    u_int32_t sampleSize = sizeof(sampleBuffer);
-    MP4SampleId sampleId = 1;
+        // parse the ADTS frames, and write the MP4 samples
+        u_int8_t sampleBuffer[8 * 1024];
+        u_int32_t sampleSize = sizeof(sampleBuffer);
+        MP4SampleId sampleId = 1;
 
-    int64_t currentSize = 0;
+        int64_t currentSize = 0;
 
-    while (LoadNextAacFrame(inFile, sampleBuffer, &sampleSize, true) && !cancelled) {
-        while ([samplesBuffer count] >= 200) {
-            usleep(200);
+        while (LoadNextAacFrame(inFile, sampleBuffer, &sampleSize, true) && !cancelled) {
+            while ([samplesBuffer count] >= 200) {
+                usleep(200);
+            }
+
+            MP42SampleBuffer *sample = [[MP42SampleBuffer alloc] init];
+
+            void * sampleDataBuffer = malloc(sampleSize);
+            memcpy(sampleDataBuffer, sampleBuffer, sampleSize);
+
+            sample->sampleData = sampleDataBuffer;
+            sample->sampleSize = sampleSize;
+            sample->sampleDuration = MP4_INVALID_DURATION;
+            sample->sampleOffset = 0;
+            sample->sampleTimestamp = 0;
+            sample->sampleIsSync = 1;
+            sample->sampleTrackId = dstTrackId;
+            if(track.needConversion)
+                sample->sampleSourceTrack = track;
+
+            @synchronized(samplesBuffer) {
+                [samplesBuffer addObject:sample];
+            }
+
+            sampleId++;
+            sampleSize = sizeof(sampleBuffer);
+
+            currentSize += sampleSize;
+            progress = (currentSize / (CGFloat) size) * 100;
         }
 
-        MP42SampleBuffer *sample = [[MP42SampleBuffer alloc] init];
-
-        void * sampleDataBuffer = malloc(sampleSize);
-        memcpy(sampleDataBuffer, sampleBuffer, sampleSize);
-
-        sample->sampleData = sampleDataBuffer;
-        sample->sampleSize = sampleSize;
-        sample->sampleDuration = MP4_INVALID_DURATION;
-        sample->sampleOffset = 0;
-        sample->sampleTimestamp = 0;
-        sample->sampleIsSync = 1;
-        sample->sampleTrackId = dstTrackId;
-        if(track.needConversion)
-            sample->sampleSourceTrack = track;
-
-        @synchronized(samplesBuffer) {
-            [samplesBuffer addObject:sample];
-            [sample release];
-        }
-
-        sampleId++;
-        sampleSize = sizeof(sampleBuffer);
-
-        currentSize += sampleSize;
-        progress = (currentSize / (CGFloat) size) * 100;
     }
-
-    [pool release];
     readerStatus = 1;
 }
 
@@ -870,7 +866,6 @@ static bool GetFirstHeader(FILE* inFile)
     if (readerStatus)
         if ([samplesBuffer count] == 0) {
             readerStatus = 0;
-            [dataReader release];
             dataReader = nil;
             return nil;
         }
@@ -879,7 +874,6 @@ static bool GetFirstHeader(FILE* inFile)
 
     @synchronized(samplesBuffer) {
         sample = [samplesBuffer objectAtIndex:0];
-        [sample retain];
         [samplesBuffer removeObjectAtIndex:0];
     }
 
@@ -900,19 +894,10 @@ static bool GetFirstHeader(FILE* inFile)
 
 - (void) dealloc
 {
-    if (dataReader)
-        [dataReader release];
-    if (samplesBuffer)
-        [samplesBuffer release];
 
     fclose(inFile);
 
-    [aacInfo release];
-	[fileURL release];
-    [tracksArray release];
-    [activeTracks release];
 
-    [super dealloc];
 }
 
 @end

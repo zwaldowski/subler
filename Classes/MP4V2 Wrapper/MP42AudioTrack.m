@@ -133,10 +133,6 @@ extern u_int8_t MP4AV_AacConfigGetChannels(u_int8_t* pConfig);
     return Id;
 }
 
-- (void) dealloc
-{
-    [super dealloc];
-}
 
 - (void) setVolume: (float) newVolume
 {
@@ -214,7 +210,7 @@ extern u_int8_t MP4AV_AacConfigGetChannels(u_int8_t* pConfig);
 
     fallbackTrackId = [decoder decodeInt64ForKey:@"fallbackTrackId"];
 
-    mixdownType = [[decoder decodeObjectForKey:@"mixdownType"] retain];
+    mixdownType = [decoder decodeObjectForKey:@"mixdownType"];
 
     return self;
 }

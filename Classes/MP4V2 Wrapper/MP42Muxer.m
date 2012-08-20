@@ -61,7 +61,6 @@
             }
 
             track.trackConverterHelper = audioConverter;
-            [audioConverter release];
         }
         if([track isMemberOfClass:[MP42SubtitleTrack class]] && [track.format isEqualToString:@"VobSub"] && track.needConversion) {
             track.format = @"3GPP Text";
@@ -73,7 +72,6 @@
             }
 
             track.trackConverterHelper = subConverter;
-            [subConverter release];
         }
         else if([track isMemberOfClass:[MP42SubtitleTrack class]] && track.needConversion) {
             track.format = @"3GPP Text";
@@ -343,117 +341,109 @@
 
 - (void)start:(MP4FileHandle)fileHandle
 {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    @autoreleasepool {
 
-    NSMutableArray * trackImportersArray = [[NSMutableArray alloc] init];
+        NSMutableArray * trackImportersArray = [[NSMutableArray alloc] init];
 
-    for (MP42Track * track in workingTracks) {
-        if (![trackImportersArray containsObject:[track trackImporterHelper]]) {
-            [trackImportersArray addObject:[track trackImporterHelper]];
+        for (MP42Track * track in workingTracks) {
+            if (![trackImportersArray containsObject:[track trackImporterHelper]]) {
+                [trackImportersArray addObject:[track trackImporterHelper]];
+            }
         }
-    }
 
-    CGFloat status = 0;
-    NSUInteger currentNumber = 0;
-    NSInteger tracksImportersCount = [trackImportersArray count];
+        CGFloat status = 0;
+        NSUInteger currentNumber = 0;
+        NSInteger tracksImportersCount = [trackImportersArray count];
 
-    if (!tracksImportersCount) {
-        [trackImportersArray release];
-        return;
-    }
+        if (!tracksImportersCount) {
+            return;
+        }
 
-    for (id importerHelper in trackImportersArray) {
-        MP42SampleBuffer * sampleBuffer;
+        for (id importerHelper in trackImportersArray) {
+            MP42SampleBuffer * sampleBuffer;
 
-        while ((sampleBuffer = [importerHelper copyNextSample]) != nil && !isCancelled) {
-            // The sample need additional conversion
-            if (sampleBuffer->sampleSourceTrack) {
+            while ((sampleBuffer = [importerHelper copyNextSample]) != nil && !isCancelled) {
+                // The sample need additional conversion
+                if (sampleBuffer->sampleSourceTrack) {
+                    MP42SampleBuffer *convertedSample;
+                    id converter = sampleBuffer->sampleSourceTrack.trackConverterHelper;
+                    [converter addSample:sampleBuffer];
+                    while (![converter needMoreSample]) {
+                        convertedSample = [converter copyEncodedSample];
+                        if (convertedSample != nil) {
+                            MP4WriteSample(fileHandle, convertedSample->sampleTrackId,
+                                           convertedSample->sampleData, convertedSample->sampleSize,
+                                           convertedSample->sampleDuration, convertedSample->sampleOffset,
+                                           convertedSample->sampleIsSync);
+                        }
+                        else if (![converter encoderDone]) {
+                            usleep(50);
+                        }
+                        else
+                            break;
+
+                    }
+                }
+
+                // Write the sample directly to the file
+                else {
+                    MP4WriteSample(fileHandle, sampleBuffer->sampleTrackId,
+                                   sampleBuffer->sampleData, sampleBuffer->sampleSize,
+                                   sampleBuffer->sampleDuration, sampleBuffer->sampleOffset,
+                                   sampleBuffer->sampleIsSync);
+                }
+
+                if (currentNumber == 150) {
+                    status = [importerHelper progress] / tracksImportersCount;
+
+                    if (delegate)
+                        [delegate muxer: self didUpdateProgress: status];
+                    currentNumber = 0;
+                }
+                else {
+                    currentNumber++;
+                }
+            }
+        }
+
+        for (id importerHelper in trackImportersArray) {
+            if (isCancelled)
+                [importerHelper cancel];
+            else
+                [importerHelper cleanUp:fileHandle];
+        }
+
+        // Write the last samples from the encoder
+        for (MP42Track * track in workingTracks) {
+            if([track isMemberOfClass:[MP42AudioTrack class]] && track.needConversion) {
+                id converter = track.trackConverterHelper;
+                [converter setDone:YES];
                 MP42SampleBuffer *convertedSample;
-                id converter = sampleBuffer->sampleSourceTrack.trackConverterHelper;
-                [converter addSample:sampleBuffer];
-                while (![converter needMoreSample]) {
-                    convertedSample = [converter copyEncodedSample];
-                    if (convertedSample != nil) {
+                while (![converter encoderDone]) {
+                    if ((convertedSample = [converter copyEncodedSample]) != nil) {
                         MP4WriteSample(fileHandle, convertedSample->sampleTrackId,
                                        convertedSample->sampleData, convertedSample->sampleSize,
                                        convertedSample->sampleDuration, convertedSample->sampleOffset,
                                        convertedSample->sampleIsSync);
-                        [convertedSample release];
                     }
-                    else if (![converter encoderDone]) {
+                    else {
                         usleep(50);
                     }
-                    else
-                        break;
 
                 }
-                [sampleBuffer release];
-            }
-
-            // Write the sample directly to the file
-            else {
-                MP4WriteSample(fileHandle, sampleBuffer->sampleTrackId,
-                               sampleBuffer->sampleData, sampleBuffer->sampleSize,
-                               sampleBuffer->sampleDuration, sampleBuffer->sampleOffset,
-                               sampleBuffer->sampleIsSync);
-                [sampleBuffer release];
-            }
-
-            if (currentNumber == 150) {
-                status = [importerHelper progress] / tracksImportersCount;
-
-                if (delegate)
-                    [delegate muxer: self didUpdateProgress: status];
-                currentNumber = 0;
-            }
-            else {
-                currentNumber++;
+                NSData *magicCookie = [track.trackConverterHelper magicCookie];
+                MP4SetTrackESConfiguration(fileHandle, track.Id,
+                                           [magicCookie bytes],
+                                           [magicCookie length]);
             }
         }
-        if (isCancelled)
-            [sampleBuffer release];
-    }
 
-    for (id importerHelper in trackImportersArray) {
-        if (isCancelled)
-            [importerHelper cancel];
-        else
-            [importerHelper cleanUp:fileHandle];
-    }
-
-    // Write the last samples from the encoder
-    for (MP42Track * track in workingTracks) {
-        if([track isMemberOfClass:[MP42AudioTrack class]] && track.needConversion) {
-            id converter = track.trackConverterHelper;
-            [converter setDone:YES];
-            MP42SampleBuffer *convertedSample;
-            while (![converter encoderDone]) {
-                if ((convertedSample = [converter copyEncodedSample]) != nil) {
-                    MP4WriteSample(fileHandle, convertedSample->sampleTrackId,
-                                   convertedSample->sampleData, convertedSample->sampleSize,
-                                   convertedSample->sampleDuration, convertedSample->sampleOffset,
-                                   convertedSample->sampleIsSync);
-                    [convertedSample release];
-                }
-                else {
-                    usleep(50);
-                }
-
-            }
-            NSData *magicCookie = [track.trackConverterHelper magicCookie];
-            MP4SetTrackESConfiguration(fileHandle, track.Id,
-                                       [magicCookie bytes],
-                                       [magicCookie length]);
+        for (MP42Track * track in workingTracks) {
+            if (track.trackConverterHelper) 
+                track.trackConverterHelper = nil;
         }
-    }
 
-    for (MP42Track * track in workingTracks) {
-        if (track.trackConverterHelper) 
-            track.trackConverterHelper = nil;
     }
-
-    [trackImportersArray release];
-    [pool release];
 }
 
 - (void)cancel
@@ -463,8 +453,7 @@
 
 - (void) dealloc
 {
-    [workingTracks release], workingTracks = nil;
-    [super dealloc];
+    workingTracks = nil;
 }
 
 @end
