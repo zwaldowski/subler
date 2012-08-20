@@ -100,7 +100,7 @@
     if ([self fileURL]) {
         MP42File *newFile = [[MP42File alloc] initWithExistingFile:[self fileURL] andDelegate:self];
         if (newFile) {
-            [mp4File autorelease];
+            [mp4File release];
             mp4File = newFile;
             [fileTracksTable reloadData];
             [self tableViewSelectionDidChange:nil];
