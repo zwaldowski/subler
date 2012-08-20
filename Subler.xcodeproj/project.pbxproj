@@ -24,6 +24,8 @@
 		6CBC598E15E27A1600C03710 /* languages.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6CBC598D15E27A1600C03710 /* languages.plist */; };
 		6CBC59AD15E27D5F00C03710 /* topLanguages.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6CBC59AC15E27D5F00C03710 /* topLanguages.plist */; };
 		6CBC59B815E293BF00C03710 /* prefs-audio@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CBC59B715E293BF00C03710 /* prefs-audio@2x.png */; };
+		6CBC59C315E297A000C03710 /* tmdb-logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CBC59C215E297A000C03710 /* tmdb-logo@2x.png */; };
+		6CBC59C515E298ED00C03710 /* tvdb-logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CBC59C415E298ED00C03710 /* tvdb-logo@2x.png */; };
 		6CEEBED415818331009A459F /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6CEEBED315818331009A459F /* Quartz.framework */; };
 		8D15AC2C0486D014006FF6A4 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2A37F4B9FDCFA73011CA2CEA /* Credits.rtf */; };
 		8D15AC2F0486D014006FF6A4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165FFE840EACC02AAC07 /* InfoPlist.strings */; };
@@ -214,6 +216,8 @@
 		6CBC598D15E27A1600C03710 /* languages.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = languages.plist; sourceTree = "<group>"; };
 		6CBC59AC15E27D5F00C03710 /* topLanguages.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = topLanguages.plist; sourceTree = "<group>"; };
 		6CBC59B715E293BF00C03710 /* prefs-audio@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "prefs-audio@2x.png"; path = "images/prefs-audio@2x.png"; sourceTree = "<group>"; };
+		6CBC59C215E297A000C03710 /* tmdb-logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "tmdb-logo@2x.png"; path = "images/tmdb-logo@2x.png"; sourceTree = "<group>"; };
+		6CBC59C415E298ED00C03710 /* tvdb-logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "tvdb-logo@2x.png"; path = "images/tvdb-logo@2x.png"; sourceTree = "<group>"; };
 		6CEEBED315818331009A459F /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Quartz.framework; sourceTree = DEVELOPER_DIR; };
 		8D15AC360486D014006FF6A4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D15AC370486D014006FF6A4 /* Subler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Subler.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -555,7 +559,9 @@
 				A975644B132A325C0051ED08 /* info-over.pdf */,
 				A975644C132A325C0051ED08 /* info-pressed.pdf */,
 				CD08BA9512F62829006BA549 /* tmdb-logo.png */,
+				6CBC59C215E297A000C03710 /* tmdb-logo@2x.png */,
 				CD16BC4612F6BC7F00AF5453 /* tvdb-logo.png */,
+				6CBC59C415E298ED00C03710 /* tvdb-logo@2x.png */,
 				A9B46AA312B79BB10040517A /* Subler.icns */,
 				A9C9E33F13FBC1EB00CA3B4E /* EncodeCanceled.png */,
 				A9C9E34013FBC1EB00CA3B4E /* EncodeComplete.png */,
@@ -856,6 +862,8 @@
 				6CBC598E15E27A1600C03710 /* languages.plist in Resources */,
 				6CBC59AD15E27D5F00C03710 /* topLanguages.plist in Resources */,
 				6CBC59B815E293BF00C03710 /* prefs-audio@2x.png in Resources */,
+				6CBC59C315E297A000C03710 /* tmdb-logo@2x.png in Resources */,
+				6CBC59C515E298ED00C03710 /* tvdb-logo@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
