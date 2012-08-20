@@ -12,6 +12,7 @@
 #import "ArtworkSelector.h"
 #import "SBLanguages.h"
 #import "NSRegularExpression+Subler.h"
+#import "SBTableView.h"
 
 @implementation MetadataSearchController
 
@@ -342,7 +343,7 @@
     if (i != NSNotFound) {
         [NSApp endSheet: selector.window];
         [selector.window orderOut:self];
-        [selector autorelease];
+        [selector release];
         selectedResult.artworkURL = [selectedResult.artworkFullsizeURLs objectAtIndex:i];
     }
     [self loadArtwork];
