@@ -37,6 +37,8 @@
 		6CBC5A6015E2A0AC00C03710 /* VideoFramerate.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6CBC5A5715E2A0AC00C03710 /* VideoFramerate.xib */; };
 		6CBC5A6B15E2C7A800C03710 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 6CBC5A6A15E2C7A800C03710 /* dsa_pub.pem */; };
 		6CBC5A7015E2C8B300C03710 /* EncodeCanceled.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CBC5A6F15E2C8B200C03710 /* EncodeCanceled.png */; };
+		6CBC5A7215E2C90B00C03710 /* EncodeCanceled@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CBC5A7115E2C90B00C03710 /* EncodeCanceled@2x.png */; };
+		6CBC5A7415E2CDDC00C03710 /* EncodeComplete@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CBC5A7315E2CDDC00C03710 /* EncodeComplete@2x.png */; };
 		6CEEBED415818331009A459F /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6CEEBED315818331009A459F /* Quartz.framework */; };
 		8D15AC320486D014006FF6A4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A37F4B0FDCFA73011CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D15AC340486D014006FF6A4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A7FEA54F5311CA2CBB /* Cocoa.framework */; };
@@ -230,6 +232,8 @@
 		6CBC5A5815E2A0AC00C03710 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = Subler/en.lproj/VideoFramerate.xib; sourceTree = SOURCE_ROOT; };
 		6CBC5A6A15E2C7A800C03710 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		6CBC5A6F15E2C8B200C03710 /* EncodeCanceled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = EncodeCanceled.png; sourceTree = "<group>"; };
+		6CBC5A7115E2C90B00C03710 /* EncodeCanceled@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "EncodeCanceled@2x.png"; sourceTree = "<group>"; };
+		6CBC5A7315E2CDDC00C03710 /* EncodeComplete@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "EncodeComplete@2x.png"; sourceTree = "<group>"; };
 		6CEEBED315818331009A459F /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Quartz.framework; sourceTree = DEVELOPER_DIR; };
 		8D15AC360486D014006FF6A4 /* Subler-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Subler-Info.plist"; sourceTree = "<group>"; };
 		8D15AC370486D014006FF6A4 /* Subler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Subler.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -610,7 +614,9 @@
 				6CBC59C415E298ED00C03710 /* tvdb-logo@2x.png */,
 				A9B46AA312B79BB10040517A /* Subler.icns */,
 				6CBC5A6F15E2C8B200C03710 /* EncodeCanceled.png */,
+				6CBC5A7115E2C90B00C03710 /* EncodeCanceled@2x.png */,
 				A9C9E34013FBC1EB00CA3B4E /* EncodeComplete.png */,
+				6CBC5A7315E2CDDC00C03710 /* EncodeComplete@2x.png */,
 				A9C9E34113FBC1EB00CA3B4E /* EncodeWorking.png */,
 				A92A4FB712B0F2F300751FA5 /* prefs-audio.png */,
 				6CBC59B715E293BF00C03710 /* prefs-audio@2x.png */,
@@ -891,6 +897,8 @@
 				6CBC5A6015E2A0AC00C03710 /* VideoFramerate.xib in Resources */,
 				6CBC5A6B15E2C7A800C03710 /* dsa_pub.pem in Resources */,
 				6CBC5A7015E2C8B300C03710 /* EncodeCanceled.png in Resources */,
+				6CBC5A7215E2C90B00C03710 /* EncodeCanceled@2x.png in Resources */,
+				6CBC5A7415E2CDDC00C03710 /* EncodeComplete@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
